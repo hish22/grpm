@@ -1,4 +1,4 @@
-# Github Releases Package Manager
+# Github Releases Packet Manager
 
 Github Releases Packet Manager (grpm) is a simple tool to handle installed releases from github.
 
