@@ -2,15 +2,22 @@ package packet
 
 import "net/url"
 
-/* Seach repo struct */
+/* Repo command info */
+type RepoInfo struct {
+	Name      string
+	Page      string
+	MostStars bool
+	FewStars  bool
+}
+
+/* Search repo struct */
 type Srepo struct {
 	Name        string
 	Description string
-	Url         url.URL
 }
 
 /* repo's page struct */
-type Repo struct {
+type RepoPage struct {
 	Name   string
 	Url    url.URL
 	Readme string

@@ -2,30 +2,57 @@ package search
 
 import (
 	"fmt"
+	"hish22/grpm/internal/packet"
 	"hish22/grpm/internal/search"
+	"strconv"
 
 	"github.com/spf13/cobra"
 )
 
-var repo bool
+var (
+	repo      string
+	page      int
+	mostStars bool
+	fewStars  bool
+)
 
 func Search() *cobra.Command {
 	c := &cobra.Command{
 		Use:   "search",
 		Short: "Search a specific github object.",
-		Run:   searchUtil,
+		Run:   searchCmd,
 	}
-	c.Flags().BoolVarP(&repo, "repo", "r", false, "Search for specific repo")
+	c.Flags().StringVarP(&repo, "repo", "r", "", "Search for specific repo")
+	c.Flags().IntVarP(&page, "page", "p", 1, "Specifiy page for a repo")
+	c.Flags().BoolVarP(&mostStars, "most-stars", "m", false, "Search for most stars repo")
+	c.Flags().BoolVarP(&fewStars, "few-stars", "f", false, "Search for fewer stars repo")
 	return c
 }
 
-func searchUtil(cmd *cobra.Command, args []string) {
-	if repo {
-		HitRepos := search.SearchRepo(args[0], args[0])
-		for _, r := range HitRepos {
-			fmt.Println("\n\033[1m", r.Name, "\033[0m\n", r.Description)
-			fmt.Println()
-		}
+func searchCmd(cmd *cobra.Command, args []string) {
+	if len(repo) != 0 {
+		repoSearch()
+	} else {
+		fmt.Println("Type grpm search -h , for help.")
 	}
-	fmt.Println("Specifiy a flag to start searching.")
+}
+
+func repoSearch() {
+
+	HitRepos := search.SearchRepo(&packet.RepoInfo{
+		Name:      repo,
+		Page:      strconv.Itoa(page),
+		MostStars: mostStars,
+		FewStars:  fewStars,
+	})
+
+	if len(HitRepos) != 0 {
+		for _, r := range HitRepos {
+			fmt.Printf("\n\033]8;;https://github.com/%s\a\033[1m%s\033[0m\033]8;;\a\n%s\n",
+				r.Name, r.Name, r.Description)
+			fmt.Println() // last space
+		}
+	} else {
+		fmt.Println("\033[1mNo result found of", repo, "\033[0m")
+	}
 }

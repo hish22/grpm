@@ -9,12 +9,14 @@ import (
 	"github.com/gocolly/colly/v2"
 )
 
-func SearchRepo(query string, page string) []packet.Srepo {
-	gc := core.Collector(query)
+/* Search list of github repos */
+func SearchRepo(repo *packet.RepoInfo) []packet.Srepo {
+	gc := core.Collector((*repo).Name)
 
-	/* Create a slice of Srepos */
+	/* Create a slice of search repos */
 	var matchedQueries []packet.Srepo
 	var srp packet.Srepo // init a new search repo
+
 	gc.OnHTML("span.search-match", func(e *colly.HTMLElement) {
 		if strings.Contains(e.Attr("class"), "hkFRpV") { // append the name of a repo
 			srp.Name = e.Text
@@ -24,14 +26,20 @@ func SearchRepo(query string, page string) []packet.Srepo {
 		}
 		if srp.Name != "" && srp.Description != "" {
 			matchedQueries = append(matchedQueries, srp) // Append a clone of srp
+			srp.Name = ""
+			srp.Description = ""
 		}
 	})
 
 	gc.OnRequest(func(r *colly.Request) {
 		fmt.Println("Visiting ", r.URL)
 	})
-
-	gc.Visit("https://github.com/search?q=" + query + "&type=repositories" + "&p=" + page)
-
+	if (*repo).MostStars {
+		gc.Visit("https://github.com/search?q=" + (*repo).Name + "&type=repositories" + "&p=" + (*repo).Page + "&s=stars&o=desc")
+	} else if (*repo).FewStars {
+		gc.Visit("https://github.com/search?q=" + (*repo).Name + "&type=repositories" + "&p=" + (*repo).Page + "&s=stars&o=asc")
+	} else {
+		gc.Visit("https://github.com/search?q=" + (*repo).Name + "&type=repositories" + "&p=" + (*repo).Page)
+	}
 	return matchedQueries
 }
