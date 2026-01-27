@@ -1,4 +1,4 @@
-package search
+package searchc
 
 import (
 	"fmt"
