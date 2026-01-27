@@ -10,7 +10,7 @@ import (
 func Collector(cacheName string) *colly.Collector {
 	return colly.NewCollector(
 		colly.AllowedDomains("github.com"),
-		colly.CacheDir("./github_"+cacheName),
+		colly.CacheDir("./cache/github_"+cacheName),
 		colly.CacheExpiration(24*time.Hour),
 	)
 }
