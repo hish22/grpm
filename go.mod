@@ -3,12 +3,12 @@ module hish22/grpm
 go 1.25.4
 
 require (
+	github.com/BurntSushi/toml v1.6.0
 	github.com/gocolly/colly/v2 v2.3.0
 	github.com/spf13/cobra v1.10.2
 )
 
 require (
-	github.com/BurntSushi/toml v1.6.0 // indirect
 	github.com/PuerkitoBio/goquery v1.11.0 // indirect
 	github.com/andybalholm/cascadia v1.3.3 // indirect
 	github.com/antchfx/htmlquery v1.3.5 // indirect

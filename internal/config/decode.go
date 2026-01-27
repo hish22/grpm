@@ -6,10 +6,6 @@ import (
 	"github.com/BurntSushi/toml"
 )
 
-type config struct {
-	Location string `toml:"location"`
-}
-
 func DecodeTOMLConfig() config {
 
 	var conf config
