@@ -22,7 +22,7 @@ commands:
  1 - sprint (predicted at: 27 jan 2026): [Implement the config plan]
 - One: We need to generate config a toml file for general configuration (Done) (Refactor phase)
 - Two: We need to use the generated config information (Done) (Refactor phase)
-- Three: user can change config file as he/she needs 
+- Three: user can change config file as he/she needs (Done) (Refactor phase)
 
  2 - sprint (predicted at: 28 jan 2026): [Start working with info search operation]
 - One: open a specific repo
