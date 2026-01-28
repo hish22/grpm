@@ -14,6 +14,7 @@ type RepoInfo struct {
 type Srepo struct {
 	Name        string
 	Description string
+	Stars       string
 }
 
 /* repo's page struct */
