@@ -3,6 +3,7 @@ package configc
 import (
 	"fmt"
 	"hish22/grpm/internal/config"
+	"log"
 
 	"github.com/spf13/cobra"
 )
@@ -32,5 +33,9 @@ func ConfigCmd(cmd *cobra.Command, args []string) {
 		fmt.Println("Location:", "\033[1m", c.Location, "\033[0m", "=> Where your installed files are saved")
 	} else if rfconfig {
 		config.OpenTOMLConfig()
+	} else {
+		if err := cmd.Help(); err != nil {
+			log.Fatal("Can't print config help command,", err)
+		}
 	}
 }
