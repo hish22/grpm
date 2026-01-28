@@ -62,6 +62,7 @@ func JsonSearchRepo(repo *packet.RepoInfo) []packet.Srepo {
 	defer resp.Body.Close()
 
 	buf, err := io.ReadAll(resp.Body)
+
 	if err != nil {
 		log.Fatal("Can't fetch repos JSON data, ", err)
 	}
