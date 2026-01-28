@@ -24,11 +24,17 @@ commands:
 - Two: We need to use the generated config information (Done) (Refactor phase)
 - Three: user can change config file as he/she needs (Done) (Refactor phase)
 
- 2 - sprint (predicted at: 28 jan 2026): [Start working with info search operation]
+ 2 - sprint (predicted at: 28 jan 2026): [Implement the search with JSON accept]
+- One: We need to fetch data from github as JSON (Done) (Refactor phase)
+- Two: Then we start by marshling/decoding the string into JSON (Done) (Refactor phase)
+- Third: print the info into the terminal (Done) (Refactor phase)
+- Fourth: add caching technique
+
+ 3 - sprint (predicted at: 29 jan 2026): [Start working with info search operation]
 - One: open a specific repo
 - Two: fetch specified info like (name,readme,url,etc)
 
- 3 - sprint (predicted at: 29 jan 2026): [Start working with instllation of files]
+ 4 - sprint (predicted at: 30 jan 2026): [Start working with instllation of files]
 - One: Install a file by writing its name like (hish22/grpm)
 - Two: Make sure the file installed based on the installation proccess (declared when we start this    process)
 - Three: make sure to include the db to track installed packets/releases
