@@ -48,8 +48,8 @@ func repoSearch() {
 
 	if len(HitRepos) != 0 {
 		for _, r := range HitRepos {
-			fmt.Printf("\n\033]8;;https://github.com/%s\a\033[1m%s\033[0m\033]8;;\a\n%s\n",
-				r.Name, r.Name, r.Description)
+			fmt.Printf("\n\033]8;;https://github.com/%s\a\033[1m%s (%s stars)\033[0m\033]8;;\a\n%s\n",
+				r.Name, r.Name, r.Stars, r.Description)
 			fmt.Println() // last space
 		}
 	} else {

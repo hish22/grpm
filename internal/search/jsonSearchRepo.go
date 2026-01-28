@@ -7,6 +7,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"strconv"
 )
 
 type Repository struct {
@@ -21,6 +22,7 @@ type Repo struct {
 type Results struct {
 	Repo        Repo   `json:"repo"`
 	Description string `json:"hl_trunc_description"`
+	Stars       int    `json:"followers"`
 }
 
 type Payload struct {
@@ -43,6 +45,7 @@ func convertToSearchRepo(jsonRepo *Response) []packet.Srepo {
 		listOfSrepo = append(listOfSrepo, packet.Srepo{
 			Name:        r.Repo.Repository.Owner_login + "/" + r.Repo.Repository.Name,
 			Description: util.CleanHtmlTags(r.Description),
+			Stars:       strconv.Itoa(r.Stars),
 		})
 	}
 	return listOfSrepo
@@ -51,7 +54,6 @@ func convertToSearchRepo(jsonRepo *Response) []packet.Srepo {
 func JsonSearchRepo(repo *packet.RepoInfo) []packet.Srepo {
 	req, _ := http.NewRequest("GET", searchLink(repo), nil)
 	req.Header.Set("Accept", "application/json")
-	// req.Header.Set("User-Agent", "Mozilla/5.0")
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
