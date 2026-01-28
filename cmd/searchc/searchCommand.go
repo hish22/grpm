@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"hish22/grpm/internal/packet"
 	"hish22/grpm/internal/search"
+	"log"
 	"strconv"
 
 	"github.com/spf13/cobra"
@@ -33,7 +34,9 @@ func searchCmd(cmd *cobra.Command, args []string) {
 	if len(repo) != 0 {
 		repoSearch()
 	} else {
-		fmt.Println("Type grpm search -h , for help.")
+		if err := cmd.Help(); err != nil {
+			log.Fatal("Can't print search help command,", err)
+		}
 	}
 }
 
