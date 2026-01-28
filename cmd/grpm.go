@@ -4,6 +4,8 @@ import (
 	"hish22/grpm/cmd/configc"
 	"hish22/grpm/cmd/searchc"
 	"hish22/grpm/internal/config"
+	"hish22/grpm/internal/packet"
+	"hish22/grpm/internal/search"
 
 	"github.com/spf13/cobra"
 )
@@ -18,6 +20,7 @@ func root() *cobra.Command {
 		Short: "A cool github release packet manger",
 		Long:  `Github Releases Packet Manager (grpm) is a tool to handle installed releases from github.`,
 		Run: func(cmd *cobra.Command, args []string) {
+			search.JsonSearchRepo(&packet.RepoInfo{})
 			if define {
 				config.GenerateTOMLConfig()
 			} else {
