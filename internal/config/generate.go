@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"runtime"
 )
 
 func homeDir() string {
@@ -25,7 +26,9 @@ func LocalConfigDirToml() string {
 
 func GenerateTOMLConfig() {
 
-	payload := []byte(`location = "/usr/local/bin"`)
+	payload := []byte(`location = "/usr/local/bin"` + "\n" +
+		`arch = "` + runtime.GOARCH + `"` + "\n" +
+		`os = "` + runtime.GOOS + `"`)
 
 	if err := os.MkdirAll(LocalConfigDirPath(), 0755); err != nil {
 		log.Fatal("Can't create grpm dir, ", err)
