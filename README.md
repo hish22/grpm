@@ -28,7 +28,8 @@ commands:
 - One: We need to fetch data from github as JSON (Done) (Refactor phase)
 - Two: Then we start by marshling/decoding the string into JSON (Done) (Refactor phase)
 - Third: print the info into the terminal (Done) (Refactor phase)
-- Fourth: add caching technique/and fetch data from db and filesystem
+- Fourth: add caching technique/and fetch data from db and filesystem (Done) (Refactor phase)
+- Fifth: clear cache operation
 
  3 - sprint (predicted at: 29 jan 2026): [Start working with info search operation]
 - One: open a specific repo
