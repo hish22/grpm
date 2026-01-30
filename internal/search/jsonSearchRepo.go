@@ -1,13 +1,21 @@
 package search
 
 import (
-	"encoding/json"
+
+	// "hish22/grpm/internal/cache"
+
+	"encoding/hex"
+	"hish22/grpm/internal/cache"
 	"hish22/grpm/internal/packet"
+	"hish22/grpm/internal/serialization"
 	"hish22/grpm/internal/util"
 	"io"
 	"log"
 	"net/http"
 	"strconv"
+	"time"
+
+	"lukechampine.com/blake3"
 )
 
 type Repository struct {
@@ -33,12 +41,6 @@ type Response struct {
 	Payload Payload `json:"payload"`
 }
 
-func unMarshalJsonSearch(buf []byte, structure any) {
-	if err := json.Unmarshal(buf, &structure); err != nil {
-		log.Fatal("Can't decode repos JSON data, ", err)
-	}
-}
-
 func convertToSearchRepo(jsonRepo *Response) []packet.Srepo {
 	var listOfSrepo []packet.Srepo
 	for _, r := range jsonRepo.Payload.Results {
@@ -51,23 +53,41 @@ func convertToSearchRepo(jsonRepo *Response) []packet.Srepo {
 	return listOfSrepo
 }
 
+func fetchFromCache(jsonSearchResult *Response, link string) bool {
+	hashed := blake3.Sum256([]byte(link))
+	BlakeHexVersion := hex.EncodeToString(hashed[:])
+	blob, exists := cache.FetchBlob([]byte(BlakeHexVersion))
+	if exists {
+		if blob.Expire.After(time.Now()) {
+			buf := cache.ReadBlob(&blob.Location)
+			serialization.JsonUnserialization(buf, &jsonSearchResult)
+			return true
+		}
+	}
+	return false
+}
+
 func JsonSearchRepo(repo *packet.RepoInfo) []packet.Srepo {
-	req, _ := http.NewRequest("GET", searchLink(repo), nil)
-	req.Header.Set("Accept", "application/json")
-	client := &http.Client{}
-	resp, err := client.Do(req)
-	if err != nil {
-		log.Fatal("Can't bring data,", err)
-	}
-	defer resp.Body.Close()
-
-	buf, err := io.ReadAll(resp.Body)
-
-	if err != nil {
-		log.Fatal("Can't fetch repos JSON data, ", err)
-	}
+	link := searchLink(repo)
 	var jsonSearchResult Response
-	unMarshalJsonSearch(buf, &jsonSearchResult)
+	if !fetchFromCache(&jsonSearchResult, link) {
+		req, _ := http.NewRequest("GET", link, nil)
+		req.Header.Set("Accept", "application/json")
+		client := &http.Client{}
+		resp, err := client.Do(req)
+		if err != nil {
+			log.Fatal("Can't bring data,", err)
+		}
+		defer resp.Body.Close()
+
+		buf, err := io.ReadAll(resp.Body)
+		if err != nil {
+			log.Fatal("Can't fetch repos JSON data, ", err)
+		}
+		serialization.JsonUnserialization(buf, &jsonSearchResult)
+
+		cache.NewCache(link, jsonSearchResult)
+	}
 
 	return convertToSearchRepo(&jsonSearchResult)
 }
