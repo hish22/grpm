@@ -41,7 +41,6 @@ func searchCmd(cmd *cobra.Command, args []string) {
 }
 
 func repoSearch() {
-
 	HitRepos := search.JsonSearchRepo(&packet.RepoInfo{
 		Name:      repo,
 		Page:      strconv.Itoa(page),
