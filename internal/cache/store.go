@@ -3,6 +3,7 @@ package cache
 import (
 	"database/sql"
 	"encoding/hex"
+	"fmt"
 	"hish22/grpm/internal/config"
 	"hish22/grpm/internal/serialization"
 	"log"
@@ -35,6 +36,41 @@ func NewCache(link string, response any) {
 	storeChunk(&blob, &chunk)
 }
 
+func DeleteCache(link *[]byte) {
+	// Delete metadata entry from db
+	db := openMetadataDB()
+	defer db.Close()
+	query := "DELETE FROM cache WHERE hashedlink=?"
+	_, err := db.Exec(query, link)
+	if err != nil {
+		log.Fatal("Cant delete cache of ", link, ", ", err)
+	}
+	// delete file from cache folder
+	cacheFilePath := filepath.Join(CacheRootLocation, string(*link)+".json")
+	err = os.Remove(cacheFilePath)
+	if err != nil {
+		log.Fatal("Can't remove cache .json file, ", err)
+	}
+}
+
+func FetchFromCache(response any, link string) bool {
+	hashed := blake3.Sum256([]byte(link))
+	BlakeHexVersion := hex.EncodeToString(hashed[:])
+	text_hashed := []byte(BlakeHexVersion)
+	blob, exists := FetchBlob(&text_hashed)
+	if exists {
+		if blob.Expire.After(time.Now()) {
+			buf := ReadBlob(&blob.Location)
+			serialization.JsonUnserialization(buf, &response)
+			return true
+		} else {
+			fmt.Println("clearing cache")
+			DeleteCache(&text_hashed)
+		}
+	}
+	return false
+}
+
 func openMetadataDB() *sql.DB {
 	db, err := sql.Open("sqlite3", MetadataDbLocation())
 	if err != nil {
@@ -59,6 +95,12 @@ func metedataEntry(blob *blob) {
 }
 
 func storeChunk(blob *blob, chunk *[]byte) {
+	// Create the cache folder
+	if os.MkdirAll("cache", 0755) != nil {
+		log.Fatal("Can't create cache folder")
+	}
+	fmt.Println(blob.Location)
+	// Write json blob into .json file
 	if err := os.WriteFile(blob.Location+".json", *chunk, 0644); err != nil {
 		log.Fatal("Can't create a blob cache, ", err)
 	}

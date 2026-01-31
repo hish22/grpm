@@ -20,8 +20,8 @@ func rowBlobFromDb(link *[]byte) *sql.Row {
 	return db.QueryRow(query, link)
 }
 
-func FetchBlob(link []byte) (*blob, bool) {
-	row := rowBlobFromDb(&link)
+func FetchBlob(link *[]byte) (*blob, bool) {
+	row := rowBlobFromDb(link)
 	b := &blob{} // Result blob
 	err := row.Scan(&b.HashedLink, &b.Location, &b.Expire)
 	if err != nil {
