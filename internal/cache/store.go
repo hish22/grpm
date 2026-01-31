@@ -99,7 +99,6 @@ func storeChunk(blob *blob, chunk *[]byte) {
 	if os.MkdirAll("cache", 0755) != nil {
 		log.Fatal("Can't create cache folder")
 	}
-	fmt.Println(blob.Location)
 	// Write json blob into .json file
 	if err := os.WriteFile(blob.Location+".json", *chunk, 0644); err != nil {
 		log.Fatal("Can't create a blob cache, ", err)
