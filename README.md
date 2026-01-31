@@ -29,13 +29,16 @@ commands:
 - Two: Then we start by marshling/decoding the string into JSON (Done) (Refactor phase)
 - Third: print the info into the terminal (Done) (Refactor phase)
 - Fourth: add caching technique/and fetch data from db and filesystem (Done) (Refactor phase)
-- Fifth: clear cache operation
+- Fifth: clear cache operation (Done) (Refactor phase)
 
- 3 - sprint (predicted at: 29 jan 2026): [Start working with info search operation]
+ 3 - sprint (predicted at: 31 jan 2026): [Start working with info search operation]
 - One: open a specific repo
 - Two: fetch specified info like (name,readme,url,etc)
 
- 4 - sprint (predicted at: 30 jan 2026): [Start working with instllation of files]
+ 4 - sprint (predicted at: 01 Feb 2026): [Start working with instllation of files]
 - One: Install a file by writing its name like (hish22/grpm)
 - Two: Make sure the file installed based on the installation proccess (declared when we start this    process)
 - Three: make sure to include the db to track installed packets/releases
+ 5 - sprint (predicated at 02 Feb 2026): [Start working with listting of installed packets]
+- One: Hit db to fetch list of installed files
+- Two: display information
