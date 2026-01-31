@@ -35,7 +35,7 @@ func ScrapSearchRepo(repo *packet.RepoInfo) []packet.Srepo {
 		fmt.Println("Visiting ", r.URL)
 	})
 
-	gc.Visit(searchLink(repo))
+	gc.Visit(core.SearchLink(repo))
 
 	return matchedQueries
 }
