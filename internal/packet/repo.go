@@ -1,7 +1,5 @@
 package packet
 
-import "net/url"
-
 /* Repo command info */
 type RepoInfo struct {
 	Name      string
@@ -15,11 +13,14 @@ type Srepo struct {
 	Name        string
 	Description string
 	Stars       string
+	Owner       string
 }
 
-/* repo's page struct */
-type RepoPage struct {
-	Name   string
-	Url    url.URL
-	Readme string
+/* repo's page info struct */
+type RepoPageInfo struct {
+	ID        int
+	RepoName  string
+	Owner     string
+	CreatedAt string
+	Readme    string
 }
