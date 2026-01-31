@@ -41,17 +41,21 @@ func searchCmd(cmd *cobra.Command, args []string) {
 }
 
 func repoSearch() {
-	HitRepos := search.JsonSearchRepo(&packet.RepoInfo{
+	HitRepos, err := search.JsonSearchRepo(&packet.RepoInfo{
 		Name:      repo,
 		Page:      strconv.Itoa(page),
 		MostStars: mostStars,
 		FewStars:  fewStars,
 	})
 
+	if err != nil {
+		log.Fatal("(grpm search) didn't find any repository")
+	}
+
 	if len(HitRepos) != 0 {
 		for _, r := range HitRepos {
-			fmt.Printf("\n\033]8;;https://github.com/%s\a\033[1m%s (%s stars)\033[0m\033]8;;\a\n%s\n",
-				r.Name, r.Name, r.Stars, r.Description)
+			fmt.Printf("\n\033]8;;https://github.com/%s/%s\a\033[1m%s/%s (%s stars)\033[0m\033]8;;\a\n%s\n",
+				r.Owner, r.Name, r.Owner, r.Name, r.Stars, r.Description)
 			fmt.Println() // last space
 		}
 	} else {
