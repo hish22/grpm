@@ -69,5 +69,6 @@ func infoCmd(cmd *cobra.Command, args []string) {
 	fmt.Println("ID: ", pInfo.ID)
 	fmt.Println("Owner: ", pInfo.Owner)
 	fmt.Println("Repository Name: ", pInfo.RepoName)
+	fmt.Println("Link: ", pInfo.Link)
 	fmt.Println("Created at: ", pInfo.CreatedAt)
 }

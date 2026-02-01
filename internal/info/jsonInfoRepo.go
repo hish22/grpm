@@ -34,11 +34,12 @@ type Response struct {
 	Payload Payload `json:"payload"`
 }
 
-func convertIntoInfoRepo(response *Response) packet.RepoPageInfo {
+func convertIntoInfoRepo(response *Response, link *string) packet.RepoPageInfo {
 	return packet.RepoPageInfo{
 		ID:        response.Payload.Repo.ID,
 		RepoName:  response.Payload.Repo.Name,
 		Owner:     response.Payload.Repo.OwnerLogin,
+		Link:      *link,
 		CreatedAt: response.Payload.Repo.CreatedAt,
 		Readme:    response.Payload.Tree.Readme.RichText,
 	}
@@ -64,5 +65,5 @@ func JsonInfoRepo(owner *string, repo *string) (packet.RepoPageInfo, error) {
 		cache.NewCache(link, &jsonInfoResult)
 	}
 
-	return convertIntoInfoRepo(&jsonInfoResult), nil
+	return convertIntoInfoRepo(&jsonInfoResult, &link), nil
 }
