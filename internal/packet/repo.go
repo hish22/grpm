@@ -21,6 +21,7 @@ type RepoPageInfo struct {
 	ID        int
 	RepoName  string
 	Owner     string
+	Link      string
 	CreatedAt string
 	Readme    string
 }
