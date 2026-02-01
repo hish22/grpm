@@ -6,13 +6,28 @@ import (
 
 	"hish22/grpm/internal/cache"
 	"hish22/grpm/internal/core"
-	"hish22/grpm/internal/packet"
 	"hish22/grpm/internal/serialization"
 	"hish22/grpm/internal/util"
 	"io"
 	"log"
 	"strconv"
 )
+
+/* Search repo struct */
+type Srepo struct {
+	Name        string
+	Description string
+	Stars       string
+	Owner       string
+}
+
+/* Repo command info */
+type RepoInfo struct {
+	Name      string
+	Page      string
+	MostStars bool
+	FewStars  bool
+}
 
 type Repository struct {
 	Name       string `json:"name"`
@@ -37,10 +52,10 @@ type Response struct {
 	Payload Payload `json:"payload"`
 }
 
-func convertToSearchRepo(jsonRepo *Response) []packet.Srepo {
-	var listOfSrepo []packet.Srepo
+func convertToSearchRepo(jsonRepo *Response) []Srepo {
+	var listOfSrepo []Srepo
 	for _, r := range jsonRepo.Payload.Results {
-		listOfSrepo = append(listOfSrepo, packet.Srepo{
+		listOfSrepo = append(listOfSrepo, Srepo{
 			Name:        r.Repo.Repository.Name,
 			Description: util.CleanHtmlTags(r.Description),
 			Stars:       strconv.Itoa(r.Stars),
@@ -50,14 +65,14 @@ func convertToSearchRepo(jsonRepo *Response) []packet.Srepo {
 	return listOfSrepo
 }
 
-func JsonSearchRepo(repo *packet.RepoInfo) ([]packet.Srepo, error) {
-	link := core.SearchLink(repo)
+func JsonSearchRepo(repo *RepoInfo) ([]Srepo, error) {
+	link := core.SearchLink(&repo.Name, &repo.Page, &repo.MostStars, &repo.FewStars)
 	var jsonSearchResult Response
 	if !cache.FetchFromCache(&jsonSearchResult, link) {
 		resp, err := core.NewJsonReq(&link)
 		// Handle http request error
 		if err != nil {
-			return []packet.Srepo{}, err
+			return []Srepo{}, err
 		}
 
 		defer resp.Body.Close()
