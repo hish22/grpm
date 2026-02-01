@@ -15,7 +15,7 @@ var (
 	//crname    string // Refactor value of the config type (like location = "/usr/bin")
 )
 
-func Config() *cobra.Command {
+func ConfigC() *cobra.Command {
 	c := &cobra.Command{
 		Use:   "config",
 		Short: "grpm configuration information",
