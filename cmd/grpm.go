@@ -3,6 +3,7 @@ package main
 import (
 	"hish22/grpm/cmd/configc"
 	"hish22/grpm/cmd/infoc"
+	"hish22/grpm/cmd/releasec"
 	"hish22/grpm/cmd/searchc"
 	"hish22/grpm/internal/config"
 
@@ -32,9 +33,10 @@ func main() {
 	r := root()
 	r.Flags().BoolVarP(&define, "define", "d", false, "initialize your grpm tool")
 	// Add search command
-	r.AddCommand(searchc.Search())
-	r.AddCommand(configc.Config())
-	r.AddCommand(infoc.Info())
+	r.AddCommand(searchc.SearchC())
+	r.AddCommand(configc.ConfigC())
+	r.AddCommand(infoc.InfoC())
+	r.AddCommand(releasec.ReleaseC())
 	if err := r.Execute(); err != nil {
 		panic(err)
 	}
