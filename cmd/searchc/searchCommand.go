@@ -2,7 +2,6 @@ package searchc
 
 import (
 	"fmt"
-	"hish22/grpm/internal/packet"
 	"hish22/grpm/internal/search"
 	"log"
 	"strconv"
@@ -17,7 +16,7 @@ var (
 	fewStars  bool
 )
 
-func Search() *cobra.Command {
+func SearchC() *cobra.Command {
 	c := &cobra.Command{
 		Use:   "search",
 		Short: "Search a specific github object.",
@@ -41,7 +40,7 @@ func searchCmd(cmd *cobra.Command, args []string) {
 }
 
 func repoSearch() {
-	HitRepos, err := search.JsonSearchRepo(&packet.RepoInfo{
+	HitRepos, err := search.JsonSearchRepo(&search.RepoInfo{
 		Name:      repo,
 		Page:      strconv.Itoa(page),
 		MostStars: mostStars,

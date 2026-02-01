@@ -3,7 +3,6 @@ package infoc
 import (
 	"fmt"
 	"hish22/grpm/internal/info"
-	"hish22/grpm/internal/packet"
 	"hish22/grpm/internal/search"
 	"log"
 
@@ -15,7 +14,7 @@ var (
 	ownerName string
 )
 
-func Info() *cobra.Command {
+func InfoC() *cobra.Command {
 	c := &cobra.Command{
 		Use:   "info",
 		Short: "display repository's information",
@@ -27,7 +26,7 @@ func Info() *cobra.Command {
 }
 
 func infoCmd(cmd *cobra.Command, args []string) {
-	var pInfo packet.RepoPageInfo
+	var pInfo info.RepoPageInfo
 	var err error
 	if len(rName) != 0 && len(ownerName) != 0 {
 		pInfo, err = info.JsonInfoRepo(&ownerName, &rName)
@@ -40,7 +39,7 @@ func infoCmd(cmd *cobra.Command, args []string) {
 		// In case a user didn't specifiy a repo name or owner
 		// we will perfom a search command and use first
 		// most stars result as the entry to search for
-		repo := packet.RepoInfo{}
+		repo := search.RepoInfo{}
 		repo.FewStars = false
 		repo.MostStars = true
 		repo.Page = "1"
