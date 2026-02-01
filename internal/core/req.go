@@ -10,6 +10,7 @@ import (
 func NewJsonReq(link *string) (*http.Response, error) {
 	req, _ := http.NewRequest("GET", *link, nil)
 	req.Header.Set("Accept", "application/json")
+	req.Header.Set("User-Agent", "grpm/0.0.1")
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
