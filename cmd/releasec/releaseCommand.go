@@ -21,7 +21,7 @@ func ReleaseC() *cobra.Command {
 	}
 	c.Flags().StringVarP(&repo, "repo", "r", "", "Repo's name (owner/repo)")
 	c.Flags().BoolVarP(&latest, "latest", "l", false, "Grab 5 latest repo's releases information")
-	c.Flags().StringVarP(&tag, "tag", "t", "", "Grab specific repo's release by tag")
+	c.Flags().StringVarP(&tag, "tag", "t", "", "Grab a specific repo's release by tag")
 	return &c
 }
 
@@ -29,7 +29,7 @@ func releaseCmd(cmd *cobra.Command, args []string) {
 	if latest && len(tag) == 0 {
 		releases := release.FetchLatestReleases(&repo)
 		fmt.Println("=== Repo's Latest Releases ===")
-		for _, r := range *releases {
+		for _, r := range releases {
 			fmt.Print("\n")
 			fmt.Println("ID: ", r.ID)
 			fmt.Println("Release Name: ", r.ReleaseName)

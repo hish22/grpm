@@ -43,11 +43,11 @@ func fetchReleases(link *string, structure any) {
 	serialization.JsonUnserialization(buf, &structure)
 }
 
-func FetchLatestReleases(repo *string) *[]Release {
+func FetchLatestReleases(repo *string) []Release {
 	link := core.ReleasesLatestLink(repo)
 	var jsonReleasesResult []Release
 	fetchReleases(&link, &jsonReleasesResult)
-	return &jsonReleasesResult
+	return jsonReleasesResult
 }
 
 func FetchSpecificRelease(repo *string, tag *string) *Release {
