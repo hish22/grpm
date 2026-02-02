@@ -8,9 +8,10 @@ import (
 )
 
 var (
-	repo   string
-	latest bool
-	tag    string
+	repo          string
+	latest        bool
+	tag           string
+	latestRelease bool
 )
 
 func ReleaseC() *cobra.Command {
@@ -20,8 +21,9 @@ func ReleaseC() *cobra.Command {
 		Run:   releaseCmd,
 	}
 	c.Flags().StringVarP(&repo, "repo", "r", "", "Repo's name (owner/repo)")
-	c.Flags().BoolVarP(&latest, "latest", "l", false, "Grab 5 latest repo's releases information")
+	c.Flags().BoolVarP(&latest, "latest", "a", false, "Grab 5 latest repo's releases information")
 	c.Flags().StringVarP(&tag, "tag", "t", "", "Grab a specific repo's release by tag")
+	c.Flags().BoolVarP(&latestRelease, "latest-release", "l", false, "Grab latest repo's release information")
 	return &c
 }
 
@@ -42,6 +44,17 @@ func releaseCmd(cmd *cobra.Command, args []string) {
 		return
 	} else if len(tag) != 0 {
 		release := release.FetchSpecificRelease(&repo, &tag)
+		fmt.Println("=== Repo's Release ===")
+		fmt.Print("\n")
+		fmt.Println("ID: ", release.ID)
+		fmt.Println("Release Name: ", release.ReleaseName)
+		fmt.Println("Tag Name: ", release.TagName)
+		fmt.Println("Created At: ", release.CreatedAt)
+		fmt.Println("Updated At: ", release.UpdatedAt)
+		fmt.Println("Release Page: ", release.HtmlUrl)
+		fmt.Print("\n")
+	} else if latestRelease {
+		release := release.FetchLatestRelease(&repo)
 		fmt.Println("=== Repo's Release ===")
 		fmt.Print("\n")
 		fmt.Println("ID: ", release.ID)
