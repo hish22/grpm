@@ -1,6 +1,7 @@
 package core
 
 import (
+	"fmt"
 	"log"
 	"net/url"
 )
@@ -47,6 +48,15 @@ func ReleasesLatestLink(repo *string) string {
 		log.Fatal("Can't create such a link", err)
 	}
 	return url + LatestFiveReleasesQuery
+}
+
+func ReleaseLatestLink(repo *string) string {
+	url, err := url.JoinPath(ApiLink, ReposEndPoint, *repo, ReleasesEndPoint, ReposLatestReleaseEndPoint)
+	if err != nil {
+		log.Fatal("Can't create such a link", err)
+	}
+	fmt.Println(url)
+	return url
 }
 
 // https://api.github.com/repos/owner/repo/releases/tags/v1.2.3

@@ -50,6 +50,13 @@ func FetchLatestReleases(repo *string) []Release {
 	return jsonReleasesResult
 }
 
+func FetchLatestRelease(repo *string) *Release {
+	link := core.ReleaseLatestLink(repo)
+	var jsonReleaseResult Release
+	fetchReleases(&link, &jsonReleaseResult)
+	return &jsonReleaseResult
+}
+
 func FetchSpecificRelease(repo *string, tag *string) *Release {
 	link := core.ReleasesByTagLink(repo, tag)
 	var jsonReleaseResult Release
