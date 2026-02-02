@@ -1,7 +1,8 @@
 package config
 
 type config struct {
-	Location string `toml:"location"`
-	Arch     string `toml:"arch"`
-	Os       string `toml:"os"`
+	Downloaded string `toml:"downloaded"`
+	Location   string `toml:"location"`
+	Arch       string `toml:"arch"`
+	Os         string `toml:"os"`
 }

@@ -27,6 +27,7 @@ func LocalConfigDirToml() string {
 func GenerateTOMLConfig() {
 
 	payload := []byte(`location = "/usr/local/bin"` + "\n" +
+		`downloaded = "/Downloads"` + "\n" +
 		`arch = "` + runtime.GOARCH + `"` + "\n" +
 		`os = "` + runtime.GOOS + `"`)
 
