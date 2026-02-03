@@ -41,9 +41,10 @@ commands:
 - Three: add URL address of the release (Done) (Refactor phase)
 
  5 - sprint (predicted at: 02 Feb 2026): [Start working with instllation of files]
-- One: Install a file by writing its name like (hish22/grpm)
-- Two: Make sure the file installed based on the installation proccess (declared when we start this    process)
+- One: Install a file by writing its name like (hish22/grpm) (Done) (Refactor phase)
+- Two: Make sure the file installed based on the installation proccess (declared when we start this    process) (Refactor phase)
 - Three: make sure to include the db to track installed packets/releases
+
  6 - sprint (predicated at 03 Feb 2026): [Start working with listting of installed packets]
 - One: Hit db to fetch list of installed files
 - Two: display information
