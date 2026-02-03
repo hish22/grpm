@@ -1,8 +1,8 @@
 package info
 
 import (
-	"hish22/grpm/internal/cache"
 	"hish22/grpm/internal/core"
+	"hish22/grpm/internal/persistance"
 	"hish22/grpm/internal/serialization"
 	"io"
 	"log"
@@ -57,7 +57,7 @@ func convertIntoInfoRepo(response *Response, link *string) RepoPageInfo {
 func JsonInfoRepo(owner *string, repo *string) (RepoPageInfo, error) {
 	link := core.InfoLink(owner, repo)
 	var jsonInfoResult Response
-	if !cache.FetchFromCache(&jsonInfoResult, link) {
+	if !persistance.FetchFromCache(&jsonInfoResult, link) {
 		resp, err := core.NewJsonReq(&link)
 		// Handle http request error
 		if err != nil {
@@ -71,7 +71,7 @@ func JsonInfoRepo(owner *string, repo *string) (RepoPageInfo, error) {
 		}
 		serialization.JsonUnserialization(buf, &jsonInfoResult)
 
-		cache.NewCache(link, &jsonInfoResult)
+		persistance.NewCache(link, &jsonInfoResult)
 	}
 
 	return convertIntoInfoRepo(&jsonInfoResult, &link), nil
