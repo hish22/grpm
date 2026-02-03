@@ -11,6 +11,16 @@ import (
 	"github.com/dustin/go-humanize"
 )
 
+type TrackedAsset struct {
+	ID          int
+	AssetName   string
+	Location    string
+	Tag         string
+	ReleaseName string
+	Size        int
+	Digest      string
+}
+
 func printAssets(r []release.Assets) {
 	for i, a := range r {
 		fmt.Print(i, "-")
@@ -32,33 +42,27 @@ func matchedAssets(r *release.Release) []release.Assets {
 func PrintTheAssets(r *release.Release, repo *string, match bool) {
 	fmt.Println("=== Which asset of (", *repo, r.TagName, ") you want to install? ===")
 	if match {
-		a := matchedAssets(r)
-		printAssets(a)
-	} else {
-		printAssets(r.Assets)
+		r.Assets = matchedAssets(r)
 	}
+	printAssets(r.Assets)
 }
 
-func FetchAssets(repo *string, tag *string) ([]release.Assets, *release.Release) {
-	r := release.FetchSpecificRelease(repo, tag)
-	return r.Assets, r
-}
-
-func FetchLatestReleaseAssets(repo *string) ([]release.Assets, *release.Release) {
-	r := release.FetchLatestRelease(repo)
-	return r.Assets, r
-}
-
-func FetchAssetsWithoutPrint() []release.Assets {
+func FetchAssetsWithoutPrint() []TrackedAsset {
 	db := persistance.OpenMetadataDB()
-	assets := []release.Assets{}
-	r, err := db.Query("SELECT * FROM asset")
+	var a TrackedAsset
+	assets := []TrackedAsset{}
+	r, err := db.Query("SELECT * FROM asset;")
 	if err != nil {
 		log.Fatal("Can't fetch installed assets")
 	}
 	defer r.Close()
 	if r.Next() {
-		r.Scan(assets)
+		err := r.Scan(&a.ID, &a.AssetName, &a.Location, &a.Tag,
+			&a.ReleaseName, &a.Size, &a.Digest)
+		if err != nil {
+			log.Fatal("Can't decode sql, ", err)
+		}
+		assets = append(assets, a)
 	}
 	return assets
 }
