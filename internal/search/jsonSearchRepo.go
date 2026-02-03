@@ -4,8 +4,8 @@ import (
 
 	// "hish22/grpm/internal/cache"
 
-	"hish22/grpm/internal/cache"
 	"hish22/grpm/internal/core"
+	"hish22/grpm/internal/persistance"
 	"hish22/grpm/internal/serialization"
 	"hish22/grpm/internal/util"
 	"io"
@@ -68,7 +68,7 @@ func convertToSearchRepo(jsonRepo *Response) []Srepo {
 func JsonSearchRepo(repo *RepoInfo) ([]Srepo, error) {
 	link := core.SearchLink(&repo.Name, &repo.Page, &repo.MostStars, &repo.FewStars)
 	var jsonSearchResult Response
-	if !cache.FetchFromCache(&jsonSearchResult, link) {
+	if !persistance.FetchFromCache(&jsonSearchResult, link) {
 		resp, err := core.NewJsonReq(&link)
 		// Handle http request error
 		if err != nil {
@@ -83,7 +83,7 @@ func JsonSearchRepo(repo *RepoInfo) ([]Srepo, error) {
 		}
 		serialization.JsonUnserialization(buf, &jsonSearchResult)
 
-		cache.NewCache(link, &jsonSearchResult)
+		persistance.NewCache(link, &jsonSearchResult)
 	}
 
 	return convertToSearchRepo(&jsonSearchResult), nil

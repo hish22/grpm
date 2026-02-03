@@ -45,7 +45,7 @@ func scanner() int {
 
 func installCmd(cmd *cobra.Command, args []string) {
 	if len(repo) != 0 && len(tag) != 0 {
-		a := install.FetchAssets(&repo, &tag)
+		a, r := install.FetchAssets(&repo, &tag)
 		ch := scanner()
 
 		if ch > (len(a) - 1) {
@@ -54,9 +54,9 @@ func installCmd(cmd *cobra.Command, args []string) {
 		}
 
 		chRelease := a[ch]
-		install.InstallSelectedAsset(&chRelease)
+		install.InstallSelectedAsset(&chRelease, r)
 	} else if len(tag) == 0 && len(repo) != 0 {
-		a := install.FetchLatestReleaseAssets(&repo)
+		a, r := install.FetchLatestReleaseAssets(&repo)
 		ch := scanner()
 
 		if ch > (len(a) - 1) {
@@ -65,7 +65,7 @@ func installCmd(cmd *cobra.Command, args []string) {
 		}
 
 		chRelease := a[ch]
-		install.InstallSelectedAsset(&chRelease)
+		install.InstallSelectedAsset(&chRelease, r)
 	} else {
 		cmd.Help()
 	}
