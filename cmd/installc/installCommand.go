@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"hish22/grpm/internal/asset"
 	"hish22/grpm/internal/install"
+	"hish22/grpm/internal/release"
 	"log"
 	"os"
 	"strconv"
@@ -48,29 +49,29 @@ func scanner() int {
 
 func installCmd(cmd *cobra.Command, args []string) {
 	if len(repo) != 0 && len(tag) != 0 {
-		a, r := asset.FetchAssets(&repo, &tag)
-		asset.PrintTheAssets(r, &repo, match)
+		a := release.FetchSpecificRelease(&repo, &tag)
+		asset.PrintTheAssets(a, &repo, match)
 		ch := scanner()
 
-		if ch > (len(a) - 1) {
+		if ch > (len(a.Assets) - 1) {
 			fmt.Println("No such asset")
 			return
 		}
 
-		chRelease := a[ch]
-		install.InstallSelectedAsset(&chRelease, r)
+		chRelease := a.Assets[ch]
+		install.InstallSelectedAsset(&chRelease, a)
 	} else if len(tag) == 0 && len(repo) != 0 {
-		a, r := asset.FetchLatestReleaseAssets(&repo)
-		asset.PrintTheAssets(r, &repo, match)
+		a := release.FetchLatestRelease(&repo)
+		asset.PrintTheAssets(a, &repo, match)
 		ch := scanner()
 
-		if ch > (len(a) - 1) {
+		if ch > (len(a.Assets) - 1) {
 			fmt.Println("No such asset")
 			return
 		}
 
-		chRelease := a[ch]
-		install.InstallSelectedAsset(&chRelease, r)
+		chRelease := a.Assets[ch]
+		install.InstallSelectedAsset(&chRelease, a)
 	} else {
 		cmd.Help()
 	}
