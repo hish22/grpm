@@ -1,4 +1,4 @@
-package cache
+package persistance
 
 import (
 	"database/sql"
@@ -14,7 +14,7 @@ type blob struct {
 }
 
 func rowBlobFromDb(link *[]byte) *sql.Row {
-	db := openMetadataDB()
+	db := OpenMetadataDB()
 	defer db.Close()
 	query := "SELECT hashedlink, location, expire FROM cache WHERE hashedlink=?"
 	return db.QueryRow(query, link)

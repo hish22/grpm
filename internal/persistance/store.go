@@ -1,4 +1,4 @@
-package cache
+package persistance
 
 import (
 	"database/sql"
@@ -38,7 +38,7 @@ func NewCache(link string, response any) {
 
 func DeleteCache(link *[]byte) {
 	// Delete metadata entry from db
-	db := openMetadataDB()
+	db := OpenMetadataDB()
 	defer db.Close()
 	query := "DELETE FROM cache WHERE hashedlink=?"
 	_, err := db.Exec(query, link)
@@ -71,7 +71,7 @@ func FetchFromCache(response any, link string) bool {
 	return false
 }
 
-func openMetadataDB() *sql.DB {
+func OpenMetadataDB() *sql.DB {
 	db, err := sql.Open("sqlite3", MetadataDbLocation())
 	if err != nil {
 		log.Fatal("Can't open/create metadata.db, ", err)
@@ -80,7 +80,7 @@ func openMetadataDB() *sql.DB {
 }
 
 func metedataEntry(blob *blob) {
-	db := openMetadataDB()
+	db := OpenMetadataDB()
 	defer db.Close()
 	ddlQuery := "CREATE TABLE IF NOT EXISTS cache (id INT PRIMARY KEY,hashedlink TEXT UNIQUE,location TEXT,expire DATE);"
 	_, err := db.Exec(ddlQuery)
