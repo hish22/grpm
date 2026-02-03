@@ -1,50 +1,195 @@
-# Github Releases Packet Manager
+# Github Releases Packet Manager (GRPM)
 
-Github Releases Packet Manager (grpm) is a simple tool to handle installed releases from github.
+GRPM is a command-line tool written in Go that helps you discover, manage, and install GitHub releases. It functions as a package manager specifically designed for GitHub releases, allowing you to search repositories, view release information, and download assets directly from your terminal.
 
-basic usage:
+## Features
 
-this tool can track your installed releases, update them, etc.
+- **Search**: Find GitHub repositories by name with sorting options
+- **Info**: View repository details and README content
+- **Releases**: Browse release information for any repository
+- **Install**: Download and install release assets with tracking
+- **Configure**: Customize installation paths and preferences
+- **Track**: SQLite database tracks all installed releases
 
-commands:
+## Installation
 
- - install <release> -> install a new releases
- - update <release> -> updates specific release
- - upgrade -> update all releases
- - list -> show installed releases
- - release -> get 
- - info -> repo information
- - search -> search specific package -> start with this
- - new -> check if the installed release in it is latest version
+### Build from Source
 
- /* plans */
- 
- 1 - sprint (predicted at: 27 jan 2026): [Implement the config plan]
-- One: We need to generate config a toml file for general configuration (Done) (Refactor phase)
-- Two: We need to use the generated config information (Done) (Refactor phase)
-- Three: user can change config file as he/she needs (Done) (Refactor phase)
+```bash
+git clone https://github.com/yourusername/grpm.git
+cd grpm
+go build -o grpm ./cmd/grpm.go
+```
 
- 2 - sprint (predicted at: 28 jan 2026): [Implement the search with JSON accept]
-- One: We need to fetch data from github as JSON (Done) (Refactor phase)
-- Two: Then we start by marshling/decoding the string into JSON (Done) (Refactor phase)
-- Third: print the info into the terminal (Done) (Refactor phase)
-- Fourth: add caching technique/and fetch data from db and filesystem (Done) (Refactor phase)
-- Fifth: clear cache operation (Done) (Refactor phase)
+### Initialize Configuration
 
- 3 - sprint (predicted at: 31 jan 2026): [Start working with info search operation]
-- One: open a specific repo (Done) (Refactor phase)
-- Two: fetch specified info like (name,readme,url,etc) (Done) (Refactor phase)
+Before using GRPM, initialize the configuration file:
 
-4 - sprint (predicted at: 01 Feb 2026): [Start working on fetching latest releases]
-- One: fetch a releases from specific repo (Done) (Refactor phase)
-- Two: display releases to a user with release information (Done) (Refactor phase)
-- Three: add URL address of the release (Done) (Refactor phase)
+```bash
+./grpm --define
+```
 
- 5 - sprint (predicted at: 02 Feb 2026): [Start working with instllation of files]
-- One: Install a file by writing its name like (hish22/grpm) (Done) (Refactor phase)
-- Two: Make sure the file installed based on the installation proccess (declared when we start this    process) (Refactor phase)
-- Three: make sure to include the db to track installed packets/releases
+This creates `~/.config/grpm/config.toml` with default settings.
 
- 6 - sprint (predicated at 03 Feb 2026): [Start working with listting of installed packets]
-- One: Hit db to fetch list of installed files
-- Two: display information
+## Usage
+
+### Configuration
+
+Show current configuration:
+
+```bash
+grpm config --show
+```
+
+Edit configuration directly:
+
+```bash
+nano ~/.config/grpm/config.toml
+```
+
+Configuration options include:
+- `install_dir`: Where assets are installed
+- `download_dir`: Where files are downloaded
+- `os`: Operating system filter
+- `arch`: Architecture filter
+
+### Search Repositories
+
+Search for GitHub repositories:
+
+```bash
+grpm search --repo <name>
+```
+
+Sort results by stars:
+
+```bash
+grpm search --repo <name> --stars desc    # Most stars first
+grpm search --repo <name> --stars asc     # Fewest stars first
+```
+
+### View Repository Information
+
+Get repository details and README:
+
+```bash
+grpm info --owner <owner> --repo <name>
+```
+
+### Browse Releases
+
+View latest releases (limited to 5):
+
+```bash
+grpm release --repo <owner>/<repo> --latest
+```
+
+View a specific release by tag:
+
+```bash
+grpm release --repo <owner>/<repo> --tag v1.0.0
+```
+
+### Install Releases
+
+Install the latest release:
+
+```bash
+grpm install --repo <owner>/<repo>
+```
+
+Install a specific version:
+
+```bash
+grpm install --repo <owner>/<repo> --tag v1.0.0
+```
+
+During installation, select an asset from the available release assets.
+
+### List Installed Packages
+
+View all installed releases:
+
+```bash
+grpm list
+```
+
+### Check for Updates
+
+Check if installed releases have newer versions available:
+
+```bash
+grpm new
+```
+
+### Upgrade Releases
+
+Update a specific release:
+
+```bash
+grpm update --repo <owner>/<repo>
+```
+
+Upgrade all installed releases:
+
+```bash
+grpm upgrade
+```
+
+### Clear Cache
+
+Clear the search cache:
+
+```bash
+grpm cache --clear
+```
+
+## Architecture
+
+```
+/home/pling77/Desktop/REAL_PROJECTS/grpm/
+├── cmd/                           # CLI commands (Cobra framework)
+│   ├── grpm.go                   # Main entry point
+│   ├── searchc/                  # Search command
+│   ├── installc/                 # Install command
+│   ├── releasec/                 # Release info command
+│   ├── infoc/                    # Repository info command
+│   └── configc/                  # Configuration command
+├── internal/                      # Core business logic
+│   ├── config/                   # TOML configuration
+│   ├── core/                     # HTTP and URL handling
+│   ├── search/                   # GitHub search
+│   ├── release/                  # Release fetching
+│   ├── info/                     # Repository info
+│   ├── install/                  # Asset installation
+│   ├── persistance/              # SQLite database
+│   ├── serialization/            # JSON handling
+│   └── util/                     # Utilities
+```
+
+## Data Storage
+
+GRPM stores data in `~/.config/grpm/`:
+- `config.toml`: User configuration
+- `metadata.db`: SQLite database tracking installed releases
+- `cache/`: Cached API responses (24-hour expiration)
+
+## Dependencies
+
+- Go 1.25+
+- spf13/cobra - CLI framework
+- BurntSushi/toml - Configuration
+- mattn/go-sqlite3 - Database
+- dustin/go-humanize - Human-readable formatting
+- lukechampine.com/blake3 - Cache hashing
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Submit a pull request
+
+## License
+
+MIT License
