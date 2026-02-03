@@ -3,6 +3,7 @@ package installc
 import (
 	"bufio"
 	"fmt"
+	"hish22/grpm/internal/asset"
 	"hish22/grpm/internal/install"
 	"log"
 	"os"
@@ -12,8 +13,9 @@ import (
 )
 
 var (
-	repo string
-	tag  string
+	repo  string
+	tag   string
+	match bool
 )
 
 func InstallC() *cobra.Command {
@@ -24,6 +26,7 @@ func InstallC() *cobra.Command {
 	}
 	c.Flags().StringVarP(&repo, "repo", "r", "", "Repo's name (owner/repo)")
 	c.Flags().StringVarP(&tag, "tag", "t", "", "Grab a specific repo's release by tag")
+	c.Flags().BoolVarP(&match, "match", "m", false, "Print assets that match your config file opitions")
 	return &c
 }
 
@@ -45,7 +48,8 @@ func scanner() int {
 
 func installCmd(cmd *cobra.Command, args []string) {
 	if len(repo) != 0 && len(tag) != 0 {
-		a, r := install.FetchAssets(&repo, &tag)
+		a, r := asset.FetchAssets(&repo, &tag)
+		asset.PrintTheAssets(r, &repo, match)
 		ch := scanner()
 
 		if ch > (len(a) - 1) {
@@ -56,7 +60,8 @@ func installCmd(cmd *cobra.Command, args []string) {
 		chRelease := a[ch]
 		install.InstallSelectedAsset(&chRelease, r)
 	} else if len(tag) == 0 && len(repo) != 0 {
-		a, r := install.FetchLatestReleaseAssets(&repo)
+		a, r := asset.FetchLatestReleaseAssets(&repo)
+		asset.PrintTheAssets(r, &repo, match)
 		ch := scanner()
 
 		if ch > (len(a) - 1) {
