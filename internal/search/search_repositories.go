@@ -4,6 +4,7 @@ import (
 	corehttp "hish22/grpm/internal/coreHttp"
 	"hish22/grpm/internal/persistance"
 	"hish22/grpm/internal/serialization"
+	"hish22/grpm/internal/structures"
 	"hish22/grpm/internal/util"
 	"io"
 	"log"
@@ -60,37 +61,9 @@ func convertToSearchRepo(jsonRepo *Response) []Srepo {
 	return listOfSrepo
 }
 
-type Owner struct {
-	ID       int    `json:"id"`
-	Username string `json:"login"`
-	Url      string `json:"url"`
-	HtmlUrl  string `json:"html_url"`
-	Type     string `json:"type"`
-}
-
-type Items struct {
-	ID                  int    `json:"id"`
-	NodeID              string `json:"node_id"`
-	Name                string `json:"name"`
-	Owner               Owner  `json:"owner"`
-	FullName            string `json:"full_name"`
-	Private             bool   `json:"private"`
-	HtmlUrl             string `json:"html_url"`
-	Description         string `json:"description"`
-	Stars               int    `json:"stargazers_count"`
-	Watchers            int    `json:"watchers_count"`
-	Forks               int    `json:"forks"`
-	ProgrammingLanguage string `json:"language"`
-}
-
-type Repositories struct {
-	TotalCount int     `json:"total_count"`
-	TotalItems []Items `json:"items"`
-}
-
 /* Search Repositories by requesting api.github */
-func SearchRepositories(metadata *RepoInfo) *Repositories {
-	var repositories Repositories
+func SearchRepositories(metadata *RepoInfo) *structures.Repositories {
+	var repositories structures.Repositories
 	link := corehttp.RequestLink{
 		Base:      corehttp.ApiLink,
 		Endpoints: []string{"search", "repositories"},
