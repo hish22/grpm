@@ -46,42 +46,44 @@ func writePath(assetName *string) string {
 	return filepath.Join(homePath, configs.Downloaded, *assetName)
 }
 
-func InstallSelectedAsset(asset *release.Assets, release *release.Release) {
+func InstallSelectedAsset(repo *string, asset *release.Assets, release *release.Release) {
 	// Fetch assets data and buffer it
 	fmt.Printf("(%s) Installing..\n", asset.AssetName)
 	resp, err := http.Get(asset.DownloadUrl)
 	if err != nil {
 		log.Fatal("Can't downloaded requested asset, ", asset.AssetName, err)
 	}
+
+	// Create the file into the (Downloaded config location)
+	path := writePath(&asset.AssetName)
+	file, err := os.Create(path)
+	if err != nil {
+		log.Fatal("Can't write buffer data into a file,", err)
+	}
+
 	// Read assets data
-	buf, err := io.ReadAll(resp.Body)
+	_, err = io.Copy(file, resp.Body)
 	if err != nil {
 		log.Fatal("Can't read downloaded asset buffer, ", err)
 	}
-	// Create the file into the (Downloaded config location)
-	path := writePath(&asset.AssetName)
-	if err := os.WriteFile(path, buf, 0755); err != nil {
-		log.Fatal("Can't write buffer data into a file,", err)
-	}
 	fmt.Printf("Asset %s installed successfully\n", asset.AssetName)
-
-	trackAssetTable()             // Create the table if not exists
-	registerAsset(asset, release) // Register installed asset
+	trackAssetTable()                   // Create the table if not exists
+	registerAsset(repo, asset, release) // Register installed asset
 
 }
 
 func trackAssetTable() {
 	db := persistance.OpenMetadataDB()
-	_, err := db.Exec("CREATE TABLE IF NOT EXISTS asset (id INT, asset_name TEXT, location TEXT, tag TEXT, release_name TEXT, size INT, Digest TEXT);")
+	_, err := db.Exec("CREATE TABLE IF NOT EXISTS asset (id INT, repo TEXT,asset_name TEXT, location TEXT, tag TEXT, release_name TEXT, size INT, Digest TEXT);")
 	if err != nil {
 		log.Fatal("Can't create asset table to track assets, ", err)
 	}
 }
 
-func registerAsset(asset *release.Assets, release *release.Release) {
+func registerAsset(repo *string, asset *release.Assets, release *release.Release) {
 	db := persistance.OpenMetadataDB()
 	path := writePath(&asset.AssetName)
-	_, err := db.Exec("INSERT INTO asset VALUES (?,?,?,?,?,?,?);", asset.ID, asset.AssetName, path, release.TagName, release.ReleaseName, asset.Size, asset.Digest)
+	_, err := db.Exec("INSERT INTO asset VALUES (?,?,?,?,?,?,?,?);", asset.ID, *repo, asset.AssetName, path, release.TagName, release.ReleaseName, asset.Size, asset.Digest)
 	if err != nil {
 		log.Fatal("Can't register an installed asset")
 	}
