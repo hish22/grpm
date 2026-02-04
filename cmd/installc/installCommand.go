@@ -59,7 +59,7 @@ func installCmd(cmd *cobra.Command, args []string) {
 		}
 
 		chRelease := a.Assets[ch]
-		install.InstallSelectedAsset(&chRelease, a)
+		install.InstallSelectedAsset(&repo, &chRelease, a)
 	} else if len(tag) == 0 && len(repo) != 0 {
 		a := release.FetchLatestRelease(&repo)
 		asset.PrintTheAssets(a, &repo, match)
@@ -71,7 +71,7 @@ func installCmd(cmd *cobra.Command, args []string) {
 		}
 
 		chRelease := a.Assets[ch]
-		install.InstallSelectedAsset(&chRelease, a)
+		install.InstallSelectedAsset(&repo, &chRelease, a)
 	} else {
 		cmd.Help()
 	}
