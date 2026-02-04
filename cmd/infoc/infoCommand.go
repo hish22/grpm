@@ -40,8 +40,8 @@ func infoCmd(cmd *cobra.Command, args []string) {
 		// we will perfom a search command and use first
 		// most stars result as the entry to search for
 		repo := search.RepoInfo{}
-		repo.FewStars = false
-		repo.MostStars = true
+		repo.Order = ""
+		repo.Sort = ""
 		repo.Page = "1"
 		if len(rName) == 0 && len(ownerName) != 0 {
 			repo.Name = ownerName

@@ -3,17 +3,17 @@ package searchc
 import (
 	"fmt"
 	"hish22/grpm/internal/search"
-	"log"
 	"strconv"
 
+	charmlog "github.com/charmbracelet/log"
 	"github.com/spf13/cobra"
 )
 
 var (
-	repo      string
-	page      int
-	mostStars bool
-	fewStars  bool
+	repo  string
+	order string
+	sort  string
+	page  int
 )
 
 func SearchC() *cobra.Command {
@@ -22,40 +22,36 @@ func SearchC() *cobra.Command {
 		Short: "Search a specific github object.",
 		Run:   searchCmd,
 	}
-	c.Flags().StringVarP(&repo, "repo", "r", "", "Search for specific repo")
-	c.Flags().IntVarP(&page, "page", "p", 1, "Specifiy page for a repo")
-	c.Flags().BoolVarP(&mostStars, "most-stars", "m", false, "Search for most stars repo")
-	c.Flags().BoolVarP(&fewStars, "few-stars", "f", false, "Search for fewer stars repo")
+	c.Flags().StringVarP(&repo, "repo", "r", "", "Search a list of repositories.")
+	c.Flags().IntVarP(&page, "page", "p", 1, "page number of the results to fetch (Default 1).")
+	c.Flags().StringVarP(&sort, "sort", "s", "", "Sort repositories based criteria (stars, forks, help-wanted-issues, updated).")
+	c.Flags().StringVarP(&order, "order", "o", "", "Order of sorting repositories (asc, desc).")
 	return c
 }
 
 func searchCmd(cmd *cobra.Command, args []string) {
 	if len(repo) != 0 {
-		repoSearch()
+		s := &search.RepoInfo{
+			Name:  repo,
+			Page:  strconv.Itoa(page),
+			Sort:  sort,
+			Order: order,
+		}
+		repositories := search.SearchRepositories(s)
+		enumerateRepos(repositories)
 	} else {
 		if err := cmd.Help(); err != nil {
-			log.Fatal("Can't print search help command,", err)
+			charmlog.Fatal("Failed to show search help opitions,", "Error", err)
 		}
 	}
 }
 
-func repoSearch() {
-	HitRepos, err := search.JsonSearchRepo(&search.RepoInfo{
-		Name:      repo,
-		Page:      strconv.Itoa(page),
-		MostStars: mostStars,
-		FewStars:  fewStars,
-	})
-
-	if err != nil {
-		log.Fatal("(grpm search) didn't find any repository")
-	}
-
-	if len(HitRepos) != 0 {
-		for _, r := range HitRepos {
-			fmt.Printf("\n\033]8;;https://github.com/%s/%s\a\033[1m%s/%s (%s stars)\033[0m\033]8;;\a\n%s\n",
-				r.Owner, r.Name, r.Owner, r.Name, r.Stars, r.Description)
-			fmt.Println() // last space
+func enumerateRepos(repositories *search.Repositories) {
+	if len(repositories.TotalItems) > 0 {
+		for _, r := range repositories.TotalItems {
+			fmt.Printf("\n\033]8;;https://github.com/%s/%s\a\033[1m%s/%s (%d stars | %d forks)\033[0m\033]8;;\a\n%s\n",
+				r.Owner.Username, r.Name, r.Owner.Username, r.Name, r.Stars, r.Forks, r.Description)
+			fmt.Println()
 		}
 	} else {
 		fmt.Println("\033[1mNo result found of", repo, "\033[0m")
