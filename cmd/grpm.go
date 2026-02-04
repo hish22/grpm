@@ -7,6 +7,7 @@ import (
 	"hish22/grpm/cmd/listc"
 	"hish22/grpm/cmd/releasec"
 	"hish22/grpm/cmd/searchc"
+	"hish22/grpm/cmd/updatec"
 	"hish22/grpm/internal/config"
 
 	"github.com/spf13/cobra"
@@ -41,6 +42,7 @@ func main() {
 	r.AddCommand(releasec.ReleaseC())
 	r.AddCommand(installc.InstallC())
 	r.AddCommand(listc.ListC())
+	r.AddCommand(updatec.UpdateC())
 	if err := r.Execute(); err != nil {
 		panic(err)
 	}
