@@ -3,6 +3,7 @@ package searchc
 import (
 	"fmt"
 	"hish22/grpm/internal/search"
+	"hish22/grpm/internal/structures"
 	"strconv"
 
 	charmlog "github.com/charmbracelet/log"
@@ -46,9 +47,9 @@ func searchCmd(cmd *cobra.Command, args []string) {
 	}
 }
 
-func enumerateRepos(repositories *search.Repositories) {
-	if len(repositories.TotalItems) > 0 {
-		for _, r := range repositories.TotalItems {
+func enumerateRepos(repositories *structures.Repositories) {
+	if len(repositories.Repositories) > 0 {
+		for _, r := range repositories.Repositories {
 			fmt.Printf("\n\033]8;;https://github.com/%s/%s\a\033[1m%s/%s (%d stars | %d forks)\033[0m\033]8;;\a\n%s\n",
 				r.Owner.Username, r.Name, r.Owner.Username, r.Name, r.Stars, r.Forks, r.Description)
 			fmt.Println()
