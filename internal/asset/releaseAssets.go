@@ -13,6 +13,7 @@ import (
 
 type TrackedAsset struct {
 	ID          int
+	repoName    string
 	AssetName   string
 	Location    string
 	Tag         string
@@ -57,7 +58,7 @@ func FetchAssetsWithoutPrint() []TrackedAsset {
 	}
 	defer r.Close()
 	if r.Next() {
-		err := r.Scan(&a.ID, &a.AssetName, &a.Location, &a.Tag,
+		err := r.Scan(&a.ID, &a.repoName, &a.AssetName, &a.Location, &a.Tag,
 			&a.ReleaseName, &a.Size, &a.Digest)
 		if err != nil {
 			log.Fatal("Can't decode sql, ", err)
@@ -65,4 +66,15 @@ func FetchAssetsWithoutPrint() []TrackedAsset {
 		assets = append(assets, a)
 	}
 	return assets
+}
+
+func FetchSpecificAsset(repo *string) TrackedAsset {
+	db := persistance.OpenMetadataDB()
+	row := db.QueryRow("SELECT * FROM asset WHERE repo=?", *repo)
+	if row.Err() != nil {
+		log.Fatal("Can't fetch specified ", *repo, " asset, ", row.Err())
+	}
+	a := TrackedAsset{}
+	row.Scan(&a.ID, &a.repoName, &a.AssetName, &a.Location, &a.Tag, &a.ReleaseName, &a.Size, &a.Digest)
+	return a
 }
