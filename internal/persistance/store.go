@@ -6,9 +6,11 @@ import (
 	"fmt"
 	"hish22/grpm/internal/config"
 	"hish22/grpm/internal/serialization"
+	"hish22/grpm/internal/util"
 	"log"
 	"os"
 	"path/filepath"
+	"runtime"
 	"time"
 
 	_ "github.com/mattn/go-sqlite3" // Import for side-effects
@@ -16,8 +18,17 @@ import (
 )
 
 const (
-	CacheRootLocation = "cache"
+	CacheRfootLocation = "cache"
 )
+
+func ChacheRootLocation(append string) string {
+	switch runtime.GOOS {
+	case "linux":
+		return filepath.Join(util.HomeDir(), ".cache", append)
+	default:
+		return ""
+	}
+}
 
 func MetadataDbLocation() string {
 	return filepath.Join(config.LocalConfigDirPath(), "metadata.db")
@@ -28,7 +39,7 @@ func NewCache(link string, response any) {
 	blakeHexVersion := hex.EncodeToString(hash[:])
 	blob := blob{
 		HashedLink: []byte(blakeHexVersion),
-		Location:   filepath.Join(CacheRootLocation, blakeHexVersion),
+		Location:   filepath.Join(ChacheRootLocation("grpm"), blakeHexVersion),
 		Expire:     time.Now().AddDate(0, 0, 1),
 	}
 	chunk := serialization.JsonSerialization(response)
@@ -46,7 +57,7 @@ func DeleteCache(link *[]byte) {
 		log.Fatal("Cant delete cache of ", link, ", ", err)
 	}
 	// delete file from cache folder
-	cacheFilePath := filepath.Join(CacheRootLocation, string(*link)+".json")
+	cacheFilePath := filepath.Join(ChacheRootLocation("grpm"), string(*link)+".json")
 	err = os.Remove(cacheFilePath)
 	if err != nil {
 		log.Fatal("Can't remove cache .json file, ", err)
@@ -96,7 +107,7 @@ func metedataEntry(blob *blob) {
 
 func storeChunk(blob *blob, chunk *[]byte) {
 	// Create the cache folder
-	if os.MkdirAll("cache", 0755) != nil {
+	if os.MkdirAll(ChacheRootLocation("grpm"), 0755) != nil {
 		log.Fatal("Can't create cache folder")
 	}
 	// Write json blob into .json file

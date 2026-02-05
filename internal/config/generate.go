@@ -2,26 +2,19 @@ package config
 
 import (
 	"fmt"
+	"hish22/grpm/internal/util"
 	"log"
 	"os"
 	"path/filepath"
 	"runtime"
 )
 
-func homeDir() string {
-	homep, err := os.UserHomeDir()
-	if err != nil {
-		log.Fatal("Can't detect home dir, ", err)
-	}
-	return homep
-}
-
 func LocalConfigDirPath() string {
-	return filepath.Join(homeDir(), ".config", "grpm")
+	return filepath.Join(util.HomeDir(), ".config", "grpm")
 }
 
 func LocalConfigDirToml() string {
-	return filepath.Join(homeDir(), ".config", "grpm", "config.toml")
+	return filepath.Join(util.HomeDir(), ".config", "grpm", "config.toml")
 }
 
 func GenerateTOMLConfig() {
