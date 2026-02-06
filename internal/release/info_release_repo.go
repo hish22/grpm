@@ -2,9 +2,6 @@ package release
 
 import (
 	corehttp "hish22/grpm/internal/coreHttp"
-	"hish22/grpm/internal/serialization"
-	"io"
-	"log"
 	"time"
 )
 
@@ -30,36 +27,32 @@ type Release struct {
 	HtmlUrl     string    `json:"html_url"`
 }
 
-func fetchReleases(link *string, structure any) {
-	resp, err := corehttp.NewJsonReq(link)
-	if err != nil {
-		log.Fatal("Can't fetch releases, ", err)
-	}
-	defer resp.Body.Close()
-	buf, err := io.ReadAll(resp.Body)
-	if err != nil {
-		log.Fatal("Can't read releases buffer data, ", err)
-	}
-	serialization.JsonUnserialization(buf, &structure)
+func FetchLatestReleases(name *string) []Release {
+	link := corehttp.RequestLink{
+		Base:      corehttp.ApiLink,
+		Endpoints: []string{"repos", *name, "releases"},
+	}.Build()
+	var releasesResult []Release
+	corehttp.Request(link, &releasesResult)
+	return releasesResult
 }
 
-func FetchLatestReleases(repo *string) []Release {
-	link := corehttp.ReleasesLatestLink(repo)
-	var jsonReleasesResult []Release
-	fetchReleases(&link, &jsonReleasesResult)
-	return jsonReleasesResult
+func FetchLatestRelease(name *string) *Release {
+	link := corehttp.RequestLink{
+		Base:      corehttp.ApiLink,
+		Endpoints: []string{"repos", *name, "releases", "latest"},
+	}.Build()
+	var releaseResult Release
+	corehttp.Request(link, &releaseResult)
+	return &releaseResult
 }
 
-func FetchLatestRelease(repo *string) *Release {
-	link := corehttp.ReleaseLatestLink(repo)
-	var jsonReleaseResult Release
-	fetchReleases(&link, &jsonReleaseResult)
-	return &jsonReleaseResult
-}
-
-func FetchSpecificRelease(repo *string, tag *string) *Release {
-	link := corehttp.ReleasesByTagLink(repo, tag)
-	var jsonReleaseResult Release
-	fetchReleases(&link, &jsonReleaseResult)
-	return &jsonReleaseResult
+func FetchSpecificRelease(name *string, tag *string) *Release {
+	link := corehttp.RequestLink{
+		Base:      corehttp.ApiLink,
+		Endpoints: []string{"repos", *name, "releases", "tags", *tag},
+	}.Build()
+	var releaseResult Release
+	corehttp.Request(link, &releaseResult)
+	return &releaseResult
 }
