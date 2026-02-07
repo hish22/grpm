@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"hish22/grpm/internal/config"
 	"hish22/grpm/internal/persistance"
-	"hish22/grpm/internal/release"
+	"hish22/grpm/internal/structures"
 	"io"
 	"log"
 	"net/http"
@@ -46,7 +46,7 @@ func writePath(assetName *string) string {
 	return filepath.Join(homePath, configs.Downloaded, *assetName)
 }
 
-func InstallSelectedAsset(repo *string, asset *release.Assets, release *release.Release) {
+func InstallSelectedAsset(repo *string, asset *structures.Assets, release *structures.Release) {
 	// Fetch assets data and buffer it
 	fmt.Printf("(%s) Installing..\n", asset.AssetName)
 	resp, err := http.Get(asset.DownloadUrl)
@@ -80,7 +80,7 @@ func trackAssetTable() {
 	}
 }
 
-func registerAsset(repo *string, asset *release.Assets, release *release.Release) {
+func registerAsset(repo *string, asset *structures.Assets, release *structures.Release) {
 	db := persistance.OpenMetadataDB()
 	path := writePath(&asset.AssetName)
 	_, err := db.Exec("INSERT INTO asset VALUES (?,?,?,?,?,?,?,?);", asset.ID, *repo, asset.AssetName, path, release.TagName, release.ReleaseName, asset.Size, asset.Digest)

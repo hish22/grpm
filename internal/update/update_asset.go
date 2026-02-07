@@ -6,6 +6,7 @@ import (
 	"hish22/grpm/internal/install"
 	"hish22/grpm/internal/persistance"
 	"hish22/grpm/internal/release"
+	"hish22/grpm/internal/structures"
 	"log"
 	"regexp"
 	"strconv"
@@ -32,8 +33,8 @@ func deleteLastTrackedAsset(id int) {
 	}
 }
 
-func installUpdatedAsset(lr *release.Release, oldAssetID int, version *string) {
-	ua := &release.Assets{}
+func installUpdatedAsset(lr *structures.Release, oldAssetID int, version *string) {
+	ua := &structures.Assets{}
 	for _, a := range lr.Assets {
 		if a.AssetName == *version {
 			fmt.Println(a.AssetName)

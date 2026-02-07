@@ -4,34 +4,23 @@ import (
 	"fmt"
 	"hish22/grpm/internal/config"
 	"hish22/grpm/internal/persistance"
-	"hish22/grpm/internal/release"
+	"hish22/grpm/internal/structures"
 	"log"
 	"strings"
 
 	"github.com/dustin/go-humanize"
 )
 
-type TrackedAsset struct {
-	ID          int
-	repoName    string
-	AssetName   string
-	Location    string
-	Tag         string
-	ReleaseName string
-	Size        int
-	Digest      string
-}
-
-func printAssets(r []release.Assets) {
+func enumerateAssets(r []structures.Assets) {
 	for i, a := range r {
 		fmt.Print(i, "-")
 		fmt.Println(a.AssetName, "("+humanize.Bytes(uint64(a.Size))+")")
 	}
 }
 
-func matchedAssets(r *release.Release) []release.Assets {
+func matchedAssets(r *structures.Release) []structures.Assets {
 	config := config.DecodeTOMLConfig()
-	var MatchedReleases []release.Assets
+	var MatchedReleases []structures.Assets
 	for _, a := range r.Assets {
 		if strings.Contains(a.AssetName, config.Arch) && strings.Contains(a.AssetName, config.Os) {
 			MatchedReleases = append(MatchedReleases, a)
@@ -40,25 +29,25 @@ func matchedAssets(r *release.Release) []release.Assets {
 	return MatchedReleases
 }
 
-func PrintTheAssets(r *release.Release, repo *string, match bool) {
+func PrintTheAssets(r *structures.Release, repo *string, match bool) {
 	fmt.Println("=== Which asset of (", *repo, r.TagName, ") you want to install? ===")
 	if match {
 		r.Assets = matchedAssets(r)
 	}
-	printAssets(r.Assets)
+	enumerateAssets(r.Assets)
 }
 
-func FetchAssetsWithoutPrint() []TrackedAsset {
+func FetchAssetsWithoutPrint() []structures.TrackedAsset {
 	db := persistance.OpenMetadataDB()
-	var a TrackedAsset
-	assets := []TrackedAsset{}
+	var a structures.TrackedAsset
+	assets := []structures.TrackedAsset{}
 	r, err := db.Query("SELECT * FROM asset;")
 	if err != nil {
 		log.Fatal("Can't fetch installed assets")
 	}
 	defer r.Close()
 	if r.Next() {
-		err := r.Scan(&a.ID, &a.repoName, &a.AssetName, &a.Location, &a.Tag,
+		err := r.Scan(&a.ID, &a.RepoName, &a.AssetName, &a.Location, &a.Tag,
 			&a.ReleaseName, &a.Size, &a.Digest)
 		if err != nil {
 			log.Fatal("Can't decode sql, ", err)
@@ -68,13 +57,13 @@ func FetchAssetsWithoutPrint() []TrackedAsset {
 	return assets
 }
 
-func FetchSpecificAsset(repo *string) TrackedAsset {
+func FetchSpecificAsset(repo *string) structures.TrackedAsset {
 	db := persistance.OpenMetadataDB()
 	row := db.QueryRow("SELECT * FROM asset WHERE repo=?", *repo)
 	if row.Err() != nil {
 		log.Fatal("Can't fetch specified ", *repo, " asset, ", row.Err())
 	}
-	a := TrackedAsset{}
-	row.Scan(&a.ID, &a.repoName, &a.AssetName, &a.Location, &a.Tag, &a.ReleaseName, &a.Size, &a.Digest)
+	a := structures.TrackedAsset{}
+	row.Scan(&a.ID, &a.RepoName, &a.AssetName, &a.Location, &a.Tag, &a.ReleaseName, &a.Size, &a.Digest)
 	return a
 }
