@@ -5,6 +5,7 @@ import (
 	"hish22/grpm/internal/config"
 	"hish22/grpm/internal/persistance"
 	"hish22/grpm/internal/structures"
+	"hish22/grpm/internal/util"
 	"log"
 	"strings"
 
@@ -20,13 +21,16 @@ func enumerateAssets(r []structures.Assets) {
 
 func matchedAssets(r *structures.Release) []structures.Assets {
 	config := config.DecodeTOMLConfig()
-	var MatchedReleases []structures.Assets
+	var matchedAssets []structures.Assets
 	for _, a := range r.Assets {
-		if strings.Contains(a.AssetName, config.Arch) && strings.Contains(a.AssetName, config.Os) {
-			MatchedReleases = append(MatchedReleases, a)
+		if strings.Contains(strings.ToLower(a.AssetName), config.Arch) &&
+			strings.Contains(strings.ToLower(a.AssetName), config.Os) {
+			matchedAssets = append(matchedAssets, a)
+		} else if strings.Contains(strings.ToLower(a.AssetName), config.Os) {
+			util.ArchitectureAssetsMatch(&config.Arch, &a, &matchedAssets)
 		}
 	}
-	return MatchedReleases
+	return matchedAssets
 }
 
 func PrintTheAssets(r *structures.Release, repo *string, match bool) {
@@ -37,13 +41,14 @@ func PrintTheAssets(r *structures.Release, repo *string, match bool) {
 	enumerateAssets(r.Assets)
 }
 
-func FetchAssetsWithoutPrint() []structures.TrackedAsset {
+func FetchAssetsWithoutPrint() ([]structures.TrackedAsset, error) {
 	db := persistance.OpenMetadataDB()
 	var a structures.TrackedAsset
 	assets := []structures.TrackedAsset{}
 	r, err := db.Query("SELECT * FROM asset;")
 	if err != nil {
-		log.Fatal("Can't fetch installed assets")
+		return nil, err
+		// log.Fatal("Can't fetch installed assets", err)
 	}
 	defer r.Close()
 	if r.Next() {
@@ -54,7 +59,7 @@ func FetchAssetsWithoutPrint() []structures.TrackedAsset {
 		}
 		assets = append(assets, a)
 	}
-	return assets
+	return assets, nil
 }
 
 func FetchSpecificAsset(repo *string) structures.TrackedAsset {
