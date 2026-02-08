@@ -1,6 +1,7 @@
 package main
 
 import (
+	"hish22/grpm/cmd/cachec"
 	"hish22/grpm/cmd/configc"
 	"hish22/grpm/cmd/infoc"
 	"hish22/grpm/cmd/installc"
@@ -43,6 +44,7 @@ func main() {
 	r.AddCommand(installc.InstallC())
 	r.AddCommand(listc.ListC())
 	r.AddCommand(updatec.UpdateC())
+	r.AddCommand(cachec.CacheC())
 	if err := r.Execute(); err != nil {
 		panic(err)
 	}

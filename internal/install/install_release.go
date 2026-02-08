@@ -62,6 +62,7 @@ func downloadWithValidation(asset *structures.Assets, resp *http.Response) error
 	mw := io.MultiWriter(tf, hash256)
 	io.Copy(mw, resp.Body)
 
+	charmlog.Info("Comparing digests..")
 	// compare digest
 	calcDigest := "sha256:" + hex.EncodeToString(hash256.Sum(nil))
 	if asset.Digest != calcDigest {
