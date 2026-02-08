@@ -82,6 +82,7 @@ func InstallSelectedAsset(repo *string, asset *structures.Assets, release *struc
 
 	// Create .tmp file where we store binary data
 	// to validate the digest of the fetched content
+	// and handle unexpected situations
 	if err := downloadWithValidation(asset, resp); err != nil {
 		charmlog.Fatal("Failed to download asset", "asset", asset.AssetName, "error", err)
 	}
