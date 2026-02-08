@@ -51,7 +51,7 @@ func FetchAssetsWithoutPrint() ([]structures.TrackedAsset, error) {
 		// log.Fatal("Can't fetch installed assets", err)
 	}
 	defer r.Close()
-	if r.Next() {
+	for r.Next() {
 		err := r.Scan(&a.ID, &a.RepoName, &a.AssetName, &a.Location, &a.Tag,
 			&a.ReleaseName, &a.Size, &a.Digest)
 		if err != nil {
