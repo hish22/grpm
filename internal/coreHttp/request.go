@@ -1,9 +1,8 @@
 package corehttp
 
 import (
+	"encoding/json"
 	"errors"
-	"hish22/grpm/internal/serialization"
-	"io"
 	"log"
 	"net/http"
 	"strconv"
@@ -17,11 +16,10 @@ func Request(link *string, structure any) {
 		charmlog.Fatal("Failed to request", "link", *link)
 	}
 	defer response.Body.Close()
-	buffer, err := io.ReadAll(response.Body)
+	err = json.NewDecoder(response.Body).Decode(&structure)
 	if err != nil {
 		charmlog.Fatal("Failed to read response body of", "link", *link)
 	}
-	serialization.JsonUnserialization(buffer, &structure)
 }
 
 func newHttpRequest(link *string) (*http.Response, error) {
