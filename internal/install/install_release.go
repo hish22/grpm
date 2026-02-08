@@ -1,16 +1,19 @@
 package install
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
 	"fmt"
 	"hish22/grpm/internal/config"
 	"hish22/grpm/internal/persistance"
 	"hish22/grpm/internal/structures"
 	"io"
-	"log"
 	"net/http"
 	"os"
 	"path/filepath"
+	"strconv"
 
+	charmlog "github.com/charmbracelet/log"
 	_ "github.com/mattn/go-sqlite3" // Import for side-effects
 )
 
@@ -35,38 +38,56 @@ import (
 // 3- apply steps
 // 4- traksing could be opitional
 
-func writePath(assetName *string) string {
+func writePath(fileName *string) string {
 	configs := config.DecodeTOMLConfig()
 	homePath, err := os.UserHomeDir()
 
 	if err != nil {
-		log.Fatal("Can't return home dir path")
+		charmlog.Fatal("Can't return home dir path")
 	}
 
-	return filepath.Join(homePath, configs.Downloaded, *assetName)
+	return filepath.Join(homePath, configs.Downloaded, *fileName)
+}
+
+func downloadWithValidation(asset *structures.Assets, resp *http.Response) error {
+	// Create .tmp file into specified download folder
+	fileName := strconv.Itoa(asset.ID)
+	tf, _ := os.CreateTemp("", fileName)
+	defer os.Remove(tf.Name())
+	defer tf.Close()
+
+	// Create Hasher
+	hash256 := sha256.New()
+	// multiple stream write to tmp file and hasher
+	mw := io.MultiWriter(tf, hash256)
+	io.Copy(mw, resp.Body)
+
+	// compare digest
+	calcDigest := "sha256:" + hex.EncodeToString(hash256.Sum(nil))
+	if asset.Digest != calcDigest {
+		return fmt.Errorf("Digest Unmatch!")
+	}
+
+	tf.Close()
+	return os.Rename(tf.Name(), writePath(&asset.AssetName))
 }
 
 func InstallSelectedAsset(repo *string, asset *structures.Assets, release *structures.Release) {
-	// Fetch assets data and buffer it
-	fmt.Printf("(%s) Installing..\n", asset.AssetName)
+	// Request to Fetch assets from specific release
+	charmlog.Info("Installing..", "asset", asset.AssetName)
 	resp, err := http.Get(asset.DownloadUrl)
 	if err != nil {
-		log.Fatal("Can't downloaded requested asset, ", asset.AssetName, err)
+		charmlog.Fatal("Failed to GET request asset payload, ", "asset", asset.AssetName, "error", err)
 	}
 
-	// Create the file into the (Downloaded config location)
-	path := writePath(&asset.AssetName)
-	file, err := os.Create(path)
-	if err != nil {
-		log.Fatal("Can't write buffer data into a file,", err)
+	// Create .tmp file where we store binary data
+	// to validate the digest of the fetched content
+	if err := downloadWithValidation(asset, resp); err != nil {
+		charmlog.Fatal("Failed to download asset", "asset", asset.AssetName, "error", err)
 	}
 
-	// Read assets data
-	_, err = io.Copy(file, resp.Body)
-	if err != nil {
-		log.Fatal("Can't read downloaded asset buffer, ", err)
-	}
-	fmt.Printf("Asset %s installed successfully\n", asset.AssetName)
+	charmlog.Info("Digest match")
+
 	trackAssetTable()                   // Create the table if not exists
 	registerAsset(repo, asset, release) // Register installed asset
 
@@ -76,7 +97,7 @@ func trackAssetTable() {
 	db := persistance.OpenMetadataDB()
 	_, err := db.Exec("CREATE TABLE IF NOT EXISTS asset (id INT, repo TEXT,asset_name TEXT, location TEXT, tag TEXT, release_name TEXT, size INT, Digest TEXT);")
 	if err != nil {
-		log.Fatal("Can't create asset table to track assets, ", err)
+		charmlog.Fatal("Can't create asset table to track assets, ", err)
 	}
 }
 
@@ -85,7 +106,7 @@ func registerAsset(repo *string, asset *structures.Assets, release *structures.R
 	path := writePath(&asset.AssetName)
 	_, err := db.Exec("INSERT INTO asset VALUES (?,?,?,?,?,?,?,?);", asset.ID, *repo, asset.AssetName, path, release.TagName, release.ReleaseName, asset.Size, asset.Digest)
 	if err != nil {
-		log.Fatal("Can't register an installed asset")
+		charmlog.Fatal("Can't register an installed asset")
 	}
-	fmt.Println("Asset registered (Tracked)")
+	charmlog.Info("Asset registered (Tracked)")
 }
