@@ -11,6 +11,8 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+
+	charmlog "github.com/charmbracelet/log"
 )
 
 // UpdateVersion replaces a SemVer string within a filename automatically
@@ -29,7 +31,7 @@ func deleteLastTrackedAsset(id int) {
 	db := persistance.OpenMetadataDB()
 	_, err := db.Exec("DELETE FROM asset WHERE id=?", id)
 	if err != nil {
-		log.Fatal("Can't delete last tracked asset, ", err)
+		charmlog.Fatal("Failed to delete last tracked asset", "error", err)
 	}
 }
 
@@ -78,13 +80,13 @@ func UpdateToLatestAsset(repo *string) {
 	newVersion := updateVersion(a.AssetName, string(lb))
 
 	if lmajor > major {
-		fmt.Println("Major Updating...")
+		charmlog.Info("Major Updating...")
 		installUpdatedAsset(latestA, a.ID, &newVersion)
 	} else if lminor > minor {
-		fmt.Println("Minor Updating...")
+		charmlog.Info("Minor Updating...")
 		installUpdatedAsset(latestA, a.ID, &newVersion)
 	} else if lpatch > patch {
-		fmt.Println("Patch Updating...")
+		charmlog.Info("Patch Updating...")
 		installUpdatedAsset(latestA, a.ID, &newVersion)
 	}
 
