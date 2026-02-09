@@ -4,12 +4,12 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
-	"hish22/grpm/internal/config"
+	assets "hish22/grpm/internal/asset"
+	corehttp "hish22/grpm/internal/coreHttp"
 	"hish22/grpm/internal/structures"
 	"io"
 	"net/http"
 	"os"
-	"path/filepath"
 	"strconv"
 
 	charmlog "github.com/charmbracelet/log"
@@ -37,17 +37,6 @@ import (
 // 3- apply steps
 // 4- traksing could be opitional
 
-func writePath(fileName *string) string {
-	configs := config.DecodeTOMLConfig()
-	homePath, err := os.UserHomeDir()
-
-	if err != nil {
-		charmlog.Fatal("Can't return home dir path")
-	}
-
-	return filepath.Join(homePath, configs.Downloaded, *fileName)
-}
-
 func downloadWithValidation(asset *structures.Assets, resp *http.Response) error {
 	// Create .tmp file into specified download folder
 	fileName := strconv.Itoa(asset.ID)
@@ -69,7 +58,7 @@ func downloadWithValidation(asset *structures.Assets, resp *http.Response) error
 	}
 
 	tf.Close()
-	return os.Rename(tf.Name(), writePath(&asset.AssetName))
+	return os.Rename(tf.Name(), corehttp.WriteFilePath(&asset.AssetName))
 }
 
 func InstallSelectedAsset(repo *string, asset *structures.Assets, release *structures.Release) {
@@ -89,7 +78,7 @@ func InstallSelectedAsset(repo *string, asset *structures.Assets, release *struc
 
 	charmlog.Info("Digest match")
 
-	trackAssetTable()                   // Create the table if not exists
-	registerAsset(repo, asset, release) // Register installed asset
+	assets.TrackAssetTable()                   // Create the table if not exists
+	assets.RegisterAsset(repo, asset, release) // Register installed asset
 
 }

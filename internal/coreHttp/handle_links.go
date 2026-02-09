@@ -1,8 +1,11 @@
 package corehttp
 
 import (
+	"hish22/grpm/internal/config"
 	"log"
 	"net/url"
+	"os"
+	"path/filepath"
 	"strings"
 
 	charmlog "github.com/charmbracelet/log"
@@ -42,6 +45,17 @@ func (link RequestLink) Build() *string {
 		return &httpLink
 	}
 	return &construct
+}
+
+func WriteFilePath(fileName *string) string {
+	configs := config.DecodeTOMLConfig()
+	homePath, err := os.UserHomeDir()
+
+	if err != nil {
+		charmlog.Fatal("Can't return home dir path")
+	}
+
+	return filepath.Join(homePath, configs.Downloaded, *fileName)
 }
 
 func SearchLink(name *string, page *string, mostStars *bool, fewStars *bool) string {
