@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"hish22/grpm/internal/asset"
 	"hish22/grpm/internal/install"
-	"hish22/grpm/internal/persistance"
 	"hish22/grpm/internal/release"
 	"hish22/grpm/internal/structures"
 	"log"
@@ -27,14 +26,6 @@ func updateVersion(filename, newVersion string) string {
 	return re.ReplaceAllString(filename, "${1}"+newVersion+"${2}")
 }
 
-func deleteLastTrackedAsset(id int) {
-	db := persistance.OpenMetadataDB()
-	_, err := db.Exec("DELETE FROM asset WHERE id=?", id)
-	if err != nil {
-		charmlog.Fatal("Failed to delete last tracked asset", "error", err)
-	}
-}
-
 func installUpdatedAsset(lr *structures.Release, oldAssetID int, version *string) {
 	ua := &structures.Assets{}
 	for _, a := range lr.Assets {
@@ -43,7 +34,7 @@ func installUpdatedAsset(lr *structures.Release, oldAssetID int, version *string
 			ua = &a
 		}
 	}
-	deleteLastTrackedAsset(oldAssetID)
+	asset.DeleteLastTrackedAssetById(oldAssetID)
 	install.InstallSelectedAsset(version, ua, lr)
 }
 
@@ -78,15 +69,19 @@ func UpdateToLatestAsset(repo *string) {
 	}
 	// Replace if new version found/or nothing changes
 	newVersion := updateVersion(a.AssetName, string(lb))
-
+	isUpdateable := false
 	if lmajor > major {
 		charmlog.Info("Major Updating...")
-		installUpdatedAsset(latestA, a.ID, &newVersion)
+		isUpdateable = true
 	} else if lminor > minor {
 		charmlog.Info("Minor Updating...")
-		installUpdatedAsset(latestA, a.ID, &newVersion)
+		isUpdateable = true
 	} else if lpatch > patch {
 		charmlog.Info("Patch Updating...")
+		isUpdateable = true
+	}
+
+	if isUpdateable {
 		installUpdatedAsset(latestA, a.ID, &newVersion)
 	}
 
