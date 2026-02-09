@@ -41,13 +41,14 @@ func installUpdatedAsset(lr *structures.Release, oldAssetID int, version *string
 func UpdateToLatestAsset(repo *string) {
 	a := asset.FetchSpecificAsset(repo)
 	latestA := release.FetchLatestRelease(repo)
-	rx, err := regexp.Compile(`\d.\d.\d`)
+	rx, err := regexp.Compile(`\d+.\d+.\d+`)
 	if err != nil {
 		log.Fatal("Regex Failed to compile, ", err)
 	}
 
 	b := rx.Find([]byte(a.Tag))
 	lb := rx.Find([]byte(latestA.TagName))
+
 	// Asset Tag
 	version := strings.Split(string(b), ".")
 	major, err := strconv.Atoi(version[0])
