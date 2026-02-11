@@ -11,7 +11,12 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/charmbracelet/lipgloss"
 	charmlog "github.com/charmbracelet/log"
+)
+
+var (
+	assetNameStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#0000FF")).Bold(true)
 )
 
 // UpdateVersion replaces a SemVer string within a filename automatically
@@ -80,6 +85,8 @@ func UpdateToLatestAsset(repo string) {
 	} else if lpatch > patch {
 		charmlog.Info("Patch Updating...")
 		isUpdateable = true
+	} else {
+		charmlog.Info(assetNameStyle.Render(a.AssetName) + " installed with its latest version.")
 	}
 
 	if isUpdateable {
