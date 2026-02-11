@@ -6,6 +6,7 @@ import (
 	"fmt"
 	assets "hish22/grpm/internal/asset"
 	corehttp "hish22/grpm/internal/coreHttp"
+	"hish22/grpm/internal/setup"
 	"hish22/grpm/internal/structures"
 	"io"
 	"net/http"
@@ -58,7 +59,7 @@ func downloadWithValidation(asset *structures.Assets, resp *http.Response) error
 	}
 
 	tf.Close()
-	return os.Rename(tf.Name(), corehttp.WriteFilePath(&asset.AssetName))
+	return os.Rename(tf.Name(), corehttp.WriteFilePath(asset.AssetName))
 }
 
 func InstallSelectedAsset(repo string, asset *structures.Assets, release *structures.Release, setupStatus bool) {
@@ -81,7 +82,7 @@ func InstallSelectedAsset(repo string, asset *structures.Assets, release *struct
 	// auto setup of installed file
 	// if the user only flaged with --setup
 	if setupStatus {
-
+		setup.UnzipFileTarGz(corehttp.WriteFilePath(asset.AssetName))
 	}
 
 	assets.TrackAssetTable()                   // Create the table if not exists

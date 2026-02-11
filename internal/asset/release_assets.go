@@ -9,6 +9,7 @@ import (
 	"log"
 	"strings"
 
+	charmlog "github.com/charmbracelet/log"
 	"github.com/dustin/go-humanize"
 )
 
@@ -66,7 +67,7 @@ func FetchSpecificAsset(repo string) structures.TrackedAsset {
 	db := persistance.OpenMetadataDB()
 	row := db.QueryRow("SELECT * FROM asset WHERE repo=?", repo)
 	if row.Err() != nil {
-		log.Fatal("Can't fetch specified ", repo, " asset, ", row.Err())
+		charmlog.Fatal("Failed to fetch specified repository", "repo", repo, "error", row.Err())
 	}
 	a := structures.TrackedAsset{}
 	row.Scan(&a.ID, &a.RepoName, &a.AssetName, &a.Location, &a.Tag, &a.ReleaseName, &a.Size, &a.Digest)

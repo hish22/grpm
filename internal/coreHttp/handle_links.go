@@ -47,7 +47,7 @@ func (link RequestLink) Build() string {
 	return construct
 }
 
-func WriteFilePath(fileName *string) string {
+func WriteFilePath(fileName string) string {
 	configs := config.DecodeTOMLConfig()
 	homePath, err := os.UserHomeDir()
 
@@ -55,7 +55,7 @@ func WriteFilePath(fileName *string) string {
 		charmlog.Fatal("Can't return home dir path")
 	}
 
-	return filepath.Join(homePath, configs.Downloaded, *fileName)
+	return filepath.Join(homePath, configs.Downloaded, fileName)
 }
 
 func SearchLink(name *string, page *string, mostStars *bool, fewStars *bool) string {

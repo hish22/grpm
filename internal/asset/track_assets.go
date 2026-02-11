@@ -18,7 +18,7 @@ func TrackAssetTable() {
 
 func RegisterAsset(repo string, asset *structures.Assets, release *structures.Release) {
 	db := persistance.OpenMetadataDB()
-	path := corehttp.WriteFilePath(&asset.AssetName)
+	path := corehttp.WriteFilePath(asset.AssetName)
 	_, err := db.Exec("INSERT INTO asset VALUES (?,?,?,?,?,?,?,?);", asset.ID, repo, asset.AssetName, path, release.TagName, release.ReleaseName, asset.Size, asset.Digest)
 	if err != nil {
 		charmlog.Warn("Failed to register an installed asset", "error", err)

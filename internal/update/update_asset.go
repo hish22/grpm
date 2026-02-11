@@ -6,7 +6,6 @@ import (
 	"hish22/grpm/internal/install"
 	"hish22/grpm/internal/release"
 	"hish22/grpm/internal/structures"
-	"log"
 	"regexp"
 	"strconv"
 	"strings"
@@ -48,7 +47,7 @@ func UpdateToLatestAsset(repo string) {
 	latestA := release.FetchLatestRelease(repo)
 	rx, err := regexp.Compile(`\d+.\d+.\d+`)
 	if err != nil {
-		log.Fatal("Regex Failed to compile, ", err)
+		charmlog.Fatal("Regex Failed to compile, ", "error", err)
 	}
 
 	b := rx.Find([]byte(a.Tag))
@@ -61,7 +60,7 @@ func UpdateToLatestAsset(repo string) {
 	patch, err := strconv.Atoi(version[2])
 
 	if err != nil {
-		log.Fatal("Can't convert version to number", err)
+		charmlog.Fatal("Can't convert version to number", "error", err)
 	}
 
 	// Latest release Tag
@@ -71,7 +70,7 @@ func UpdateToLatestAsset(repo string) {
 	lpatch, err := strconv.Atoi(latestVersion[2])
 
 	if err != nil {
-		log.Fatal("Can't convert latest version to number", err)
+		charmlog.Fatal("Can't convert latest version to number", "error", err)
 	}
 	// Replace if new version found/or nothing changes
 	newVersion := updateVersion(a.AssetName, string(lb))
