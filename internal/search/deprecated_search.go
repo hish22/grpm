@@ -59,7 +59,7 @@ func JsonSearchRepo(repo *RepoInfo) ([]Srepo, error) {
 	link := corehttp.SearchLink(&repo.Name, &repo.Page, &MostStars, &FewStars)
 	var jsonSearchResult Response
 	if !persistance.FetchFromCache(&jsonSearchResult, link) {
-		resp, err := corehttp.NewJsonReq(&link)
+		resp, err := corehttp.NewJsonReq(link)
 		// Handle http request error
 		if err != nil {
 			return []Srepo{}, err

@@ -9,6 +9,7 @@ import (
 var (
 	repo   string
 	latest bool
+	setup  bool
 )
 
 func UpdateC() *cobra.Command {
@@ -24,7 +25,7 @@ func UpdateC() *cobra.Command {
 
 func updateCmd(cmd *cobra.Command, args []string) {
 	if latest && len(repo) != 0 {
-		update.UpdateToLatestAsset(&repo)
+		update.UpdateToLatestAsset(repo)
 	} else {
 		cmd.Help()
 	}

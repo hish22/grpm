@@ -47,7 +47,7 @@ func InfoC() *cobra.Command {
 }
 
 func fullRepositoryInfo() {
-	repository := info.InfoRepository(&owner, &name)
+	repository := info.InfoRepository(owner, name)
 	showRepositoryInfo(repository)
 }
 
@@ -65,7 +65,7 @@ func particalRepositoryInfo() {
 		repo.Name = name
 	}
 	SearchedRepo := search.SearchRepositories(&repo)
-	repository := info.InfoRepository(&SearchedRepo.Repositories[0].Owner.Username, &SearchedRepo.Repositories[0].Name)
+	repository := info.InfoRepository(SearchedRepo.Repositories[0].Owner.Username, SearchedRepo.Repositories[0].Name)
 	showRepositoryInfo(repository)
 }
 

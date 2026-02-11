@@ -43,7 +43,7 @@ func releaseCmd(cmd *cobra.Command, args []string) {
 		}
 		return
 	} else if len(tag) != 0 {
-		release := release.FetchSpecificRelease(&repo, &tag)
+		release := release.FetchSpecificRelease(repo, tag)
 		fmt.Println("=== Repo's Release ===")
 		fmt.Print("\n")
 		fmt.Println("ID: ", release.ID)
@@ -54,7 +54,7 @@ func releaseCmd(cmd *cobra.Command, args []string) {
 		fmt.Println("Release Page: ", release.HtmlUrl)
 		fmt.Print("\n")
 	} else if latestRelease {
-		release := release.FetchLatestRelease(&repo)
+		release := release.FetchLatestRelease(repo)
 		fmt.Println("=== Repo's Release ===")
 		fmt.Print("\n")
 		fmt.Println("ID: ", release.ID)

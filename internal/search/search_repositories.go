@@ -23,9 +23,9 @@ func SearchRepositories(metadata *RepoInfo) *structures.Repositories {
 			metadata.Sort, "order=" + metadata.Order,
 			"page=" + metadata.Page},
 	}.Build()
-	if !persistance.FetchFromCache(&repositories, *link) {
+	if !persistance.FetchFromCache(&repositories, link) {
 		corehttp.Request(link, &repositories)
-		persistance.NewCache(*link, &repositories)
+		persistance.NewCache(link, &repositories)
 	}
 	return &repositories
 }

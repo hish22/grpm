@@ -61,7 +61,7 @@ func downloadWithValidation(asset *structures.Assets, resp *http.Response) error
 	return os.Rename(tf.Name(), corehttp.WriteFilePath(&asset.AssetName))
 }
 
-func InstallSelectedAsset(repo *string, asset *structures.Assets, release *structures.Release) {
+func InstallSelectedAsset(repo string, asset *structures.Assets, release *structures.Release, setupStatus bool) {
 	// Request to Fetch assets from specific release
 	charmlog.Info("Installing..", "asset", asset.AssetName)
 	resp, err := http.Get(asset.DownloadUrl)
@@ -77,6 +77,12 @@ func InstallSelectedAsset(repo *string, asset *structures.Assets, release *struc
 	}
 
 	charmlog.Info("Digest match")
+
+	// auto setup of installed file
+	// if the user only flaged with --setup
+	if setupStatus {
+
+	}
 
 	assets.TrackAssetTable()                   // Create the table if not exists
 	assets.RegisterAsset(repo, asset, release) // Register installed asset

@@ -54,11 +54,11 @@ func convertIntoInfoRepo(response *Response, link *string) RepoPageInfo {
 	}
 }
 
-func JsonInfoRepo(owner *string, repo *string) (RepoPageInfo, error) {
+func JsonInfoRepo(owner string, repo string) (RepoPageInfo, error) {
 	link := corehttp.InfoLink(owner, repo)
 	var jsonInfoResult Response
 	if !persistance.FetchFromCache(&jsonInfoResult, link) {
-		resp, err := corehttp.NewJsonReq(&link)
+		resp, err := corehttp.NewJsonReq(link)
 		// Handle http request error
 		if err != nil {
 			return RepoPageInfo{}, err

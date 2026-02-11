@@ -32,7 +32,7 @@ type RequestLink struct {
 	Queries   []string
 }
 
-func (link RequestLink) Build() *string {
+func (link RequestLink) Build() string {
 	// Construct the link without the queries.
 	construct, err := url.JoinPath(link.Base, link.Endpoints...)
 	if err != nil {
@@ -42,9 +42,9 @@ func (link RequestLink) Build() *string {
 	if len(link.Queries) > 0 {
 		queryPack := "?" + strings.Join(link.Queries, "&")
 		httpLink := construct + queryPack
-		return &httpLink
+		return httpLink
 	}
-	return &construct
+	return construct
 }
 
 func WriteFilePath(fileName *string) string {
@@ -71,8 +71,8 @@ func SearchLink(name *string, page *string, mostStars *bool, fewStars *bool) str
 	return link
 }
 
-func InfoLink(owner *string, repo *string) string {
-	url, err := url.JoinPath(BaseLink, *owner, *repo)
+func InfoLink(owner string, repo string) string {
+	url, err := url.JoinPath(BaseLink, owner, repo)
 	if err != nil {
 		log.Fatal("Can't create such a link", err)
 	}

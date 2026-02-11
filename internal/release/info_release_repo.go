@@ -15,20 +15,20 @@ func FetchLatestReleases(name *string) []structures.Release {
 	return releasesResult
 }
 
-func FetchLatestRelease(name *string) *structures.Release {
+func FetchLatestRelease(name string) *structures.Release {
 	link := corehttp.RequestLink{
 		Base:      corehttp.ApiLink,
-		Endpoints: []string{"repos", *name, "releases", "latest"},
+		Endpoints: []string{"repos", name, "releases", "latest"},
 	}.Build()
 	var releaseResult structures.Release
 	corehttp.Request(link, &releaseResult)
 	return &releaseResult
 }
 
-func FetchSpecificRelease(name *string, tag *string) *structures.Release {
+func FetchSpecificRelease(name string, tag string) *structures.Release {
 	link := corehttp.RequestLink{
 		Base:      corehttp.ApiLink,
-		Endpoints: []string{"repos", *name, "releases", "tags", *tag},
+		Endpoints: []string{"repos", name, "releases", "tags", tag},
 	}.Build()
 	var releaseResult structures.Release
 	corehttp.Request(link, &releaseResult)

@@ -33,8 +33,8 @@ func matchedAssets(r *structures.Release) []structures.Assets {
 	return matchedAssets
 }
 
-func PrintTheAssets(r *structures.Release, repo *string, match bool) {
-	fmt.Println("=== Which asset of (", *repo, r.TagName, ") you want to install? ===")
+func PrintTheAssets(r *structures.Release, repo string, match bool) {
+	fmt.Println("=== Which asset of (", repo, r.TagName, ") you want to install? ===")
 	if match {
 		r.Assets = matchedAssets(r)
 	}
@@ -62,11 +62,11 @@ func FetchAssets() ([]structures.TrackedAsset, error) {
 	return assets, nil
 }
 
-func FetchSpecificAsset(repo *string) structures.TrackedAsset {
+func FetchSpecificAsset(repo string) structures.TrackedAsset {
 	db := persistance.OpenMetadataDB()
-	row := db.QueryRow("SELECT * FROM asset WHERE repo=?", *repo)
+	row := db.QueryRow("SELECT * FROM asset WHERE repo=?", repo)
 	if row.Err() != nil {
-		log.Fatal("Can't fetch specified ", *repo, " asset, ", row.Err())
+		log.Fatal("Can't fetch specified ", repo, " asset, ", row.Err())
 	}
 	a := structures.TrackedAsset{}
 	row.Scan(&a.ID, &a.RepoName, &a.AssetName, &a.Location, &a.Tag, &a.ReleaseName, &a.Size, &a.Digest)

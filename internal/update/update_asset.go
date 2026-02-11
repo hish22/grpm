@@ -26,19 +26,19 @@ func updateVersion(filename, newVersion string) string {
 	return re.ReplaceAllString(filename, "${1}"+newVersion+"${2}")
 }
 
-func installUpdatedAsset(lr *structures.Release, oldAssetID int, version *string) {
+func installUpdatedAsset(lr *structures.Release, oldAssetID int, version string) {
 	ua := &structures.Assets{}
 	for _, a := range lr.Assets {
-		if a.AssetName == *version {
+		if a.AssetName == version {
 			fmt.Println(a.AssetName)
 			ua = &a
 		}
 	}
 	asset.DeleteLastTrackedAssetById(oldAssetID)
-	install.InstallSelectedAsset(version, ua, lr)
+	install.InstallSelectedAsset(version, ua, lr, false)
 }
 
-func UpdateToLatestAsset(repo *string) {
+func UpdateToLatestAsset(repo string) {
 	a := asset.FetchSpecificAsset(repo)
 	latestA := release.FetchLatestRelease(repo)
 	rx, err := regexp.Compile(`\d+.\d+.\d+`)
@@ -83,7 +83,7 @@ func UpdateToLatestAsset(repo *string) {
 	}
 
 	if isUpdateable {
-		installUpdatedAsset(latestA, a.ID, &newVersion)
+		installUpdatedAsset(latestA, a.ID, newVersion)
 	}
 
 }

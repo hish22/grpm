@@ -17,6 +17,7 @@ var (
 	repo  string
 	tag   string
 	match bool
+	setup bool
 )
 
 func InstallC() *cobra.Command {
@@ -28,6 +29,7 @@ func InstallC() *cobra.Command {
 	c.Flags().StringVarP(&repo, "repo", "r", "", "Repo's name (owner/repo)")
 	c.Flags().StringVarP(&tag, "tag", "t", "", "Grab a specific repo's release by tag")
 	c.Flags().BoolVarP(&match, "match", "m", false, "Print assets that match your config file opitions")
+	c.Flags().BoolVarP(&setup, "setup", "s", false, "Auto setup of installed asset")
 	return &c
 }
 
@@ -49,8 +51,8 @@ func scanner() int {
 
 func installCmd(cmd *cobra.Command, args []string) {
 	if len(repo) != 0 && len(tag) != 0 {
-		a := release.FetchSpecificRelease(&repo, &tag)
-		asset.PrintTheAssets(a, &repo, match)
+		a := release.FetchSpecificRelease(repo, tag)
+		asset.PrintTheAssets(a, repo, match)
 		ch := scanner()
 
 		if ch > (len(a.Assets) - 1) {
@@ -59,10 +61,10 @@ func installCmd(cmd *cobra.Command, args []string) {
 		}
 
 		chRelease := a.Assets[ch]
-		install.InstallSelectedAsset(&repo, &chRelease, a)
+		install.InstallSelectedAsset(repo, &chRelease, a, setup)
 	} else if len(tag) == 0 && len(repo) != 0 {
-		a := release.FetchLatestRelease(&repo)
-		asset.PrintTheAssets(a, &repo, match)
+		a := release.FetchLatestRelease(repo)
+		asset.PrintTheAssets(a, repo, match)
 		ch := scanner()
 
 		if ch > (len(a.Assets) - 1) {
@@ -71,7 +73,7 @@ func installCmd(cmd *cobra.Command, args []string) {
 		}
 
 		chRelease := a.Assets[ch]
-		install.InstallSelectedAsset(&repo, &chRelease, a)
+		install.InstallSelectedAsset(repo, &chRelease, a, setup)
 	} else {
 		cmd.Help()
 	}
