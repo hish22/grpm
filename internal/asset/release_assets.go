@@ -41,7 +41,7 @@ func PrintTheAssets(r *structures.Release, repo *string, match bool) {
 	enumerateAssets(r.Assets)
 }
 
-func FetchAssetsWithoutPrint() ([]structures.TrackedAsset, error) {
+func FetchAssets() ([]structures.TrackedAsset, error) {
 	db := persistance.OpenMetadataDB()
 	var a structures.TrackedAsset
 	assets := []structures.TrackedAsset{}
