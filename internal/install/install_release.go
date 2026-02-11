@@ -66,7 +66,7 @@ func InstallSelectedAsset(repo *string, asset *structures.Assets, release *struc
 	charmlog.Info("Installing..", "asset", asset.AssetName)
 	resp, err := http.Get(asset.DownloadUrl)
 	if err != nil {
-		charmlog.Fatal("Failed to GET request asset payload, ", "asset", asset.AssetName, "error", err)
+		charmlog.Fatal("Failed to GET request asset payload", "asset", asset.AssetName, "error", err)
 	}
 
 	// Create .tmp file where we store binary data
