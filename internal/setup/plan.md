@@ -15,3 +15,5 @@ Note: exe and other simailer files can't be operated in setup phase
 -   start by running dpkg command
 -   let the dkpg process handle the installation setup
 -  endif
+
+Need to start in this by today or tomorrow.
