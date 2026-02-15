@@ -69,6 +69,6 @@ func FetchSpecificAsset(repo string) (structures.TrackedAsset, error) {
 		return structures.TrackedAsset{}, row.Err()
 	}
 	a := structures.TrackedAsset{}
-	row.Scan(&a.ID, &a.RepoName, &a.AssetName, &a.Location, &a.Tag, &a.ReleaseName, &a.Size, &a.Digest)
+	row.Scan(&a.ID, &a.RepoName, &a.AssetName, &a.Location, &a.Tag, &a.ReleaseName, &a.Size, &a.Digest, &a.SetupStatus)
 	return a, nil
 }

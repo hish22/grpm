@@ -42,7 +42,7 @@ func InstallC() *cobra.Command {
 
 func scanner() int {
 	s := bufio.NewScanner(os.Stdin)
-	fmt.Print("Enter your choose: ")
+	fmt.Print("Specifiy asset (index): ")
 	if s.Scan() {
 		index, err := strconv.Atoi(s.Text())
 		if err != nil {

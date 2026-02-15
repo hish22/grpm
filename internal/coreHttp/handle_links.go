@@ -52,10 +52,26 @@ func WriteFilePath(fileName string) string {
 	homePath, err := os.UserHomeDir()
 
 	if err != nil {
-		charmlog.Fatal("Can't return home dir path")
+		charmlog.Fatal("Failed to return home dir path", "error", err)
 	}
 
 	return filepath.Join(homePath, configs.Downloaded, fileName)
+}
+
+func WriteDownloadsFilePath(filename string) string {
+	downlaodsPath, err := config.GrpmDownloadedDirPath()
+	if err != nil {
+		charmlog.Error("Failed to return download path", "error", err)
+	}
+	return filepath.Join(downlaodsPath, filename)
+}
+
+func WriteLibFilePath(filename string) string {
+	libPath, err := config.GrpmLibraryDirPath()
+	if err != nil {
+		charmlog.Error("Failed to return library path", "error", err)
+	}
+	return filepath.Join(libPath, filename)
 }
 
 func SearchLink(name *string, page *string, mostStars *bool, fewStars *bool) string {

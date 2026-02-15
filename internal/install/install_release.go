@@ -61,7 +61,14 @@ func downloadWithValidation(asset *structures.Assets, resp *http.Response) error
 	}
 
 	tf.Close()
-	return os.Rename(tf.Name(), corehttp.WriteFilePath(asset.AssetName))
+	return os.Rename(tf.Name(), corehttp.WriteDownloadsFilePath(asset.AssetName))
+}
+
+func changeFilePerm(asset string) {
+	err := os.Chmod(corehttp.WriteDownloadsFilePath(asset), 0644)
+	if err != nil {
+		charmlog.Fatal("Failed ot change file's permission", "error", err)
+	}
 }
 
 func InstallSelectedAsset(repo string, asset *structures.Assets, release *structures.Release, setupStatus bool) {
@@ -76,17 +83,20 @@ func InstallSelectedAsset(repo string, asset *structures.Assets, release *struct
 	// to validate the digest of the fetched content
 	// and handle unexpected situations
 	if err := downloadWithValidation(asset, resp); err != nil {
-		charmlog.Fatal("Failed to download asset", "asset", asset.AssetName, "error", err)
+		charmlog.Fatal("Failed to download asset (Make sure to use sudo/privileged execution)", "asset", asset.AssetName, "error", err)
 	}
 
 	charmlog.Info("Digest match")
+
+	changeFilePerm(asset.AssetName)
 
 	// auto setup of installed file
 	// if the user only flaged with --setup
 	if setupStatus {
 		exts := util.ExtensionExtractor(asset.AssetName)
 		totalext := strings.Join(exts, "")
-		setup.SetupAsset(corehttp.WriteFilePath(asset.AssetName), totalext)
+		setup.SetupAsset(corehttp.WriteDownloadsFilePath(asset.AssetName), totalext)
+		charmlog.Info("Asset installed at /opt/grpm/lib")
 	}
 
 	assets.TrackAssetTable()                                // Create the table if not exists

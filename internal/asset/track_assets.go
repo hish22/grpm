@@ -21,7 +21,7 @@ func TrackAssetTable() error {
 func RegisterAsset(repo string, asset *structures.Assets, release *structures.Release, setupTrack bool) {
 	db := persistance.OpenMetadataDB()
 	defer db.Close()
-	path := corehttp.WriteFilePath(asset.AssetName)
+	path := corehttp.WriteDownloadsFilePath(asset.AssetName)
 	_, err := db.Exec("INSERT INTO asset VALUES (?,?,?,?,?,?,?,?,?);", asset.ID, repo, asset.AssetName, path, release.TagName, release.ReleaseName, asset.Size, asset.Digest, setupTrack)
 	if err != nil {
 		charmlog.Warn("Failed to register an installed asset", "error", err)
@@ -36,9 +36,9 @@ func AssetSetupTrackStatus(id int) bool {
 	defer db.Close()
 	row := db.QueryRow("SELECT setup_track FROM asset WHERE id=?", id)
 	if row.Err() == nil {
-		err := row.Scan(status)
+		err := row.Scan(&status)
 		if err != nil {
-			charmlog.Error("Failed to fetch status of an asset")
+			charmlog.Error("Failed to fetch status of an asset", "error", err)
 			return false
 		}
 	}

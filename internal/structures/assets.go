@@ -19,4 +19,5 @@ type TrackedAsset struct {
 	ReleaseName string
 	Size        int
 	Digest      string
+	SetupStatus bool
 }
