@@ -38,40 +38,52 @@ func installUpdatedAsset(lr *structures.Release, oldAssetID int, version string)
 			ua = &a
 		}
 	}
+	setupStatus := asset.AssetSetupTrackStatus(oldAssetID)
 	asset.DeleteLastTrackedAssetById(oldAssetID)
-	install.InstallSelectedAsset(version, ua, lr, false)
+	install.InstallSelectedAsset(version, ua, lr, setupStatus)
 }
 
-func UpdateToLatestAsset(repo string) {
-	a := asset.FetchSpecificAsset(repo)
-	latestA := release.FetchLatestRelease(repo)
+func buildregx() *regexp.Regexp {
 	rx, err := regexp.Compile(`\d+.\d+.\d+`)
 	if err != nil {
 		charmlog.Fatal("Regex Failed to compile, ", "error", err)
 	}
+	return rx
+}
+
+func extractVersionSet(tag string) (int, int, int) {
+	version := strings.Split(string(tag), ".")
+	major, err := strconv.Atoi(version[0])
+	minor, err := strconv.Atoi(version[1])
+	patch, err := strconv.Atoi(version[2])
+	if err != nil {
+		charmlog.Fatal("Can't convert latest version to number", "error", err)
+	}
+	return major, minor, patch
+}
+
+func UpdateToLatestAsset(repo string) {
+	// Fetch Specific asset
+	a, err := asset.FetchSpecificAsset(repo)
+	if err != nil {
+		charmlog.Fatal("Failed to fetch specified repository", "repo", repo, "error", err)
+	}
+	// Fetch latest repo release
+	latestA, err := release.FetchLatestRelease(repo)
+	if err != nil {
+		charmlog.Fatal("Failed to fetch latest release", "repo", repo, "error", err)
+	}
+	// Build regex
+	rx := buildregx()
 
 	b := rx.Find([]byte(a.Tag))
 	lb := rx.Find([]byte(latestA.TagName))
 
 	// Asset Tag
-	version := strings.Split(string(b), ".")
-	major, err := strconv.Atoi(version[0])
-	minor, err := strconv.Atoi(version[1])
-	patch, err := strconv.Atoi(version[2])
-
-	if err != nil {
-		charmlog.Fatal("Can't convert version to number", "error", err)
-	}
-
+	major, minor, patch := extractVersionSet(string(b))
 	// Latest release Tag
-	latestVersion := strings.Split(string(lb), ".")
-	lmajor, err := strconv.Atoi(latestVersion[0])
-	lminor, err := strconv.Atoi(latestVersion[1])
-	lpatch, err := strconv.Atoi(latestVersion[2])
+	lmajor, lminor, lpatch := extractVersionSet(string(lb))
 
-	if err != nil {
-		charmlog.Fatal("Can't convert latest version to number", "error", err)
-	}
 	// Replace if new version found/or nothing changes
 	newVersion := updateVersion(a.AssetName, string(lb))
 	isUpdateable := false
