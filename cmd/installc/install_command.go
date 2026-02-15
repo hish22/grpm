@@ -46,36 +46,44 @@ func scanner() int {
 	if s.Scan() {
 		index, err := strconv.Atoi(s.Text())
 		if err != nil {
-			log.Fatal("(Wrong entry) Can't convert from string to int, ", err)
+			charmlog.Fatal("No such selection (Not applicable)", "error", err)
 		}
 		return index
 	}
 	if s.Err() != nil {
-		log.Fatal("Can't scan the data, ", s.Err())
+		log.Fatal("Failed to scan the data, ", s.Err())
 	}
 	return 0
 }
 
 func installCmd(cmd *cobra.Command, args []string) {
 	if len(repo) != 0 && len(tag) != 0 {
-		a := release.FetchSpecificRelease(repo, tag)
+		a, err := release.FetchSpecificRelease(repo, tag)
+		if err != nil {
+			charmlog.Error("Failed to fetch specified repository release", "error", err)
+			return
+		}
 		asset.PrintTheAssets(a, repo, match)
 		ch := scanner()
 
 		if ch > (len(a.Assets) - 1) {
-			fmt.Println("No such asset")
+			charmlog.Error("No such asset")
 			return
 		}
 
 		chRelease := a.Assets[ch]
 		install.InstallSelectedAsset(repo, &chRelease, a, setup)
 	} else if len(tag) == 0 && len(repo) != 0 {
-		a := release.FetchLatestRelease(repo)
+		a, err := release.FetchLatestRelease(repo)
+		if err != nil {
+			charmlog.Error("Failed to fetch latest repository release", "error", err)
+			return
+		}
 		asset.PrintTheAssets(a, repo, match)
 		ch := scanner()
 
 		if ch > (len(a.Assets) - 1) {
-			fmt.Println("No such asset")
+			charmlog.Error("No such asset")
 			return
 		}
 

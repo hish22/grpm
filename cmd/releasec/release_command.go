@@ -36,7 +36,11 @@ func ReleaseC() *cobra.Command {
 
 func releaseCmd(cmd *cobra.Command, args []string) {
 	if latest && len(tag) == 0 {
-		releases := release.FetchLatestReleases(&repo)
+		releases, err := release.FetchLatestReleases(&repo)
+		if err != nil {
+			charmlog.Error("Failed to fetch latest repository releases", "error", err)
+			return
+		}
 		fmt.Println("=== Repo's Latest Releases ===")
 		for _, r := range releases {
 			fmt.Print("\n")
@@ -50,7 +54,11 @@ func releaseCmd(cmd *cobra.Command, args []string) {
 		}
 		return
 	} else if len(tag) != 0 {
-		release := release.FetchSpecificRelease(repo, tag)
+		release, err := release.FetchSpecificRelease(repo, tag)
+		if err != nil {
+			charmlog.Error("Failed to fetch specified repository release", "error", err)
+			return
+		}
 		fmt.Println("=== Repo's Release ===")
 		fmt.Print("\n")
 		fmt.Println("ID: ", release.ID)
@@ -61,7 +69,11 @@ func releaseCmd(cmd *cobra.Command, args []string) {
 		fmt.Println("Release Page: ", release.HtmlUrl)
 		fmt.Print("\n")
 	} else if latestRelease {
-		release := release.FetchLatestRelease(repo)
+		release, err := release.FetchLatestRelease(repo)
+		if err != nil {
+			charmlog.Error("Failed to fetch Latest repository release", "error", err)
+			return
+		}
 		fmt.Println("=== Repo's Release ===")
 		fmt.Print("\n")
 		fmt.Println("ID: ", release.ID)
