@@ -2,6 +2,7 @@ package infoc
 
 import (
 	"fmt"
+	"hish22/grpm/internal/config"
 	"hish22/grpm/internal/info"
 	"hish22/grpm/internal/search"
 	"hish22/grpm/internal/structures"
@@ -40,6 +41,11 @@ func InfoC() *cobra.Command {
 		Use:   "info",
 		Short: "display repository's information",
 		Run:   infoCmd,
+		PreRun: func(cmd *cobra.Command, args []string) {
+			if !config.CheckConfig() {
+				charmlog.Fatal("Please Run (grpm -d) to define grpm configuration files")
+			}
+		},
 	}
 	c.Flags().StringVarP(&owner, "owner", "o", "", "Repository owner")
 	c.Flags().StringVarP(&name, "repo", "r", "", "Repository name")

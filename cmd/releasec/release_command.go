@@ -2,8 +2,10 @@ package releasec
 
 import (
 	"fmt"
+	"hish22/grpm/internal/config"
 	"hish22/grpm/internal/release"
 
+	charmlog "github.com/charmbracelet/log"
 	"github.com/spf13/cobra"
 )
 
@@ -19,6 +21,11 @@ func ReleaseC() *cobra.Command {
 		Use:   "release",
 		Short: "Info about repo's releases information",
 		Run:   releaseCmd,
+		PreRun: func(cmd *cobra.Command, args []string) {
+			if !config.CheckConfig() {
+				charmlog.Fatal("Please Run (grpm -d) to define grpm configuration files")
+			}
+		},
 	}
 	c.Flags().StringVarP(&repo, "repo", "r", "", "Repo's name (owner/repo)")
 	c.Flags().BoolVarP(&latest, "latest", "a", false, "Grab 5 latest repo's releases information")

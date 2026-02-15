@@ -2,6 +2,7 @@ package searchc
 
 import (
 	"fmt"
+	"hish22/grpm/internal/config"
 	"hish22/grpm/internal/search"
 	"hish22/grpm/internal/structures"
 	"strconv"
@@ -22,6 +23,11 @@ func SearchC() *cobra.Command {
 		Use:   "search",
 		Short: "Search a specific github object.",
 		Run:   searchCmd,
+		PreRun: func(cmd *cobra.Command, args []string) {
+			if !config.CheckConfig() {
+				charmlog.Fatal("Please Run (grpm -d) to define grpm configuration files")
+			}
+		},
 	}
 	c.Flags().StringVarP(&repo, "repo", "r", "", "Search a list of repositories.")
 	c.Flags().IntVarP(&page, "page", "p", 1, "page number of the results to fetch (Default 1).")

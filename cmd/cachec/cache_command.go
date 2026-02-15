@@ -1,6 +1,7 @@
 package cachec
 
 import (
+	"hish22/grpm/internal/config"
 	"hish22/grpm/internal/persistance"
 
 	"github.com/spf13/cobra"
@@ -17,6 +18,11 @@ func CacheC() *cobra.Command {
 		Use:   "cache",
 		Short: "Handle cache commands",
 		Run:   cacheCmd,
+		PreRun: func(cmd *cobra.Command, args []string) {
+			if !config.CheckConfig() {
+				charmlog.Fatal("Please Run (grpm -d) to define grpm configuration files")
+			}
+		},
 	}
 	c.Flags().BoolVarP(&clear, "clear", "c", false, "Clear all stored cache")
 	return c

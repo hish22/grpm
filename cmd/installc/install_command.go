@@ -4,12 +4,14 @@ import (
 	"bufio"
 	"fmt"
 	"hish22/grpm/internal/asset"
+	"hish22/grpm/internal/config"
 	"hish22/grpm/internal/install"
 	"hish22/grpm/internal/release"
 	"log"
 	"os"
 	"strconv"
 
+	charmlog "github.com/charmbracelet/log"
 	"github.com/spf13/cobra"
 )
 
@@ -25,6 +27,11 @@ func InstallC() *cobra.Command {
 		Use:   "install",
 		Short: "Install a release",
 		Run:   installCmd,
+		PreRun: func(cmd *cobra.Command, args []string) {
+			if !config.CheckConfig() {
+				charmlog.Fatal("Please Run (grpm -d) to define grpm configuration files")
+			}
+		},
 	}
 	c.Flags().StringVarP(&repo, "repo", "r", "", "Repo's name (owner/repo)")
 	c.Flags().StringVarP(&tag, "tag", "t", "", "Grab a specific repo's release by tag")
