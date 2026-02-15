@@ -3,7 +3,6 @@ package persistance
 import (
 	"database/sql"
 	"encoding/hex"
-	"fmt"
 	"hish22/grpm/internal/config"
 	"hish22/grpm/internal/serialization"
 	"hish22/grpm/internal/util"
@@ -13,6 +12,7 @@ import (
 	"runtime"
 	"time"
 
+	charmlog "github.com/charmbracelet/log"
 	_ "github.com/mattn/go-sqlite3" // Import for side-effects
 	"lukechampine.com/blake3"
 )
@@ -22,9 +22,13 @@ const (
 )
 
 func ChacheRootLocation(append string) string {
+	home, err := util.HomeDir()
+	if err != nil {
+		charmlog.Error("Failed to fetch home directory", "error", err)
+	}
 	switch runtime.GOOS {
 	case "linux":
-		return filepath.Join(util.HomeDir(), ".cache", append)
+		return filepath.Join(home, ".cache", append)
 	default:
 		return ""
 	}
@@ -44,7 +48,7 @@ func NewCache(link string, response any) {
 	}
 	chunk := serialization.JsonSerialization(response)
 	metedataEntry(&blob)
-	storeChunk(&blob, &chunk)
+	storeChunk(&blob, chunk)
 }
 
 func DeleteCache(link *[]byte) {
@@ -75,7 +79,7 @@ func FetchFromCache(response any, link string) bool {
 			serialization.JsonUnserialization(buf, &response)
 			return true
 		} else {
-			fmt.Println("clearing cache")
+			charmlog.Info("clearing cache")
 			DeleteCache(&text_hashed)
 		}
 	}
@@ -96,22 +100,22 @@ func metedataEntry(blob *blob) {
 	ddlQuery := "CREATE TABLE IF NOT EXISTS cache (id INT PRIMARY KEY,hashedlink TEXT UNIQUE,location TEXT,expire DATE);"
 	_, err := db.Exec(ddlQuery)
 	if err != nil {
-		log.Fatal("Can't create cache table, ", err)
+		charmlog.Error("Failed to create cache table, ", err)
 	}
 	dmlQuery := "INSERT INTO cache(hashedlink,location,expire) VALUES (?,?,?)"
 	_, err = db.Exec(dmlQuery, blob.HashedLink, blob.Location, blob.Expire)
 	if err != nil {
-		log.Fatal("Can't insert entry into cache table, ", err)
+		charmlog.Error("Failed to insert cache metadata into cache table, ", err)
 	}
 }
 
-func storeChunk(blob *blob, chunk *[]byte) {
+func storeChunk(blob *blob, chunk []byte) {
 	// Create the cache folder
 	if os.MkdirAll(ChacheRootLocation("grpm"), 0755) != nil {
-		log.Fatal("Can't create cache folder")
+		charmlog.Error("Failed to create cache directory")
 	}
 	// Write json blob into .json file
-	if err := os.WriteFile(blob.Location+".json", *chunk, 0644); err != nil {
-		log.Fatal("Can't create a blob cache, ", err)
+	if err := os.WriteFile(blob.Location+".json", chunk, 0644); err != nil {
+		charmlog.Error("Failed to create a cache blob, ", err)
 	}
 }

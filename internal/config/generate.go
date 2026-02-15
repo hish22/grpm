@@ -11,11 +11,19 @@ import (
 )
 
 func LocalConfigDirPath() string {
-	return filepath.Join(util.HomeDir(), ".config", "grpm")
+	home, err := util.HomeDir()
+	if err != nil {
+		charmlog.Fatal("Failed to fetch local config dirctory path", "error", err)
+	}
+	return filepath.Join(home, ".config", "grpm")
 }
 
 func LocalConfigDirToml() string {
-	return filepath.Join(util.HomeDir(), ".config", "grpm", "config.toml")
+	home, err := util.HomeDir()
+	if err != nil {
+		charmlog.Fatal("Failed to fetch local config .toml", "error", err)
+	}
+	return filepath.Join(home, ".config", "grpm", "config.toml")
 }
 
 func GrpmDirPath() (string, error) {
@@ -62,15 +70,11 @@ func createAndWriteConfig(payload []byte) {
 }
 
 func createGrpmDir() {
-
 	gdd, err := GrpmDownloadedDirPath()
-
 	if err != nil {
 		charmlog.Fatal("Failed to fetch grpm and grpm/Downloads dir", "error", err)
 	}
-
 	libd, err := GrpmLibraryDirPath()
-
 	if err != nil {
 		charmlog.Fatal("Failed to fetch grpm/lib dir", "error", err)
 	}
@@ -87,22 +91,19 @@ func GenerateTOMLConfig() {
 	var payload []byte
 	switch runtime.GOOS {
 	case "linux":
-		payload = []byte(` location = "/opt/grpm"
-			 library = "/opt/grpm/lib"` + "\n" +
+		payload = []byte(`location = "/opt/grpm"` + "\n" +
+			`library = "/opt/grpm/lib"` + "\n" +
 			`downloaded = "/opt/grpm/Downloads"` + "\n" +
 			`arch = "` + runtime.GOARCH + `"` + "\n" +
 			`os = "` + runtime.GOOS + `"`)
 	case "windows":
-		payload = []byte(` location = "/Tools/grpm"
-			 library = "/Tools/grpm/lib"` + "\n" +
+		payload = []byte(`location = "/Tools/grpm"` + "\n" +
+			`library = "/Tools/grpm/lib"` + "\n" +
 			`downloaded = "/Tools/grpm/Downloads"` + "\n" +
 			`arch = "` + runtime.GOARCH + `"` + "\n" +
 			`os = "` + runtime.GOOS + `"`)
 	}
-
 	createAndWriteConfig(payload)
 	createGrpmDir()
-	fmt.Println(GrpmDirPath())
 	charmlog.Info("Configuration initialized", "Location", LocalConfigDirToml())
-
 }

@@ -10,16 +10,19 @@ import (
 	charmlog "github.com/charmbracelet/log"
 )
 
-func Request(link string, structure any) {
+func Request(link string, structure any) error {
 	response, err := newHttpRequest(link)
 	if err != nil {
-		charmlog.Fatal("Failed to request", "link", link)
+		charmlog.Error("Failed to request", "link", link)
+		return err
 	}
 	defer response.Body.Close()
 	err = json.NewDecoder(response.Body).Decode(&structure)
 	if err != nil {
-		charmlog.Fatal("Failed to read response body of", "link", link)
+		charmlog.Error("Failed to read response body of", "link", link)
+		return err
 	}
+	return nil
 }
 
 func newHttpRequest(link string) (*http.Response, error) {

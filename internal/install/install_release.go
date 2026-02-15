@@ -8,10 +8,12 @@ import (
 	corehttp "hish22/grpm/internal/coreHttp"
 	"hish22/grpm/internal/setup"
 	"hish22/grpm/internal/structures"
+	"hish22/grpm/internal/util"
 	"io"
 	"net/http"
 	"os"
 	"strconv"
+	"strings"
 
 	charmlog "github.com/charmbracelet/log"
 	_ "github.com/mattn/go-sqlite3" // Import for side-effects
@@ -82,10 +84,12 @@ func InstallSelectedAsset(repo string, asset *structures.Assets, release *struct
 	// auto setup of installed file
 	// if the user only flaged with --setup
 	if setupStatus {
-		setup.UnzipFileTarGz(corehttp.WriteFilePath(asset.AssetName))
+		exts := util.ExtensionExtractor(asset.AssetName)
+		totalext := strings.Join(exts, "")
+		setup.SetupAsset(corehttp.WriteFilePath(asset.AssetName), totalext)
 	}
 
-	assets.TrackAssetTable()                   // Create the table if not exists
-	assets.RegisterAsset(repo, asset, release) // Register installed asset
+	assets.TrackAssetTable()                                // Create the table if not exists
+	assets.RegisterAsset(repo, asset, release, setupStatus) // Register installed asset
 
 }
