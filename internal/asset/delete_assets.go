@@ -10,6 +10,6 @@ func DeleteLastTrackedAssetById(id int) {
 	db := persistance.OpenMetadataDB()
 	_, err := db.Exec("DELETE FROM asset WHERE id=?", id)
 	if err != nil {
-		charmlog.Fatal("Failed to delete last tracked asset", "error", err)
+		charmlog.Error("Failed to delete last tracked asset", "error", err)
 	}
 }
