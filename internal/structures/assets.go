@@ -11,13 +11,15 @@ type Assets struct {
 }
 
 type TrackedAsset struct {
-	ID          int
-	RepoName    string
-	AssetName   string
-	Location    string
-	Tag         string
-	ReleaseName string
-	Size        int
-	Digest      string
-	SetupStatus bool
+	ID                int
+	RepoName          string
+	AssetName         string
+	Location          string
+	Tag               string
+	ReleaseName       string
+	Size              int
+	Digest            string
+	SetupStatus       bool
+	SymlinkName       string
+	FileSetupLocation string
 }

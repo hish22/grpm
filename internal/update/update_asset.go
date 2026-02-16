@@ -1,10 +1,10 @@
 package update
 
 import (
-	"fmt"
 	"hish22/grpm/internal/asset"
 	"hish22/grpm/internal/install"
 	"hish22/grpm/internal/release"
+	"hish22/grpm/internal/setup"
 	"hish22/grpm/internal/structures"
 	"regexp"
 	"strconv"
@@ -30,16 +30,18 @@ func updateVersion(filename, newVersion string) string {
 	return re.ReplaceAllString(filename, "${1}"+newVersion+"${2}")
 }
 
-func installUpdatedAsset(lr *structures.Release, oldAssetID int, version string) {
+func installUpdatedAsset(lr *structures.Release, oldAsset *structures.TrackedAsset, version string) {
 	ua := &structures.Assets{}
 	for _, a := range lr.Assets {
 		if a.AssetName == version {
-			fmt.Println(a.AssetName)
 			ua = &a
 		}
 	}
-	setupStatus := asset.AssetSetupTrackStatus(oldAssetID)
-	asset.DeleteLastTrackedAssetById(oldAssetID)
+	setup.RemoveSymlink(oldAsset.ID)
+	asset.RemoveAssetLibFile(oldAsset.ID)
+	asset.RemoveRawAsset(oldAsset.Location)
+	setupStatus := asset.AssetSetupTrackStatus(oldAsset.ID)
+	asset.DeleteLastTrackedAssetById(oldAsset.ID)
 	install.InstallSelectedAsset(version, ua, lr, setupStatus)
 }
 
@@ -75,8 +77,6 @@ func UpdateToLatestAsset(repo string) {
 	}
 	// Build regex
 	rx := buildregx()
-	fmt.Println(a.Tag)
-	fmt.Println(latestA.TagName)
 	b := rx.Find([]byte(a.Tag))
 	lb := rx.Find([]byte(latestA.TagName))
 
@@ -102,7 +102,7 @@ func UpdateToLatestAsset(repo string) {
 	}
 
 	if isUpdateable {
-		installUpdatedAsset(latestA, a.ID, newVersion)
+		installUpdatedAsset(latestA, &a, newVersion)
 	}
 
 }
