@@ -3,14 +3,16 @@ package setup
 import (
 	"archive/tar"
 	"compress/gzip"
+	"hish22/grpm/internal/asset"
 	"hish22/grpm/internal/link"
 	"io"
 	"os"
+	"strings"
 
 	charmlog "github.com/charmbracelet/log"
 )
 
-func unzipTar(header *tar.Header, file io.Reader) {
+func unzipTar(header *tar.Header, file io.Reader, assetID int) {
 	switch header.Typeflag {
 
 	case tar.TypeDir:
@@ -20,7 +22,8 @@ func unzipTar(header *tar.Header, file io.Reader) {
 		}
 
 	case tar.TypeReg:
-		f, err := os.Create(link.WriteLibFilePath(header.Name))
+		link := link.WriteLibFilePath(header.Name)
+		f, err := os.Create(link)
 		if err != nil {
 			charmlog.Fatal("Failed to create file", "error", err)
 		}
@@ -28,13 +31,16 @@ func unzipTar(header *tar.Header, file io.Reader) {
 		if err != nil {
 			charmlog.Fatal("Failed to copy contents of a file", "error", err)
 		}
+		binaryName := strings.Split(header.Name, "/")
+		SymlinkAsset(link, binaryName[len(binaryName)-1], assetID)
 	}
 }
 
-func tarReader(cfile io.Reader, location string) {
+func tarReader(cfile io.Reader, location string, assetID int) {
 	// read archive .tar file
 	tarfile := tar.NewReader(cfile)
 	charmlog.Info("Extracting..", "asset", location)
+	isSetupFileRegisterd := false
 	for {
 		header, err := tarfile.Next()
 		if err == io.EOF {
@@ -44,12 +50,16 @@ func tarReader(cfile io.Reader, location string) {
 		if err != nil {
 			charmlog.Error("Failed to read tar", "error", err)
 		}
+		if !isSetupFileRegisterd {
+			asset.InsertFileSetupLocation(link.WriteLibFilePath(header.Name), assetID)
+			isSetupFileRegisterd = true
+		}
 		charmlog.Info(header.Name)
-		unzipTar(header, tarfile)
+		unzipTar(header, tarfile, assetID)
 	}
 }
 
-func unzipFileTarGz(location string) {
+func unzipFileTarGz(location string, assetID int) {
 	// open the compressed file
 	file, err := os.Open(location)
 	if err != nil {
@@ -62,5 +72,5 @@ func unzipFileTarGz(location string) {
 		charmlog.Fatal("Failed to uncompress .gz file", "error", err)
 	}
 	defer gzip.Close()
-	tarReader(gzip, location)
+	tarReader(gzip, location, assetID)
 }
