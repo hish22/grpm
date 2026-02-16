@@ -10,7 +10,7 @@ import (
 
 func TrackAssetTable() error {
 	db := persistance.OpenMetadataDB()
-	_, err := db.Exec("CREATE TABLE IF NOT EXISTS asset (id INT PRIMARY KEY, repo TEXT,asset_name TEXT, location TEXT, tag TEXT, release_name TEXT, size INT, Digest TEXT, setup_track BOOL);")
+	_, err := db.Exec("CREATE TABLE IF NOT EXISTS asset (id INT PRIMARY KEY, repo TEXT,asset_name TEXT, location TEXT, tag TEXT, release_name TEXT, size INT, Digest TEXT, setup_track BOOL, symlink_name TEXT,file_setup_location TEXT);")
 	defer db.Close()
 	if err != nil {
 		charmlog.Error("Failed to create asset table to track assets, ", err)
@@ -22,12 +22,58 @@ func RegisterAsset(repo string, asset *structures.Assets, release *structures.Re
 	db := persistance.OpenMetadataDB()
 	defer db.Close()
 	path := link.WriteDownloadsFilePath(asset.AssetName)
-	_, err := db.Exec("INSERT INTO asset VALUES (?,?,?,?,?,?,?,?,?);", asset.ID, repo, asset.AssetName, path, release.TagName, release.ReleaseName, asset.Size, asset.Digest, setupTrack)
+	_, err := db.Exec("INSERT INTO asset VALUES (?,?,?,?,?,?,?,?,?,?,?);", asset.ID, repo, asset.AssetName, path, release.TagName, release.ReleaseName, asset.Size, asset.Digest, setupTrack, nil, nil)
 	if err != nil {
 		charmlog.Warn("Failed to register an installed asset", "error", err)
 		return
 	}
 	charmlog.Info("Asset registered (Tracked)")
+}
+
+func InsertSymlinkLocation(name string, id int) {
+	db := persistance.OpenMetadataDB()
+	defer db.Close()
+	_, err := db.Exec("UPDATE asset SET symlink_name=? WHERE id=?", name, id)
+	if err != nil {
+		charmlog.Error("Failed to insert symlink_name to an asset", "error", err)
+		return
+	}
+	charmlog.Info("Symlink location inserted")
+}
+
+func SymlinkLocation(id int) string {
+	var symlink string
+	db := persistance.OpenMetadataDB()
+	defer db.Close()
+	row := db.QueryRow("SELECT symlink_name FROM asset WHERE id=?", id)
+	err := row.Scan(&symlink)
+	if err != nil {
+		charmlog.Error("Failed to fetch symlink_name", "error", err)
+	}
+	return symlink
+}
+
+func InsertFileSetupLocation(location string, id int) {
+	db := persistance.OpenMetadataDB()
+	defer db.Close()
+	_, err := db.Exec("UPDATE asset SET file_setup_location=? WHERE id=?", location, id)
+	if err != nil {
+		charmlog.Error("Failed to insert file_setup_location to an asset", "error", err)
+		return
+	}
+	charmlog.Info("File Setup location inserted")
+}
+
+func FileSetupLocation(id int) string {
+	var location string
+	db := persistance.OpenMetadataDB()
+	defer db.Close()
+	row := db.QueryRow("SELECT file_setup_location FROM asset WHERE id=?", id)
+	err := row.Scan(&location)
+	if err != nil {
+		charmlog.Error("Failed to fetch file_setup_location", "error", err)
+	}
+	return location
 }
 
 func AssetSetupTrackStatus(id int) bool {
