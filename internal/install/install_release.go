@@ -5,7 +5,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	assets "hish22/grpm/internal/asset"
-	corehttp "hish22/grpm/internal/coreHttp"
+	"hish22/grpm/internal/link"
 	"hish22/grpm/internal/setup"
 	"hish22/grpm/internal/structures"
 	"hish22/grpm/internal/util"
@@ -59,13 +59,12 @@ func downloadWithValidation(asset *structures.Assets, resp *http.Response) error
 	if asset.Digest != calcDigest {
 		return fmt.Errorf("Digest Unmatch!")
 	}
-
 	tf.Close()
-	return os.Rename(tf.Name(), corehttp.WriteDownloadsFilePath(asset.AssetName))
+	return os.Rename(tf.Name(), link.WriteDownloadsFilePath(asset.AssetName))
 }
 
 func changeFilePerm(asset string) {
-	err := os.Chmod(corehttp.WriteDownloadsFilePath(asset), 0644)
+	err := os.Chmod(link.WriteDownloadsFilePath(asset), 0644)
 	if err != nil {
 		charmlog.Fatal("Failed ot change file's permission", "error", err)
 	}
@@ -95,7 +94,7 @@ func InstallSelectedAsset(repo string, asset *structures.Assets, release *struct
 	if setupStatus {
 		exts := util.ExtensionExtractor(asset.AssetName)
 		totalext := strings.Join(exts, "")
-		setup.SetupAsset(corehttp.WriteDownloadsFilePath(asset.AssetName), totalext)
+		setup.SetupAsset(link.WriteDownloadsFilePath(asset.AssetName), totalext)
 		charmlog.Info("Asset installed at /opt/grpm/lib")
 	}
 

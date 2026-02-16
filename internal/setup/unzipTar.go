@@ -3,7 +3,7 @@ package setup
 import (
 	"archive/tar"
 	"compress/gzip"
-	corehttp "hish22/grpm/internal/coreHttp"
+	"hish22/grpm/internal/link"
 	"io"
 	"os"
 
@@ -14,13 +14,13 @@ func unzipTar(header *tar.Header, file io.Reader) {
 	switch header.Typeflag {
 
 	case tar.TypeDir:
-		err := os.MkdirAll(corehttp.WriteLibFilePath(header.Name), 0755)
+		err := os.MkdirAll(link.WriteLibFilePath(header.Name), 0755)
 		if err != nil {
 			charmlog.Fatal("Failed to create directory", "error", err)
 		}
 
 	case tar.TypeReg:
-		f, err := os.Create(corehttp.WriteLibFilePath(header.Name))
+		f, err := os.Create(link.WriteLibFilePath(header.Name))
 		if err != nil {
 			charmlog.Fatal("Failed to create file", "error", err)
 		}

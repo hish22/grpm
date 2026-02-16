@@ -1,7 +1,7 @@
 package asset
 
 import (
-	corehttp "hish22/grpm/internal/coreHttp"
+	"hish22/grpm/internal/link"
 	"hish22/grpm/internal/persistance"
 	"hish22/grpm/internal/structures"
 
@@ -21,7 +21,7 @@ func TrackAssetTable() error {
 func RegisterAsset(repo string, asset *structures.Assets, release *structures.Release, setupTrack bool) {
 	db := persistance.OpenMetadataDB()
 	defer db.Close()
-	path := corehttp.WriteDownloadsFilePath(asset.AssetName)
+	path := link.WriteDownloadsFilePath(asset.AssetName)
 	_, err := db.Exec("INSERT INTO asset VALUES (?,?,?,?,?,?,?,?,?);", asset.ID, repo, asset.AssetName, path, release.TagName, release.ReleaseName, asset.Size, asset.Digest, setupTrack)
 	if err != nil {
 		charmlog.Warn("Failed to register an installed asset", "error", err)

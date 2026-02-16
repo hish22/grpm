@@ -1,27 +1,15 @@
 package corehttp
 
 import (
-	"hish22/grpm/internal/config"
 	"net/url"
-	"path/filepath"
 	"strings"
 
 	charmlog "github.com/charmbracelet/log"
 )
 
 const (
-	BaseLink                   = "https://github.com/"
-	ApiLink                    = "https://api.github.com/"
-	BaseSearchLink             = "https://github.com/search?q="
-	RepoQuery                  = "&type=repositories"
-	PageQuery                  = "&p="
-	MostStarsQuery             = "&s=stars&o=desc"
-	FewStarsQuery              = "&s=stars&o=asc"
-	ReleasesEndPoint           = "releases"
-	ReposEndPoint              = "repos"
-	ReposLatestReleaseEndPoint = "latest"
-	ReposTagsEndPoint          = "tags"
-	LatestFiveReleasesQuery    = "?per_page=5"
+	BaseLink = "https://github.com/"
+	ApiLink  = "https://api.github.com/"
 )
 
 type RequestLink struct {
@@ -43,20 +31,4 @@ func (link RequestLink) Build() string {
 		return httpLink
 	}
 	return construct
-}
-
-func WriteDownloadsFilePath(filename string) string {
-	downlaodsPath, err := config.GrpmDownloadedDirPath()
-	if err != nil {
-		charmlog.Error("Failed to return download path", "error", err)
-	}
-	return filepath.Join(downlaodsPath.String(), filename)
-}
-
-func WriteLibFilePath(filename string) string {
-	libPath, err := config.GrpmLibraryDirPath()
-	if err != nil {
-		charmlog.Error("Failed to return library path", "error", err)
-	}
-	return filepath.Join(libPath.String(), filename)
 }
