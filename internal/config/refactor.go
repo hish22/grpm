@@ -10,7 +10,7 @@ import (
 func OpenTOMLConfig() {
 	switch runtime.GOOS {
 	case "linux":
-		cmd := exec.Command("nano", LocalConfigDirToml())
+		cmd := exec.Command("nano", LocalConfigDirToml().String())
 
 		// Connect the command's input/output to the current terminal
 		cmd.Stdin = os.Stdin
@@ -21,21 +21,9 @@ func OpenTOMLConfig() {
 			log.Fatal("Can't open TOML config file, ", err)
 		}
 	case "windows":
-		cmd := exec.Command("notepad", LocalConfigDirToml())
+		cmd := exec.Command("notepad", LocalConfigDirToml().String())
 		if err := cmd.Run(); err != nil {
 			log.Fatal("Can't open TOML config file, ", err)
 		}
 	}
 }
-
-// func RefactorConfigs(uconfig *config) {
-
-// 	buf := new(bytes.Buffer)
-
-// 	if err := toml.NewEncoder(buf).Encode(uconfig); err != nil {
-// 		log.Fatal("Can't Encode config, ", err)
-// 	}
-
-// 	fmt.Println(buf)
-
-// }

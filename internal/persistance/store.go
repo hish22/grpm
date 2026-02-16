@@ -35,7 +35,7 @@ func ChacheRootLocation(append string) string {
 }
 
 func MetadataDbLocation() string {
-	return filepath.Join(config.LocalConfigDirPath(), "metadata.db")
+	return filepath.Join(config.LocalConfigDirPath().String(), "metadata.db")
 }
 
 func NewCache(link string, response any) {

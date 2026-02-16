@@ -10,61 +10,79 @@ import (
 	charmlog "github.com/charmbracelet/log"
 )
 
-func LocalConfigDirPath() string {
+type FileLink struct {
+	Base     string
+	Childern []string
+	Asset    string
+}
+
+func (link FileLink) String() string {
+	childern := filepath.Join(link.Childern...)
+	return filepath.Join(link.Base, childern, link.Asset)
+}
+
+func LocalConfigDirPath() FileLink {
 	home, err := util.HomeDir()
 	if err != nil {
 		charmlog.Fatal("Failed to fetch local config dirctory path", "error", err)
 	}
-	return filepath.Join(home, ".config", "grpm")
+	return FileLink{
+		Base:     home,
+		Childern: []string{".config", "grpm"},
+	}
 }
 
-func LocalConfigDirToml() string {
+func LocalConfigDirToml() FileLink {
 	home, err := util.HomeDir()
 	if err != nil {
 		charmlog.Fatal("Failed to fetch local config .toml", "error", err)
 	}
-	return filepath.Join(home, ".config", "grpm", "config.toml")
-}
-
-func GrpmDirPath() (string, error) {
-	switch runtime.GOOS {
-	case "linux":
-		return filepath.Join("/", "opt", "grpm"), nil
-	case "windows":
-		return filepath.Join("C:\\", "Tools", "grpm"), nil
-	default:
-		return "", fmt.Errorf("Failed to retun the grpm path based on specified OS")
+	return FileLink{
+		Base:     home,
+		Childern: []string{".config", "grpm"},
+		Asset:    "config.toml",
 	}
 }
 
-func GrpmLibraryDirPath() (string, error) {
+func GrpmDirPath() (FileLink, error) {
 	switch runtime.GOOS {
 	case "linux":
-		return filepath.Join("/", "opt", "grpm", "lib"), nil
+		return FileLink{Base: "/", Childern: []string{"opt", "grpm"}}, nil
 	case "windows":
-		return filepath.Join("C:\\", "Tools", "grpm", "lib"), nil
+		return FileLink{Base: "C:\\", Childern: []string{"Tools", "grpm"}}, nil
 	default:
-		return "", fmt.Errorf("Failed to retun the grpm/lib path based on specified OS")
+		return FileLink{}, fmt.Errorf("Failed to retun the grpm path based on specified OS")
 	}
 }
 
-func GrpmDownloadedDirPath() (string, error) {
+func GrpmLibraryDirPath() (FileLink, error) {
 	switch runtime.GOOS {
 	case "linux":
-		return filepath.Join("/", "opt", "grpm", "Downloads"), nil
+		return FileLink{Base: "/", Childern: []string{"opt", "grpm", "lib"}}, nil
 	case "windows":
-		return filepath.Join("C:\\", "Tools", "grpm", "Downloads"), nil
+		return FileLink{Base: "C:\\", Childern: []string{"Tools", "grpm", "lib"}}, nil
 	default:
-		return "", fmt.Errorf("Failed to retun the grpm/lib path based on specified OS")
+		return FileLink{}, fmt.Errorf("Failed to retun the grpm/lib path based on specified OS")
+	}
+}
+
+func GrpmDownloadedDirPath() (FileLink, error) {
+	switch runtime.GOOS {
+	case "linux":
+		return FileLink{Base: "/", Childern: []string{"opt", "grpm", "Downloads"}}, nil
+	case "windows":
+		return FileLink{Base: "C:\\", Childern: []string{"Tools", "grpm", "Downloads"}}, nil
+	default:
+		return FileLink{}, fmt.Errorf("Failed to retun the grpm/lib path based on specified OS")
 	}
 }
 
 func createAndWriteConfig(payload []byte) {
-	if err := os.MkdirAll(LocalConfigDirPath(), 0755); err != nil {
+	if err := os.MkdirAll(LocalConfigDirPath().String(), 0755); err != nil {
 		charmlog.Fatal("Failed create .config/grpm dir, ", "error", err)
 	}
 
-	if err := os.WriteFile(LocalConfigDirToml(), payload, 0644); err != nil {
+	if err := os.WriteFile(LocalConfigDirToml().String(), payload, 0644); err != nil {
 		charmlog.Fatal("Failed create config.toml, ", "error", err)
 	}
 }
@@ -79,10 +97,10 @@ func createGrpmDir() {
 		charmlog.Fatal("Failed to fetch grpm/lib dir", "error", err)
 	}
 
-	if err := os.MkdirAll(gdd, 0755); err != nil {
+	if err := os.MkdirAll(gdd.String(), 0755); err != nil {
 		charmlog.Fatal("Failed to create grpm dir and grpm/Downloads dir, ", "error", err)
 	}
-	if err := os.MkdirAll(libd, 0755); err != nil {
+	if err := os.MkdirAll(libd.String(), 0755); err != nil {
 		charmlog.Fatal("Failed to create grpm/lib dir", "error", err)
 	}
 }
@@ -105,5 +123,5 @@ func GenerateTOMLConfig() {
 	}
 	createAndWriteConfig(payload)
 	createGrpmDir()
-	charmlog.Info("Configuration initialized", "Location", LocalConfigDirToml())
+	charmlog.Info("Configuration initialized", "Location", LocalConfigDirToml().String())
 }

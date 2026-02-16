@@ -5,7 +5,7 @@ import (
 )
 
 func CheckConfig() bool {
-	_, err := os.Stat(LocalConfigDirToml())
+	_, err := os.Stat(LocalConfigDirToml().String())
 	if err != nil {
 		return false
 	}
