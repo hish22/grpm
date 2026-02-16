@@ -89,16 +89,15 @@ func InstallSelectedAsset(repo string, asset *structures.Assets, release *struct
 
 	changeFilePerm(asset.AssetName)
 
+	assets.TrackAssetTable()                                // Create the table if not exists
+	assets.RegisterAsset(repo, asset, release, setupStatus) // Register installed asset
+
 	// auto setup of installed file
 	// if the user only flaged with --setup
 	if setupStatus {
 		exts := util.ExtensionExtractor(asset.AssetName)
 		totalext := strings.Join(exts, "")
-		setup.SetupAsset(link.WriteDownloadsFilePath(asset.AssetName), totalext)
+		setup.SetupAsset(link.WriteDownloadsFilePath(asset.AssetName), totalext, asset.ID)
 		charmlog.Info("Asset installed at /opt/grpm/lib")
 	}
-
-	assets.TrackAssetTable()                                // Create the table if not exists
-	assets.RegisterAsset(repo, asset, release, setupStatus) // Register installed asset
-
 }
