@@ -35,8 +35,8 @@ func IsBinary(file string) bool {
 	return bytes.Equal(header, elfMagic)
 }
 
-func confirm() bool {
-	charmlog.Info("Binary detected")
+func confirm(binaryName string) bool {
+	charmlog.Info("Binary detected", "binary", binaryName)
 	fmt.Print("Do you want to create a symlink for this binary (yes/no)? ")
 	status := false
 	scan := bufio.NewScanner(os.Stdin)
@@ -56,7 +56,7 @@ func confirm() bool {
 }
 
 func SymlinkAsset(assetLocation string, binaryName string, assetID int) {
-	if IsBinary(assetLocation) && confirm() {
+	if IsBinary(assetLocation) && confirm(binaryName) {
 		enableExecute(assetLocation)
 		newlink := config.FileLink{
 			Base:     "/",
