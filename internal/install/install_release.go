@@ -62,11 +62,11 @@ func downloadWithValidation(asset *structures.Assets, resp *http.Response) error
 	defer os.Remove(tf.Name())
 	defer tf.Close()
 
+	// Progress bar
 	bar := progressbar.DefaultBytes(
 		int64(asset.Size),
 		"Downloading",
 	)
-
 	// Create Hasher
 	hash256 := sha256.New()
 	// multiple stream write to tmp file and hasher

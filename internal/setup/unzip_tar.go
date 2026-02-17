@@ -6,6 +6,7 @@ import (
 	"hish22/grpm/internal/link"
 	"io"
 	"os"
+	"path/filepath"
 	"strings"
 
 	charmlog "github.com/charmbracelet/log"
@@ -22,6 +23,10 @@ func unzipTar(header *tar.Header, file io.Reader, assetID int) {
 
 	case tar.TypeReg:
 		link := link.WriteLibFilePath(header.Name)
+		// Ensure parent directory exists
+		if err := os.MkdirAll(filepath.Dir(link), 0755); err != nil {
+			charmlog.Fatal("Failed to create directory", "error", err)
+		}
 		f, err := os.Create(link)
 		if err != nil {
 			charmlog.Fatal("Failed to create file", "error", err)
