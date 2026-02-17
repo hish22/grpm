@@ -4,7 +4,7 @@ import (
 	"hish22/grpm/internal/asset"
 	"hish22/grpm/internal/install"
 	"hish22/grpm/internal/release"
-	"hish22/grpm/internal/setup"
+	"hish22/grpm/internal/remove"
 	"hish22/grpm/internal/structures"
 	"regexp"
 	"strconv"
@@ -37,11 +37,8 @@ func installUpdatedAsset(lr *structures.Release, oldAsset *structures.TrackedAss
 			ua = &a
 		}
 	}
-	setup.RemoveSymlink(oldAsset.ID)
-	asset.RemoveAssetLibFile(oldAsset.ID)
-	asset.RemoveRawAsset(oldAsset.Location)
 	setupStatus := asset.AssetSetupTrackStatus(oldAsset.ID)
-	asset.DeleteLastTrackedAssetById(oldAsset.ID)
+	remove.RemoveAssetByID(oldAsset.ID, oldAsset.Location)
 	install.InstallSelectedAsset(version, ua, lr, setupStatus)
 }
 

@@ -26,7 +26,7 @@ func ListAssets() {
 	}
 	fmt.Println("=== Installed Assets (Tracked) ===")
 	for _, a := range trackedAssets {
-		fmt.Println(idstyle.Render(strconv.Itoa(a.ID)), a.AssetName, tagstyle.Render(a.Tag),
+		fmt.Println(idstyle.Render(strconv.Itoa(a.ID)), "["+a.RepoName+"]", a.AssetName, tagstyle.Render(a.Tag),
 			"("+humanize.Bytes(uint64(a.Size))+")")
 	}
 }

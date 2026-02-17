@@ -7,6 +7,7 @@ import (
 	"hish22/grpm/cmd/installc"
 	"hish22/grpm/cmd/listc"
 	"hish22/grpm/cmd/releasec"
+	"hish22/grpm/cmd/removec"
 	"hish22/grpm/cmd/searchc"
 	"hish22/grpm/cmd/updatec"
 	"hish22/grpm/internal/config"
@@ -45,6 +46,7 @@ func main() {
 	r.AddCommand(listc.ListC())
 	r.AddCommand(updatec.UpdateC())
 	r.AddCommand(cachec.CacheC())
+	r.AddCommand(removec.RemoveC())
 	if err := r.Execute(); err != nil {
 		panic(err)
 	}

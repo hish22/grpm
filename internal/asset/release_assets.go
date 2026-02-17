@@ -52,7 +52,7 @@ func FetchAssets() ([]structures.TrackedAsset, error) {
 	defer r.Close()
 	for r.Next() {
 		err := r.Scan(&a.ID, &a.RepoName, &a.AssetName, &a.Location, &a.Tag,
-			&a.ReleaseName, &a.Size, &a.Digest)
+			&a.ReleaseName, &a.Size, &a.Digest, &a.SetupStatus, &a.SymlinkName, &a.FileSetupLocation)
 		if err != nil {
 			log.Fatal("Can't decode sql, ", err)
 		}
@@ -69,6 +69,10 @@ func FetchSpecificAsset(repo string) (structures.TrackedAsset, error) {
 		return structures.TrackedAsset{}, row.Err()
 	}
 	a := structures.TrackedAsset{}
-	row.Scan(&a.ID, &a.RepoName, &a.AssetName, &a.Location, &a.Tag, &a.ReleaseName, &a.Size, &a.Digest, &a.SetupStatus, &a.SymlinkName, &a.FileSetupLocation)
+	err := row.Scan(&a.ID, &a.RepoName, &a.AssetName, &a.Location, &a.Tag, &a.ReleaseName,
+		&a.Size, &a.Digest, &a.SetupStatus, &a.SymlinkName, &a.FileSetupLocation)
+	if err != nil {
+		return structures.TrackedAsset{}, err
+	}
 	return a, nil
 }
