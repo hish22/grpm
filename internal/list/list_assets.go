@@ -24,9 +24,14 @@ func ListAssets() {
 			charmlog.Fatal(err)
 		}
 	}
-	fmt.Println("=== Installed Assets (Tracked) ===")
-	for _, a := range trackedAssets {
-		fmt.Println(idstyle.Render(strconv.Itoa(a.ID)), "["+a.RepoName+"]", a.AssetName, tagstyle.Render(a.Tag),
-			"("+humanize.Bytes(uint64(a.Size))+")")
+	if len(trackedAssets) <= 0 {
+		fmt.Println("No installed assets.")
+	} else {
+		fmt.Println("=== Installed Assets (Tracked) ===")
+		for _, a := range trackedAssets {
+			fmt.Println(idstyle.Render(strconv.Itoa(a.ID)), "["+a.RepoName+"]", a.AssetName, tagstyle.Render(a.Tag),
+				"("+humanize.Bytes(uint64(a.Size))+")")
+		}
 	}
+
 }
