@@ -11,6 +11,9 @@ import (
 	"hish22/grpm/cmd/searchc"
 	"hish22/grpm/cmd/updatec"
 	"hish22/grpm/internal/config"
+	"hish22/grpm/internal/util"
+
+	charmlog "github.com/charmbracelet/log"
 
 	"github.com/spf13/cobra"
 )
@@ -26,7 +29,11 @@ func root() *cobra.Command {
 		Long:  `Github Releases Packet Manager (grpm) is a tool to handle installed releases from github.`,
 		Run: func(cmd *cobra.Command, args []string) {
 			if define {
-				config.GenerateTOMLConfig()
+				if util.IsAdministrator() {
+					config.GenerateTOMLConfig()
+				} else {
+					charmlog.Error("Failed to define grpm, please use (grpm -d) with privileged execution")
+				}
 			} else {
 				cmd.Help()
 			}
