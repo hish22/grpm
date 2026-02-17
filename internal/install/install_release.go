@@ -40,6 +40,14 @@ import (
 // 3- apply steps
 // 4- traksing could be opitional
 
+func isInstalled(repo string) (*structures.TrackedAsset, bool) {
+	asset, err := assets.FetchSpecificAsset(repo)
+	if err != nil {
+		return &asset, false
+	}
+	return &asset, true
+}
+
 func downloadWithValidation(asset *structures.Assets, resp *http.Response) error {
 	// Create .tmp file into specified download folder
 	fileName := strconv.Itoa(asset.ID)
@@ -71,6 +79,13 @@ func changeFilePerm(asset string) {
 }
 
 func InstallSelectedAsset(repo string, asset *structures.Assets, release *structures.Release, setupStatus bool) {
+	// Check if asset is already installed
+	installedAsset, isInstalled := isInstalled(repo)
+	if isInstalled {
+		charmlog.Info("Asset is already installed", "asset", installedAsset.Location)
+		return
+	}
+
 	// Request to Fetch assets from specific release
 	charmlog.Info("Installing..", "asset", asset.AssetName)
 	resp, err := http.Get(asset.DownloadUrl)
