@@ -5,6 +5,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	assets "hish22/grpm/internal/asset"
+	"hish22/grpm/internal/config"
 	"hish22/grpm/internal/link"
 	"hish22/grpm/internal/setup"
 	"hish22/grpm/internal/structures"
@@ -48,9 +49,14 @@ func isInstalled(repo string) (*structures.TrackedAsset, bool) {
 }
 
 func downloadWithValidation(asset *structures.Assets, resp *http.Response) error {
+	// Bring downloads (as tmp file) location
+	downloads, err := config.GrpmDownloadedDirPath()
+	if err != nil {
+		return err
+	}
 	// Create .tmp file into specified download folder
 	fileName := strconv.Itoa(asset.ID)
-	tf, _ := os.CreateTemp("", fileName)
+	tf, _ := os.CreateTemp(downloads.String(), fileName)
 	defer os.Remove(tf.Name())
 	defer tf.Close()
 
@@ -65,7 +71,10 @@ func downloadWithValidation(asset *structures.Assets, resp *http.Response) error
 	calcDigest := "sha256:" + hex.EncodeToString(hash256.Sum(nil))
 	if asset.Digest != calcDigest {
 		return fmt.Errorf("Digest Unmatch!")
+	} else {
+		charmlog.Info("Digest match")
 	}
+
 	tf.Close()
 	return os.Rename(tf.Name(), link.WriteDownloadsFilePath(asset.AssetName))
 }
@@ -78,6 +87,12 @@ func changeFilePerm(asset string) {
 }
 
 func InstallSelectedAsset(repo string, asset *structures.Assets, release *structures.Release, setupStatus bool) {
+	// Check if user is running this with privileged execution
+	if !util.IsAdministrator() {
+		charmlog.Error("Please run this command with privilege execution mode")
+		return
+	}
+
 	// Check if asset is already installed
 	installedAsset, isInstalled := isInstalled(repo)
 	if isInstalled {
@@ -98,8 +113,6 @@ func InstallSelectedAsset(repo string, asset *structures.Assets, release *struct
 	if err := downloadWithValidation(asset, resp); err != nil {
 		charmlog.Fatal("Failed to download asset (Make sure to use sudo/privileged execution)", "asset", asset.AssetName, "error", err)
 	}
-
-	charmlog.Info("Digest match")
 
 	changeFilePerm(asset.AssetName)
 
