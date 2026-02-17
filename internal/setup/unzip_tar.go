@@ -22,12 +22,12 @@ func unzipTar(header *tar.Header, file io.Reader, assetID int) {
 		}
 
 	case tar.TypeReg:
-		link := link.WriteLibFilePath(header.Name)
+		asssetlink := link.WriteLibFilePath(header.Name)
 		// Ensure parent directory exists
-		if err := os.MkdirAll(filepath.Dir(link), 0755); err != nil {
-			charmlog.Fatal("Failed to create directory", "error", err)
+		if err := os.MkdirAll(link.WriteLibFilePath(filepath.Dir(header.Name)), 0755); err != nil {
+			charmlog.Warn("Failed to create directory", "error", err)
 		}
-		f, err := os.Create(link)
+		f, err := os.Create(asssetlink)
 		if err != nil {
 			charmlog.Fatal("Failed to create file", "error", err)
 		}
@@ -36,7 +36,7 @@ func unzipTar(header *tar.Header, file io.Reader, assetID int) {
 			charmlog.Fatal("Failed to copy contents of a file", "error", err)
 		}
 		binaryName := strings.Split(header.Name, "/")
-		SymlinkAsset(link, binaryName[len(binaryName)-1], assetID)
+		SymlinkAsset(asssetlink, binaryName[len(binaryName)-1], assetID)
 	}
 }
 
