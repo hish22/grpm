@@ -16,7 +16,6 @@ import (
 	"strings"
 
 	charmlog "github.com/charmbracelet/log"
-	_ "github.com/mattn/go-sqlite3" // Import for side-effects
 )
 
 // Installation of a pure releases (Without setup phase):

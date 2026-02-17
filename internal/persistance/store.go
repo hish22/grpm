@@ -13,8 +13,8 @@ import (
 	"time"
 
 	charmlog "github.com/charmbracelet/log"
-	_ "github.com/mattn/go-sqlite3" // Import for side-effects
 	"lukechampine.com/blake3"
+	_ "modernc.org/sqlite" // Import for side-effects
 )
 
 const (
@@ -87,7 +87,7 @@ func FetchFromCache(response any, link string) bool {
 }
 
 func OpenMetadataDB() *sql.DB {
-	db, err := sql.Open("sqlite3", MetadataDbLocation())
+	db, err := sql.Open("sqlite", MetadataDbLocation())
 	if err != nil {
 		log.Fatal("Can't open/create metadata.db, ", err)
 	}
