@@ -3,11 +3,18 @@ package remove
 import (
 	"hish22/grpm/internal/asset"
 	"hish22/grpm/internal/setup"
+	"hish22/grpm/internal/util"
 
 	charmlog "github.com/charmbracelet/log"
 )
 
 func RemoveAssetByRepoName(repo string) {
+	// Check if user is running this with privileged execution
+	if !util.IsAdministrator() {
+		charmlog.Error("Please run this command with privilege execution mode")
+		return
+	}
+
 	trackedAsset, err := asset.FetchSpecificAsset(repo)
 	if err != nil {
 		charmlog.Error("Failed to remove asset (Are you sure you have installed this asset?)", "error", err)

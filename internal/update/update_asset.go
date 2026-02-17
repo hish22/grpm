@@ -6,6 +6,7 @@ import (
 	"hish22/grpm/internal/release"
 	"hish22/grpm/internal/remove"
 	"hish22/grpm/internal/structures"
+	"hish22/grpm/internal/util"
 	"regexp"
 	"strconv"
 	"strings"
@@ -31,6 +32,12 @@ func updateVersion(filename, newVersion string) string {
 }
 
 func installUpdatedAsset(lr *structures.Release, oldAsset *structures.TrackedAsset, version string) {
+	// Check if user is running this with privileged execution
+	if !util.IsAdministrator() {
+		charmlog.Error("Please run this command with privilege execution mode")
+		return
+	}
+
 	ua := &structures.Assets{}
 	for _, a := range lr.Assets {
 		if a.AssetName == version {
