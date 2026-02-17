@@ -48,12 +48,33 @@ func isInstalled(repo string) (*structures.TrackedAsset, bool) {
 	return &asset, true
 }
 
+func CopyContent(w io.Writer, src io.Reader) {
+	buffer := make([]byte, 4096)
+	for {
+		n, err := src.Read(buffer)
+		if n > 0 {
+			n, err := w.Write(buffer)
+			if err != nil {
+				charmlog.Error("Failed to write specified data")
+			}
+			charmlog.Info(n)
+		}
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			charmlog.Error("Failed to read specified data")
+		}
+	}
+}
+
 func downloadWithValidation(asset *structures.Assets, resp *http.Response) error {
 	// Bring downloads (as tmp file) location
 	downloads, err := config.GrpmDownloadedDirPath()
 	if err != nil {
 		return err
 	}
+
 	// Create .tmp file into specified download folder
 	fileName := strconv.Itoa(asset.ID)
 	tf, _ := os.CreateTemp(downloads.String(), fileName)
@@ -64,7 +85,8 @@ func downloadWithValidation(asset *structures.Assets, resp *http.Response) error
 	hash256 := sha256.New()
 	// multiple stream write to tmp file and hasher
 	mw := io.MultiWriter(tf, hash256)
-	io.Copy(mw, resp.Body)
+	CopyContent(mw, resp.Body)
+	// io.Copy(mw, resp.Body)
 
 	charmlog.Info("Comparing digests..")
 	// compare digest
