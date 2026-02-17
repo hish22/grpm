@@ -2,7 +2,6 @@ package setup
 
 import (
 	"archive/tar"
-	"compress/gzip"
 	"hish22/grpm/internal/asset"
 	"hish22/grpm/internal/link"
 	"io"
@@ -57,20 +56,4 @@ func tarReader(cfile io.Reader, location string, assetID int) {
 		charmlog.Info(header.Name)
 		unzipTar(header, tarfile, assetID)
 	}
-}
-
-func unzipFileTarGz(location string, assetID int) {
-	// open the compressed file
-	file, err := os.Open(location)
-	if err != nil {
-		charmlog.Fatal("Failed to open compressed file tar.gz", "error", err)
-	}
-	defer file.Close()
-	// Uncompress the file of .gz
-	gzip, err := gzip.NewReader(file)
-	if err != nil {
-		charmlog.Fatal("Failed to uncompress .gz file", "error", err)
-	}
-	defer gzip.Close()
-	tarReader(gzip, location, assetID)
 }

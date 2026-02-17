@@ -7,5 +7,7 @@ func SetupAsset(loaction string, ext string, assetID int) {
 	switch ext {
 	case "targz":
 		unzipFileTarGz(loaction, assetID)
+	case "tarzst":
+		unzipFileTarZst(loaction, assetID)
 	}
 }
