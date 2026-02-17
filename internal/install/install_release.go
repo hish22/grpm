@@ -17,6 +17,7 @@ import (
 	"strings"
 
 	charmlog "github.com/charmbracelet/log"
+	"github.com/schollz/progressbar/v3"
 )
 
 // Installation of a pure releases (Without setup phase):
@@ -48,26 +49,6 @@ func isInstalled(repo string) (*structures.TrackedAsset, bool) {
 	return &asset, true
 }
 
-func CopyContent(w io.Writer, src io.Reader) {
-	buffer := make([]byte, 4096)
-	for {
-		n, err := src.Read(buffer)
-		if n > 0 {
-			n, err := w.Write(buffer)
-			if err != nil {
-				charmlog.Error("Failed to write specified data")
-			}
-			charmlog.Info(n)
-		}
-		if err == io.EOF {
-			break
-		}
-		if err != nil {
-			charmlog.Error("Failed to read specified data")
-		}
-	}
-}
-
 func downloadWithValidation(asset *structures.Assets, resp *http.Response) error {
 	// Bring downloads (as tmp file) location
 	downloads, err := config.GrpmDownloadedDirPath()
@@ -81,12 +62,16 @@ func downloadWithValidation(asset *structures.Assets, resp *http.Response) error
 	defer os.Remove(tf.Name())
 	defer tf.Close()
 
+	bar := progressbar.DefaultBytes(
+		int64(asset.Size),
+		"Downloading",
+	)
+
 	// Create Hasher
 	hash256 := sha256.New()
 	// multiple stream write to tmp file and hasher
-	mw := io.MultiWriter(tf, hash256)
-	CopyContent(mw, resp.Body)
-	// io.Copy(mw, resp.Body)
+	mw := io.MultiWriter(tf, hash256, bar)
+	io.Copy(mw, resp.Body)
 
 	charmlog.Info("Comparing digests..")
 	// compare digest
@@ -133,7 +118,7 @@ func InstallSelectedAsset(repo string, asset *structures.Assets, release *struct
 	// to validate the digest of the fetched content
 	// and handle unexpected situations
 	if err := downloadWithValidation(asset, resp); err != nil {
-		charmlog.Fatal("Failed to download asset (Make sure to use sudo/privileged execution)", "asset", asset.AssetName, "error", err)
+		charmlog.Fatal("Failed to download the asset", "asset", asset.AssetName, "error", err)
 	}
 
 	changeFilePerm(asset.AssetName)
