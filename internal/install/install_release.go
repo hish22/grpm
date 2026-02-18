@@ -132,6 +132,10 @@ func InstallSelectedAsset(repo string, asset *structures.Assets, release *struct
 		exts := util.ExtensionExtractor(asset.AssetName)
 		totalext := strings.Join(exts, "")
 		setup.SetupAsset(link.WriteDownloadsFilePath(asset.AssetName), totalext, asset.ID)
-		charmlog.Info("Asset installed at /opt/grpm/lib")
+		libLink, err := config.GrpmLibraryDirPath()
+		if err != nil {
+			charmlog.Warn("Failed to fetch grpm library directory")
+		}
+		charmlog.Info("Asset installed", "location", libLink.String())
 	}
 }

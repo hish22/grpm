@@ -16,7 +16,7 @@ func RemoveAssetByRepoName(repo string) {
 
 	trackedAsset, err := asset.FetchSpecificAsset(repo)
 	if err != nil {
-		charmlog.Error("Failed to remove asset (Are you sure you have installed this asset?)", "error", err)
+		charmlog.Error("Failed to remove asset", "error", err)
 		return
 	}
 	err = asset.RemoveRawAsset(trackedAsset.Location)

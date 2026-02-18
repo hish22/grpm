@@ -22,7 +22,7 @@ func RegisterAsset(repo string, asset *structures.Assets, release *structures.Re
 	db := persistance.OpenMetadataDB()
 	defer db.Close()
 	path := link.WriteDownloadsFilePath(asset.AssetName)
-	_, err := db.Exec("INSERT INTO asset VALUES (?,?,?,?,?,?,?,?,?,?,?);", asset.ID, repo, asset.AssetName, path, release.TagName, release.ReleaseName, asset.Size, asset.Digest, setupTrack, nil, nil)
+	_, err := db.Exec("INSERT INTO asset VALUES (?,?,?,?,?,?,?,?,?,?,?);", asset.ID, repo, asset.AssetName, path, release.TagName, release.ReleaseName, asset.Size, asset.Digest, setupTrack, "", "")
 	if err != nil {
 		charmlog.Warn("Failed to register an installed asset", "error", err)
 		return
