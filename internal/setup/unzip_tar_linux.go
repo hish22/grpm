@@ -58,7 +58,7 @@ func tarReader(cfile io.Reader, location string, assetID int) {
 			asset.InsertFileSetupLocation(link.WriteLibFilePath(header.Name), assetID)
 			isSetupFileRegisterd = true
 		}
-		charmlog.Info(header.Name)
+		charmlog.Info(header.Name, "asset_id", assetID)
 		unzipTar(header, tarfile, assetID)
 	}
 }
