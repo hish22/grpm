@@ -1,35 +1,27 @@
 package util
 
 import (
-	"log"
+	"unsafe"
 
 	"golang.org/x/sys/windows"
 )
 
 func IsAdministrator() bool {
-	var sid *windows.SID
-	err := windows.AllocateAndInitializeSid(
-		&windows.SECURITY_NT_AUTHORITY,
-		2,
-		windows.SECURITY_BUILTIN_DOMAIN_RID,
-		windows.DOMAIN_ALIAS_RID_ADMINS,
-		0, 0, 0, 0, 0, 0,
-		&sid,
-	)
+	var token windows.Token
+	// Open the current process token
+	err := windows.OpenProcessToken(windows.CurrentProcess(), windows.TOKEN_QUERY, &token)
 	if err != nil {
-		log.Fatalf("SID Error: %s", err)
+		return false
 	}
-	defer windows.FreeSid(sid)
+	defer token.Close()
 
-	token, err := windows.OpenCurrentProcessToken()
+	// Check for elevation
+	var isElevated uint32
+	var length uint32
+	err = windows.GetTokenInformation(token, windows.TokenElevation, (*byte)(unsafe.Pointer(&isElevated)), uint32(unsafe.Sizeof(isElevated)), &length)
 	if err != nil {
-		log.Fatalf("Token Error: %s", err)
+		return false
 	}
 
-	member, err := token.IsMember(sid)
-	if err != nil {
-		log.Fatalf("Membership Error: %s", err)
-	}
-
-	return member
+	return isElevated != 0
 }
