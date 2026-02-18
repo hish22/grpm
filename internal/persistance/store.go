@@ -29,6 +29,8 @@ func ChacheRootLocation(append string) string {
 	switch runtime.GOOS {
 	case "linux":
 		return filepath.Join(home, ".cache", append)
+	case "windows":
+		return filepath.Join(home, ".cache", append)
 	default:
 		return ""
 	}
