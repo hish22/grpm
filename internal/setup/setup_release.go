@@ -9,5 +9,7 @@ func SetupAsset(loaction string, ext string, assetID int) {
 		unzipFileTarGz(loaction, assetID)
 	case "tarzst":
 		unzipFileTarZst(loaction, assetID)
+	case "zip":
+		unzipZip(loaction, assetID)
 	}
 }
