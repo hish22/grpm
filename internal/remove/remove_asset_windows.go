@@ -2,6 +2,7 @@ package remove
 
 import (
 	"hish22/grpm/internal/asset"
+	"hish22/grpm/internal/setup"
 	"hish22/grpm/internal/util"
 
 	charmlog "github.com/charmbracelet/log"
@@ -19,6 +20,14 @@ func RemoveAssetByRepoName(repo string) {
 		charmlog.Error("Failed to remove asset", "error", err)
 		return
 	}
+
+	envVarLocation := asset.SymlinkOrEnvLocation(trackedAsset.ID)
+
+	err = setup.RemoveEnvVar(envVarLocation)
+	if err != nil {
+		charmlog.Error("Failed to remove environment variable", "variable", envVarLocation)
+	}
+
 	err = asset.RemoveRawAsset(trackedAsset.Location)
 	if err != nil {
 		charmlog.Error("Failed to remove raw asset", "error", err)
