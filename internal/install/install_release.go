@@ -113,7 +113,7 @@ func InstallSelectedAsset(repo string, asset *structures.Assets, release *struct
 	if err != nil {
 		charmlog.Fatal("Failed to GET request asset payload", "asset", asset.AssetName, "error", err)
 	}
-
+	defer resp.Body.Close()
 	// Create .tmp file where we store binary data
 	// to validate the digest of the fetched content
 	// and handle unexpected situations
