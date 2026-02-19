@@ -30,29 +30,6 @@ func RegisterAsset(repo string, asset *structures.Assets, release *structures.Re
 	charmlog.Info("Asset registered (Tracked)")
 }
 
-func InsertSymlinkLocation(name string, id int) {
-	db := persistance.OpenMetadataDB()
-	defer db.Close()
-	_, err := db.Exec("UPDATE asset SET symlink_name=? WHERE id=?", name, id)
-	if err != nil {
-		charmlog.Error("Failed to insert symlink_name to an asset", "error", err)
-		return
-	}
-	charmlog.Info("Symlink location inserted")
-}
-
-func SymlinkLocation(id int) string {
-	var symlink string
-	db := persistance.OpenMetadataDB()
-	defer db.Close()
-	row := db.QueryRow("SELECT symlink_name FROM asset WHERE id=?", id)
-	err := row.Scan(&symlink)
-	if err != nil {
-		charmlog.Error("Failed to fetch symlink_name", "error", err)
-	}
-	return symlink
-}
-
 func InsertFileSetupLocation(location string, id int) {
 	db := persistance.OpenMetadataDB()
 	defer db.Close()
