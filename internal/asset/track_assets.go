@@ -2,14 +2,14 @@ package asset
 
 import (
 	"hish22/grpm/internal/link"
-	"hish22/grpm/internal/persistance"
+	"hish22/grpm/internal/middlewares"
 	"hish22/grpm/internal/structures"
 
 	charmlog "github.com/charmbracelet/log"
 )
 
 func TrackAssetTable() error {
-	db := persistance.OpenMetadataDB()
+	db := middlewares.MetadataDBConn()
 	_, err := db.Exec("CREATE TABLE IF NOT EXISTS asset (id INT PRIMARY KEY, repo TEXT,asset_name TEXT, location TEXT, tag TEXT, release_name TEXT, size INT, Digest TEXT, setup_track BOOL, symlink_orenv_name TEXT,file_setup_location TEXT);")
 	defer db.Close()
 	if err != nil {
@@ -19,7 +19,7 @@ func TrackAssetTable() error {
 }
 
 func RegisterAsset(repo string, asset *structures.Assets, release *structures.Release, setupTrack bool) {
-	db := persistance.OpenMetadataDB()
+	db := middlewares.MetadataDBConn()
 	defer db.Close()
 	path := link.WriteDownloadsFilePath(asset.AssetName)
 	_, err := db.Exec("INSERT INTO asset VALUES (?,?,?,?,?,?,?,?,?,?,?);", asset.ID, repo, asset.AssetName, path, release.TagName, release.ReleaseName, asset.Size, asset.Digest, setupTrack, "", "")
@@ -31,7 +31,7 @@ func RegisterAsset(repo string, asset *structures.Assets, release *structures.Re
 }
 
 func InsertFileSetupLocation(location string, id int) {
-	db := persistance.OpenMetadataDB()
+	db := middlewares.MetadataDBConn()
 	defer db.Close()
 	_, err := db.Exec("UPDATE asset SET file_setup_location=? WHERE id=?", location, id)
 	if err != nil {
@@ -43,7 +43,7 @@ func InsertFileSetupLocation(location string, id int) {
 
 func FileSetupLocation(id int) string {
 	var location string
-	db := persistance.OpenMetadataDB()
+	db := middlewares.MetadataDBConn()
 	defer db.Close()
 	row := db.QueryRow("SELECT file_setup_location FROM asset WHERE id=?", id)
 	err := row.Scan(&location)
@@ -55,7 +55,7 @@ func FileSetupLocation(id int) string {
 
 func AssetSetupTrackStatus(id int) bool {
 	var status bool
-	db := persistance.OpenMetadataDB()
+	db := middlewares.MetadataDBConn()
 	defer db.Close()
 	row := db.QueryRow("SELECT setup_track FROM asset WHERE id=?", id)
 	if row.Err() == nil {
@@ -69,7 +69,7 @@ func AssetSetupTrackStatus(id int) bool {
 }
 
 func InsertSymlinkOrEnvLocation(name string, id int) {
-	db := persistance.OpenMetadataDB()
+	db := middlewares.MetadataDBConn()
 	defer db.Close()
 	_, err := db.Exec("UPDATE asset SET symlink_orenv_name=? WHERE id=?", name, id)
 	if err != nil {
@@ -81,7 +81,7 @@ func InsertSymlinkOrEnvLocation(name string, id int) {
 
 func SymlinkOrEnvLocation(id int) string {
 	var symlink string
-	db := persistance.OpenMetadataDB()
+	db := middlewares.MetadataDBConn()
 	defer db.Close()
 	row := db.QueryRow("SELECT symlink_orenv_name FROM asset WHERE id=?", id)
 	err := row.Scan(&symlink)

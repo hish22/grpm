@@ -1,6 +1,7 @@
 package persistance
 
 import (
+	"hish22/grpm/internal/middlewares"
 	"os"
 
 	charmlog "github.com/charmbracelet/log"
@@ -15,7 +16,7 @@ func ClearCache() {
 	}
 
 	// remove cache table from metadata.db
-	db := OpenMetadataDB()
+	db := middlewares.MetadataDBConn()
 	_, err = db.Exec("DELETE FROM cache;")
 	if err != nil {
 		charmlog.Fatal("Failed to remove cache table from db", "error", err)

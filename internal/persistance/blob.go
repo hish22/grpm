@@ -2,6 +2,7 @@ package persistance
 
 import (
 	"database/sql"
+	"hish22/grpm/internal/middlewares"
 	"log"
 	"os"
 	"time"
@@ -14,7 +15,7 @@ type blob struct {
 }
 
 func rowBlobFromDb(link *[]byte) *sql.Row {
-	db := OpenMetadataDB()
+	db := middlewares.MetadataDBConn()
 	defer db.Close()
 	query := "SELECT hashedlink, location, expire FROM cache WHERE hashedlink=?"
 	return db.QueryRow(query, link)

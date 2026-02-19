@@ -3,7 +3,7 @@ package asset
 import (
 	"fmt"
 	"hish22/grpm/internal/config"
-	"hish22/grpm/internal/persistance"
+	"hish22/grpm/internal/middlewares"
 	"hish22/grpm/internal/structures"
 	"hish22/grpm/internal/util"
 	"log"
@@ -42,7 +42,8 @@ func PrintTheAssets(r *structures.Release, repo string, match bool) {
 }
 
 func FetchAssets() ([]structures.TrackedAsset, error) {
-	db := persistance.OpenMetadataDB()
+	db := middlewares.MetadataDBConn()
+	defer db.Close()
 	var a structures.TrackedAsset
 	assets := []structures.TrackedAsset{}
 	r, err := db.Query("SELECT * FROM asset;")
@@ -62,7 +63,7 @@ func FetchAssets() ([]structures.TrackedAsset, error) {
 }
 
 func FetchSpecificAsset(repo string) (structures.TrackedAsset, error) {
-	db := persistance.OpenMetadataDB()
+	db := middlewares.MetadataDBConn()
 	defer db.Close()
 	row := db.QueryRow("SELECT * FROM asset WHERE repo=?", repo)
 	if row.Err() != nil {

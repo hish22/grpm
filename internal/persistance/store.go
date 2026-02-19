@@ -1,9 +1,8 @@
 package persistance
 
 import (
-	"database/sql"
 	"encoding/hex"
-	"hish22/grpm/internal/config"
+	"hish22/grpm/internal/middlewares"
 	"hish22/grpm/internal/serialization"
 	"hish22/grpm/internal/util"
 	"log"
@@ -36,10 +35,6 @@ func ChacheRootLocation(append string) string {
 	}
 }
 
-func MetadataDbLocation() string {
-	return filepath.Join(config.LocalConfigDirPath().String(), "metadata.db")
-}
-
 func NewCache(link string, response any) {
 	hash := blake3.Sum256([]byte(link))
 	blakeHexVersion := hex.EncodeToString(hash[:])
@@ -55,7 +50,7 @@ func NewCache(link string, response any) {
 
 func DeleteCache(link *[]byte) {
 	// Delete metadata entry from db
-	db := OpenMetadataDB()
+	db := middlewares.MetadataDBConn()
 	defer db.Close()
 	query := "DELETE FROM cache WHERE hashedlink=?"
 	_, err := db.Exec(query, link)
@@ -88,16 +83,8 @@ func FetchFromCache(response any, link string) bool {
 	return false
 }
 
-func OpenMetadataDB() *sql.DB {
-	db, err := sql.Open("sqlite", MetadataDbLocation())
-	if err != nil {
-		log.Fatal("Can't open/create metadata.db, ", err)
-	}
-	return db
-}
-
 func metedataEntry(blob *blob) {
-	db := OpenMetadataDB()
+	db := middlewares.MetadataDBConn()
 	defer db.Close()
 	ddlQuery := "CREATE TABLE IF NOT EXISTS cache (id INT PRIMARY KEY,hashedlink TEXT UNIQUE,location TEXT,expire DATE);"
 	_, err := db.Exec(ddlQuery)
