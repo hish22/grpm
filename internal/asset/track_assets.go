@@ -10,7 +10,7 @@ import (
 
 func TrackAssetTable() error {
 	db := persistance.OpenMetadataDB()
-	_, err := db.Exec("CREATE TABLE IF NOT EXISTS asset (id INT PRIMARY KEY, repo TEXT,asset_name TEXT, location TEXT, tag TEXT, release_name TEXT, size INT, Digest TEXT, setup_track BOOL, symlink_name TEXT,file_setup_location TEXT);")
+	_, err := db.Exec("CREATE TABLE IF NOT EXISTS asset (id INT PRIMARY KEY, repo TEXT,asset_name TEXT, location TEXT, tag TEXT, release_name TEXT, size INT, Digest TEXT, setup_track BOOL, symlink_orenv_name TEXT,file_setup_location TEXT);")
 	defer db.Close()
 	if err != nil {
 		charmlog.Error("Failed to create asset table to track assets, ", err)
@@ -66,4 +66,27 @@ func AssetSetupTrackStatus(id int) bool {
 		}
 	}
 	return status
+}
+
+func InsertSymlinkOrEnvLocation(name string, id int) {
+	db := persistance.OpenMetadataDB()
+	defer db.Close()
+	_, err := db.Exec("UPDATE asset SET symlink_orenv_name=? WHERE id=?", name, id)
+	if err != nil {
+		charmlog.Error("Failed to insert symlink_name to an asset", "error", err)
+		return
+	}
+	charmlog.Info("Symlink or Environment variable location inserted")
+}
+
+func SymlinkOrEnvLocation(id int) string {
+	var symlink string
+	db := persistance.OpenMetadataDB()
+	defer db.Close()
+	row := db.QueryRow("SELECT symlink_orenv_name FROM asset WHERE id=?", id)
+	err := row.Scan(&symlink)
+	if err != nil {
+		charmlog.Error("Failed to fetch symlink_name", "error", err)
+	}
+	return symlink
 }

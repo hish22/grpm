@@ -4,8 +4,8 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
+	"hish22/grpm/internal/asset"
 	"hish22/grpm/internal/config"
-	"hish22/grpm/internal/persistance"
 	"os"
 
 	charmlog "github.com/charmbracelet/log"
@@ -55,8 +55,8 @@ func confirm(binaryName string) bool {
 	return status
 }
 
-func SymlinkAsset(assetLocation string, binaryName string, assetID int) {
-	if IsBinary(assetLocation) && confirm(binaryName) {
+func SymlinkAsset(repo, assetLocation string, binaryName string, assetID int) {
+	if IsBinary(assetLocation) && confirm(binaryName) && repo == binaryName {
 		enableExecute(assetLocation)
 		newlink := config.FileLink{
 			Base:     "/",
@@ -68,12 +68,12 @@ func SymlinkAsset(assetLocation string, binaryName string, assetID int) {
 			charmlog.Error("Failed to create symlink to binary", "binary", binaryName, "error", err)
 		}
 		charmlog.Info("Symlink created", "asset", binaryName, "location", newlink.String())
-		InsertSymlinkLocation(binaryName, assetID)
+		asset.InsertSymlinkOrEnvLocation(binaryName, assetID)
 	}
 }
 
 func RemoveSymlink(id int) {
-	symlinkName := SymlinkLocation(id)
+	symlinkName := asset.SymlinkOrEnvLocation(id)
 	if symlinkName != "" {
 		link := config.FileLink{
 			Base:     "/",
@@ -87,27 +87,4 @@ func RemoveSymlink(id int) {
 	} else {
 		charmlog.Info("No symlink created for this asset")
 	}
-}
-
-func InsertSymlinkLocation(name string, id int) {
-	db := persistance.OpenMetadataDB()
-	defer db.Close()
-	_, err := db.Exec("UPDATE asset SET symlink_name=? WHERE id=?", name, id)
-	if err != nil {
-		charmlog.Error("Failed to insert symlink_name to an asset", "error", err)
-		return
-	}
-	charmlog.Info("Symlink location inserted")
-}
-
-func SymlinkLocation(id int) string {
-	var symlink string
-	db := persistance.OpenMetadataDB()
-	defer db.Close()
-	row := db.QueryRow("SELECT symlink_name FROM asset WHERE id=?", id)
-	err := row.Scan(&symlink)
-	if err != nil {
-		charmlog.Error("Failed to fetch symlink_name", "error", err)
-	}
-	return symlink
 }
