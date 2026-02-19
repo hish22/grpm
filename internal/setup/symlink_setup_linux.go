@@ -7,6 +7,7 @@ import (
 	"hish22/grpm/internal/asset"
 	"hish22/grpm/internal/config"
 	"os"
+	"strings"
 
 	charmlog "github.com/charmbracelet/log"
 )
@@ -56,7 +57,7 @@ func confirm(binaryName string) bool {
 }
 
 func SymlinkAsset(repo, assetLocation string, binaryName string, assetID int) {
-	if IsBinary(assetLocation) && confirm(binaryName) && repo == binaryName {
+	if IsBinary(assetLocation) && confirm(binaryName) && strings.ToLower(repo) == strings.ToLower(binaryName) {
 		enableExecute(assetLocation)
 		newlink := config.FileLink{
 			Base:     "/",
