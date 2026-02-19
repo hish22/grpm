@@ -7,7 +7,7 @@ import (
 	"github.com/klauspost/compress/zstd"
 )
 
-func unzipFileTarZst(location string, assetID int) {
+func unzipFileTarZst(repo string, location string, assetID int) {
 	file, err := os.Open(location)
 	if err != nil {
 		charmlog.Fatal("Failed to open compressed file tar.zst", "error", err)
@@ -17,5 +17,5 @@ func unzipFileTarZst(location string, assetID int) {
 	if err != nil {
 		charmlog.Fatal("Failed to uncompress .zst file", "error", err)
 	}
-	tarReader(zstgz, location, assetID)
+	tarReader(repo, zstgz, location, assetID)
 }

@@ -10,7 +10,7 @@ import (
 	charmlog "github.com/charmbracelet/log"
 )
 
-func unzipTar(header *tar.Header, file io.Reader, _ int) {
+func unzipTar(_ string, header *tar.Header, file io.Reader, _ int) {
 	switch header.Typeflag {
 
 	case tar.TypeDir:
@@ -36,7 +36,7 @@ func unzipTar(header *tar.Header, file io.Reader, _ int) {
 	}
 }
 
-func tarReader(cfile io.Reader, location string, assetID int) {
+func tarReader(_ string, cfile io.Reader, location string, assetID int) {
 	// read archive .tar file
 	tarfile := tar.NewReader(cfile)
 	charmlog.Info("Extracting..", "asset", location)
@@ -50,6 +50,6 @@ func tarReader(cfile io.Reader, location string, assetID int) {
 			charmlog.Error("Failed to read tar", "error", err)
 		}
 		charmlog.Info(header.Name, "asset_id", assetID)
-		unzipTar(header, tarfile, assetID)
+		unzipTar("", header, tarfile, assetID)
 	}
 }

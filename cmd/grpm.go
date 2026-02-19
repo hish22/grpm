@@ -54,6 +54,7 @@ func main() {
 	r.AddCommand(updatec.UpdateC())
 	r.AddCommand(cachec.CacheC())
 	r.AddCommand(removec.RemoveC())
+	// r.AddCommand(testc.TestC())
 	if err := r.Execute(); err != nil {
 		panic(err)
 	}
