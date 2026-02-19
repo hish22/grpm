@@ -2,6 +2,7 @@ package util
 
 import (
 	"regexp"
+	"strings"
 
 	charmlog "github.com/charmbracelet/log"
 )
@@ -29,4 +30,12 @@ func NameAndExtensionExtractor(file string) []string {
 	}
 	namesAndExtensions := regx.FindStringSubmatch(file)
 	return namesAndExtensions
+}
+
+// owner/repo -> repo
+func RepoNameExtractor(repo string) string {
+	if strings.Contains(repo, "/") {
+		return strings.Split(repo, "/")[1]
+	}
+	return repo
 }
