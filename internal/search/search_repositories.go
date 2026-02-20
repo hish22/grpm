@@ -1,11 +1,10 @@
 package search
 
 import (
+	"fmt"
 	corehttp "hish22/grpm/internal/coreHttp"
 	"hish22/grpm/internal/persistance"
 	"hish22/grpm/internal/structures"
-
-	charmlog "github.com/charmbracelet/log"
 )
 
 type RepoInfo struct {
@@ -16,7 +15,7 @@ type RepoInfo struct {
 }
 
 /* Search Repositories by requesting api.github */
-func SearchRepositories(metadata *RepoInfo) *structures.Repositories {
+func SearchRepositories(metadata *RepoInfo) (*structures.Repositories, error) {
 	var repositories structures.Repositories
 	link := corehttp.RequestLink{
 		Base:      corehttp.ApiLink,
@@ -27,10 +26,9 @@ func SearchRepositories(metadata *RepoInfo) *structures.Repositories {
 	}.Build()
 	if !persistance.FetchFromCache(&repositories, link) {
 		if err := corehttp.Request(link, &repositories); err != nil {
-			charmlog.Error("Failed to search specified repository", "error", err)
-			return &structures.Repositories{}
+			return &structures.Repositories{}, fmt.Errorf("Failed to search specified repository")
 		}
 		persistance.NewCache(link, &repositories)
 	}
-	return &repositories
+	return &repositories, nil
 }

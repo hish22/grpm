@@ -1,14 +1,13 @@
 package info
 
 import (
+	"fmt"
 	corehttp "hish22/grpm/internal/coreHttp"
 	"hish22/grpm/internal/persistance"
 	"hish22/grpm/internal/structures"
-
-	charmlog "github.com/charmbracelet/log"
 )
 
-func InfoRepository(owner string, name string) *structures.Repository {
+func InfoRepository(owner string, name string) (*structures.Repository, error) {
 	var repository structures.Repository
 	link := corehttp.RequestLink{
 		Base:      corehttp.ApiLink,
@@ -16,10 +15,9 @@ func InfoRepository(owner string, name string) *structures.Repository {
 	}.Build()
 	if !persistance.FetchFromCache(&repository, link) {
 		if err := corehttp.Request(link, &repository); err != nil {
-			charmlog.Error("Failed to info specified repository", "error", err)
-			return &structures.Repository{}
+			return &structures.Repository{}, fmt.Errorf("Failed to search specified repository")
 		}
 		persistance.NewCache(link, &repository)
 	}
-	return &repository
+	return &repository, nil
 }

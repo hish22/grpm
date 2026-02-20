@@ -44,7 +44,11 @@ func searchCmd(cmd *cobra.Command, args []string) {
 			Sort:  sort,
 			Order: order,
 		}
-		repositories := search.SearchRepositories(s)
+		repositories, err := search.SearchRepositories(s)
+		if err != nil {
+			charmlog.Error("Failed to search specified repositories", "error", err)
+			return
+		}
 		enumerateRepos(repositories)
 	} else {
 		if err := cmd.Help(); err != nil {

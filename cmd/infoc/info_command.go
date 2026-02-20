@@ -53,7 +53,11 @@ func InfoC() *cobra.Command {
 }
 
 func fullRepositoryInfo() {
-	repository := info.InfoRepository(owner, name)
+	repository, err := info.InfoRepository(owner, name)
+	if err != nil {
+		charmlog.Error("Failed to info specified repository")
+		return
+	}
 	showRepositoryInfo(repository)
 }
 
@@ -70,8 +74,16 @@ func particalRepositoryInfo() {
 	} else if len(owner) == 0 && len(name) != 0 {
 		repo.Name = name
 	}
-	SearchedRepo := search.SearchRepositories(&repo)
-	repository := info.InfoRepository(SearchedRepo.Repositories[0].Owner.Username, SearchedRepo.Repositories[0].Name)
+	SearchedRepo, err := search.SearchRepositories(&repo)
+	if err != nil {
+		charmlog.Error("Failed to search specified repositories", "error", err)
+		return
+	}
+	repository, err := info.InfoRepository(SearchedRepo.Repositories[0].Owner.Username, SearchedRepo.Repositories[0].Name)
+	if err != nil {
+		charmlog.Error("Failed to info specified repository", "error", err)
+		return
+	}
 	showRepositoryInfo(repository)
 }
 
