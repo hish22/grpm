@@ -59,6 +59,7 @@ func tarReader(repo string, cfile io.Reader, location string, assetID int, force
 		// check if first file is parent dir
 		if header.FileInfo().IsDir() && !isThereAParentDir {
 			isThereAParentDir = true
+			parentPath = link.WriteLibFilePath("")
 			asset.InsertFileSetupLocation(link.WriteLibFilePath(header.Name), assetID)
 			// if not create one
 		} else if !isThereAParentDir {
