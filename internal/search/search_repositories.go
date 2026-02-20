@@ -30,5 +30,10 @@ func SearchRepositories(metadata *RepoInfo) (*structures.Repositories, error) {
 		}
 		persistance.NewCache(link, &repositories)
 	}
-	return &repositories, nil
+
+	if repositories.TotalCount != 0 {
+		return &repositories, nil
+	} else {
+		return &repositories, fmt.Errorf("Couldn't find any specified repository")
+	}
 }
