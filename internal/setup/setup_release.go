@@ -11,5 +11,7 @@ func SetupAsset(repo string, loaction string, ext string, assetID int, force boo
 		unzipFileTarZst(repo, loaction, assetID, force)
 	case "zip":
 		unzipZip(loaction, assetID)
+	default:
+		MoveBinary(repo, loaction, assetID, force)
 	}
 }

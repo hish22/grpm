@@ -2,10 +2,10 @@ package setup
 
 import (
 	"bufio"
-	"bytes"
 	"fmt"
 	"hish22/grpm/internal/asset"
 	"hish22/grpm/internal/config"
+	"hish22/grpm/internal/util"
 	"os"
 	"strings"
 
@@ -18,22 +18,6 @@ func enableExecute(asset string) {
 	if err != nil {
 		charmlog.Error("Failed to change permissions mode as 744", "error", err)
 	}
-}
-
-func IsBinary(file string) bool {
-	f, err := os.Open(file)
-	if err != nil {
-		charmlog.Error("Failed to open file", "file", f.Name(), "error", err)
-	}
-	defer f.Close()
-	header := make([]byte, 4)
-	_, err = f.Read(header)
-	if err != nil {
-		charmlog.Warn("Failed to read file header", "error", err)
-	}
-
-	elfMagic := []byte{0x7F, 'E', 'L', 'F'} // Magic number header of a file
-	return bytes.Equal(header, elfMagic)
 }
 
 func confirm(binaryName string, force bool) bool {
@@ -63,7 +47,7 @@ func confirm(binaryName string, force bool) bool {
 }
 
 func SymlinkAsset(repo string, assetLocation string, binaryName string, assetID int, force bool) {
-	if IsBinary(assetLocation) && strings.EqualFold(repo, binaryName) && confirm(binaryName, force) {
+	if util.IsBinary(assetLocation) && strings.EqualFold(repo, binaryName) && confirm(binaryName, force) {
 		enableExecute(assetLocation)
 		newlink := config.FileLink{
 			Base:     "/",

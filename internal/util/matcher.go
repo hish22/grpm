@@ -1,9 +1,29 @@
 package util
 
 import (
+	"bytes"
 	"hish22/grpm/internal/structures"
+	"os"
 	"strings"
+
+	charmlog "github.com/charmbracelet/log"
 )
+
+func IsBinary(file string) bool {
+	f, err := os.Open(file)
+	if err != nil {
+		charmlog.Error("Failed to open file", "file", f.Name(), "error", err)
+	}
+	defer f.Close()
+	header := make([]byte, 4)
+	_, err = f.Read(header)
+	if err != nil {
+		charmlog.Warn("Failed to read file header", "error", err)
+	}
+
+	elfMagic := []byte{0x7F, 'E', 'L', 'F'} // Magic number header of a file
+	return bytes.Equal(header, elfMagic)
+}
 
 func ArchitectureAssetsMatch(arch *string, asset *structures.Assets, matchedReleases *[]structures.Assets) {
 	var archs []string
