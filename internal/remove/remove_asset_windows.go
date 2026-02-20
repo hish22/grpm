@@ -42,7 +42,14 @@ func RemoveAssetByRepoName(repo string) {
 }
 
 func RemoveAssetByID(id int, location string) {
-	err := asset.RemoveRawAsset(location)
+	envVarLocation := asset.SymlinkOrEnvLocation(id)
+
+	err := setup.RemoveEnvVar(envVarLocation)
+	if err != nil {
+		charmlog.Error("Failed to remove environment variable", "variable", envVarLocation)
+	}
+
+	err = asset.RemoveRawAsset(location)
 	if err != nil {
 		charmlog.Error("Failed to remove raw asset", "error", err)
 		return
