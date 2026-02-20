@@ -20,6 +20,7 @@ var (
 	tag   string
 	match bool
 	setup bool
+	force bool
 )
 
 func InstallC() *cobra.Command {
@@ -37,6 +38,7 @@ func InstallC() *cobra.Command {
 	c.Flags().StringVarP(&tag, "tag", "t", "", "Grab a specific repo's release by tag")
 	c.Flags().BoolVarP(&match, "match", "m", false, "Print assets that match your config file opitions")
 	c.Flags().BoolVarP(&setup, "setup", "s", false, "Auto setup of installed asset")
+	c.Flags().BoolVarP(&force, "force", "f", false, "Apply any confirmation message as yes")
 	return &c
 }
 
@@ -72,7 +74,7 @@ func installCmd(cmd *cobra.Command, args []string) {
 		}
 
 		chRelease := a.Assets[ch]
-		install.InstallSelectedAsset(repo, &chRelease, a, setup)
+		install.InstallSelectedAsset(repo, &chRelease, a, setup, force)
 	} else if len(tag) == 0 && len(repo) != 0 {
 		a, err := release.FetchLatestRelease(repo)
 		if err != nil {
@@ -88,7 +90,7 @@ func installCmd(cmd *cobra.Command, args []string) {
 		}
 
 		chRelease := a.Assets[ch]
-		install.InstallSelectedAsset(repo, &chRelease, a, setup)
+		install.InstallSelectedAsset(repo, &chRelease, a, setup, force)
 	} else {
 		cmd.Help()
 	}

@@ -11,7 +11,8 @@ import (
 var (
 	repo   string
 	latest bool
-	setup  bool
+	// setup  bool
+	force bool
 )
 
 func UpdateC() *cobra.Command {
@@ -27,12 +28,13 @@ func UpdateC() *cobra.Command {
 	}
 	c.Flags().StringVarP(&repo, "repo", "r", "", "Repository name (Owner/repo)")
 	c.Flags().BoolVarP(&latest, "latest", "l", false, "Update to latest asset")
+	c.Flags().BoolVarP(&force, "force", "f", false, "Apply any confirmation message as yes")
 	return c
 }
 
 func updateCmd(cmd *cobra.Command, args []string) {
 	if latest && len(repo) != 0 {
-		update.UpdateToLatestAsset(repo)
+		update.UpdateToLatestAsset(repo, force)
 	} else {
 		cmd.Help()
 	}

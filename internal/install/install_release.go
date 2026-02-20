@@ -93,7 +93,7 @@ func changeFilePerm(asset string) {
 	}
 }
 
-func InstallSelectedAsset(repo string, asset *structures.Assets, release *structures.Release, setupStatus bool) {
+func InstallSelectedAsset(repo string, asset *structures.Assets, release *structures.Release, setupStatus bool, force bool) {
 	// Check if user is running this with privileged execution
 	if !util.IsAdministrator() {
 		charmlog.Error("Please run this command with privilege execution mode")
@@ -132,7 +132,7 @@ func InstallSelectedAsset(repo string, asset *structures.Assets, release *struct
 		exts := util.ExtensionExtractor(asset.AssetName)
 		totalext := strings.Join(exts, "")
 		setup.SetupAsset(util.RepoNameExtractor(repo), link.WriteDownloadsFilePath(asset.AssetName),
-			totalext, asset.ID)
+			totalext, asset.ID, force)
 		libLink, err := config.GrpmLibraryDirPath()
 		if err != nil {
 			charmlog.Warn("Failed to fetch grpm library directory")

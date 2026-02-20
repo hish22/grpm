@@ -19,7 +19,7 @@ var (
 	assetNameStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#0000FF")).Bold(true)
 )
 
-func installUpdatedAsset(repo string, lr *structures.Release, oldAsset *structures.TrackedAsset, version string) {
+func installUpdatedAsset(repo string, lr *structures.Release, oldAsset *structures.TrackedAsset, version string, force bool) {
 	// Check if user is running this with privileged execution
 	if !util.IsAdministrator() {
 		charmlog.Error("Please run this command with privilege execution mode")
@@ -34,7 +34,7 @@ func installUpdatedAsset(repo string, lr *structures.Release, oldAsset *structur
 	}
 	setupStatus := asset.AssetSetupTrackStatus(oldAsset.ID)
 	remove.RemoveAssetByID(oldAsset.ID, oldAsset.Location)
-	install.InstallSelectedAsset(repo, ua, lr, setupStatus)
+	install.InstallSelectedAsset(repo, ua, lr, setupStatus, force)
 }
 
 func buildregx() *regexp.Regexp {
@@ -56,7 +56,7 @@ func extractVersionSet(tag []byte) (int, int, int) {
 	return major, minor, patch
 }
 
-func UpdateToLatestAsset(repo string) {
+func UpdateToLatestAsset(repo string, force bool) {
 	// Fetch Specific asset
 	a, err := asset.FetchSpecificAsset(repo)
 	if err != nil {
@@ -94,7 +94,7 @@ func UpdateToLatestAsset(repo string) {
 	}
 
 	if isUpdateable {
-		installUpdatedAsset(repo, latestA, &a, newVersion)
+		installUpdatedAsset(repo, latestA, &a, newVersion, force)
 	}
 
 }

@@ -12,7 +12,7 @@ import (
 	charmlog "github.com/charmbracelet/log"
 )
 
-func unzipTar(repo string, header *tar.Header, assetName string, file io.Reader, assetID int) {
+func unzipTar(repo string, header *tar.Header, assetName string, file io.Reader, assetID int, force bool) {
 	switch header.Typeflag {
 
 	case tar.TypeDir:
@@ -36,11 +36,11 @@ func unzipTar(repo string, header *tar.Header, assetName string, file io.Reader,
 			charmlog.Fatal("Failed to copy contents of a file", "error", err)
 		}
 		binaryName := strings.Split(assetName, "/")
-		SymlinkAsset(repo, assetName, binaryName[len(binaryName)-1], assetID)
+		SymlinkAsset(repo, assetName, binaryName[len(binaryName)-1], assetID, force)
 	}
 }
 
-func tarReader(repo string, cfile io.Reader, location string, assetID int) {
+func tarReader(repo string, cfile io.Reader, location string, assetID int, force bool) {
 	// read archive .tar file
 	tarfile := tar.NewReader(cfile)
 	charmlog.Info("Extracting..", "asset", location)
@@ -76,6 +76,6 @@ func tarReader(repo string, cfile io.Reader, location string, assetID int) {
 		// }
 
 		charmlog.Info(assetName, "asset_id", assetID)
-		unzipTar(repo, header, assetName, tarfile, assetID)
+		unzipTar(repo, header, assetName, tarfile, assetID, force)
 	}
 }

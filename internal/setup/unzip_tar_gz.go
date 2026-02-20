@@ -7,7 +7,7 @@ import (
 	charmlog "github.com/charmbracelet/log"
 )
 
-func unzipFileTarGz(repo string, location string, assetID int) {
+func unzipFileTarGz(repo string, location string, assetID int, force bool) {
 	// open the compressed file
 	file, err := os.Open(location)
 	if err != nil {
@@ -22,5 +22,5 @@ func unzipFileTarGz(repo string, location string, assetID int) {
 		return
 	}
 	defer gzip.Close()
-	tarReader(repo, gzip, location, assetID)
+	tarReader(repo, gzip, location, assetID, force)
 }
