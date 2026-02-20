@@ -19,18 +19,6 @@ var (
 	assetNameStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#0000FF")).Bold(true)
 )
 
-// UpdateVersion replaces a SemVer string within a filename automatically
-func updateVersion(filename, newVersion string) string {
-	// Pattern breakdown:
-	// ^(.*?-)          : Group 1 - Matches everything from the start up to the last dash before version
-	// [0-9]+\.[0-9]+\.[0-9]+ : Matches the actual version (e.g., 1.1.3)
-	// (-.*|.*)$        : Group 2 - Matches the rest of the string (extension, arch, etc.)
-	re := regexp.MustCompile(`^(.*?)[0-9]+\.[0-9]+\.[0-9]+(.*)$`)
-
-	// ${1} is the prefix, ${2} is the suffix
-	return re.ReplaceAllString(filename, "${1}"+newVersion+"${2}")
-}
-
 func installUpdatedAsset(lr *structures.Release, oldAsset *structures.TrackedAsset, version string) {
 	// Check if user is running this with privileged execution
 	if !util.IsAdministrator() {
@@ -90,7 +78,7 @@ func UpdateToLatestAsset(repo string) {
 	lmajor, lminor, lpatch := extractVersionSet(lb)
 
 	// Replace if new version found/or nothing changes
-	newVersion := updateVersion(a.AssetName, string(lb))
+	newVersion := util.UpdateVersion(a.AssetName, string(lb))
 	isUpdateable := false
 	if lmajor > major {
 		charmlog.Info("Major Updating...")
