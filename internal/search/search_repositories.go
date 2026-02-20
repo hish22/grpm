@@ -4,6 +4,8 @@ import (
 	corehttp "hish22/grpm/internal/coreHttp"
 	"hish22/grpm/internal/persistance"
 	"hish22/grpm/internal/structures"
+
+	charmlog "github.com/charmbracelet/log"
 )
 
 type RepoInfo struct {
@@ -24,7 +26,10 @@ func SearchRepositories(metadata *RepoInfo) *structures.Repositories {
 			"page=" + metadata.Page},
 	}.Build()
 	if !persistance.FetchFromCache(&repositories, link) {
-		corehttp.Request(link, &repositories)
+		if err := corehttp.Request(link, &repositories); err != nil {
+			charmlog.Error("Failed to search specified repository", "error", err)
+			return &structures.Repositories{}
+		}
 		persistance.NewCache(link, &repositories)
 	}
 	return &repositories
