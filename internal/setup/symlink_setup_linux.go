@@ -47,7 +47,7 @@ func confirm(binaryName string, force bool) bool {
 }
 
 func SymlinkAsset(repo string, assetLocation string, binaryName string, assetID int, force bool) {
-	if util.IsBinary(assetLocation) && strings.EqualFold(repo, binaryName) && confirm(binaryName, force) {
+	if util.IsBinary(assetLocation) && (strings.EqualFold(repo, binaryName) || strings.Contains(binaryName, repo)) && confirm(binaryName, force) {
 		enableExecute(assetLocation)
 		newlink := config.FileLink{
 			Base:     "/",

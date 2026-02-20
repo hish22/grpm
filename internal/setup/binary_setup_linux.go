@@ -14,7 +14,7 @@ func MoveBinary(repo string, location string, assetID int, force bool) {
 	if util.IsBinary(location) {
 
 		// Make parent dir
-		parentPath := link.WriteLibFilePath("repo")
+		parentPath := link.WriteLibFilePath(repo)
 		if err := os.MkdirAll(parentPath, 0755); err != nil {
 			charmlog.Error("Failed to create parent directory", "error", err)
 			return
