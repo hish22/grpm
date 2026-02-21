@@ -1,11 +1,13 @@
 package corehttp
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"log"
 	"net/http"
 	"strconv"
+	"time"
 
 	charmlog "github.com/charmbracelet/log"
 )
@@ -26,7 +28,9 @@ func Request(link string, structure any) error {
 }
 
 func newHttpRequest(link string) (*http.Response, error) {
-	req, _ := http.NewRequest("GET", link, nil)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
+	req, _ := http.NewRequestWithContext(ctx, "GET", link, nil)
 	req.Header.Set("Accept", "application/vnd.github+json")
 	req.Header.Set("User-Agent", "grpm/0.0.1")
 	client := &http.Client{}
