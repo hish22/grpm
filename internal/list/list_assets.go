@@ -19,9 +19,11 @@ func ListAssets() {
 	trackedAssets, err := asset.FetchAssets()
 	if err != nil {
 		if err.Error() == "no such table: asset" {
-			charmlog.Fatal("No installed assets to list,", "Error", err)
+			charmlog.Error("No installed assets to list,", "Error", err)
+			return
 		} else {
-			charmlog.Fatal(err)
+			charmlog.Error(err)
+			return
 		}
 	}
 	if len(trackedAssets) <= 0 {
