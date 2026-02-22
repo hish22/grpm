@@ -1,6 +1,7 @@
 package persistance
 
 import (
+	"context"
 	"database/sql"
 	"hish22/grpm/internal/middlewares"
 	"log"
@@ -14,15 +15,17 @@ type blob struct {
 	Expire     time.Time `sql:"expire"`
 }
 
-func rowBlobFromDb(link *[]byte) *sql.Row {
+func rowBlobFromDb(link *[]byte) (*sql.Row, context.CancelFunc) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	db := middlewares.MetadataDBConn()
 	defer db.Close()
 	query := "SELECT hashedlink, location, expire FROM cache WHERE hashedlink=?"
-	return db.QueryRow(query, link)
+	return db.QueryRowContext(ctx, query, link), cancel
 }
 
 func FetchBlob(link *[]byte) (*blob, bool) {
-	row := rowBlobFromDb(link)
+	row, cancel := rowBlobFromDb(link)
+	defer cancel()
 	b := &blob{} // Result blob
 	err := row.Scan(&b.HashedLink, &b.Location, &b.Expire)
 	if err != nil {
