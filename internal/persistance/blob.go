@@ -4,9 +4,10 @@ import (
 	"context"
 	"database/sql"
 	"hish22/grpm/internal/middlewares"
-	"log"
 	"os"
 	"time"
+
+	charmlog "github.com/charmbracelet/log"
 )
 
 type blob struct {
@@ -37,7 +38,7 @@ func FetchBlob(link *[]byte) (*blob, bool) {
 func ReadBlob(location *string) []byte {
 	cachedJson, err := os.ReadFile(*location + ".json")
 	if err != nil {
-		log.Fatal("No such cache stored, ", err)
+		charmlog.Error("Failed to fetch specified cache", "error", err)
 	}
 	return cachedJson
 }
