@@ -14,7 +14,8 @@ func ClearCache() {
 	root := ChacheRootLocation("grpm")
 	err := os.RemoveAll(root)
 	if err != nil {
-		charmlog.Fatal("Failed to remove grpm cache file", "error", err)
+		charmlog.Error("Failed to remove grpm cache file", "error", err)
+		return
 	}
 
 	// remove cache table from metadata.db
@@ -23,6 +24,6 @@ func ClearCache() {
 	defer cancle()
 	_, err = db.ExecContext(ctx, "DELETE FROM cache;")
 	if err != nil {
-		charmlog.Fatal("Failed to remove cache table from db", "error", err)
+		charmlog.Error("Failed to remove cache table from db", "error", err)
 	}
 }
