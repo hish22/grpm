@@ -1,6 +1,7 @@
 package persistance
 
 import (
+	"context"
 	"encoding/hex"
 	"hish22/grpm/internal/middlewares"
 	"hish22/grpm/internal/serialization"
@@ -53,7 +54,9 @@ func DeleteCache(link *[]byte) {
 	db := middlewares.MetadataDBConn()
 	defer db.Close()
 	query := "DELETE FROM cache WHERE hashedlink=?"
-	_, err := db.Exec(query, link)
+	ctx, cancle := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancle()
+	_, err := db.ExecContext(ctx, query, link)
 	if err != nil {
 		log.Fatal("Cant delete cache of ", link, ", ", err)
 	}
@@ -87,12 +90,16 @@ func metedataEntry(blob *blob) {
 	db := middlewares.MetadataDBConn()
 	defer db.Close()
 	ddlQuery := "CREATE TABLE IF NOT EXISTS cache (id INT PRIMARY KEY,hashedlink TEXT UNIQUE,location TEXT,expire DATE);"
-	_, err := db.Exec(ddlQuery)
+	ddlCtx, cancle := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancle()
+	_, err := db.ExecContext(ddlCtx, ddlQuery)
 	if err != nil {
 		charmlog.Error("Failed to create cache table, ", err)
 	}
 	dmlQuery := "INSERT INTO cache(hashedlink,location,expire) VALUES (?,?,?)"
-	_, err = db.Exec(dmlQuery, blob.HashedLink, blob.Location, blob.Expire)
+	dmlCtx, cancle := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancle()
+	_, err = db.ExecContext(dmlCtx, dmlQuery, blob.HashedLink, blob.Location, blob.Expire)
 	if err != nil {
 		charmlog.Error("Failed to insert cache metadata into cache table, ", err)
 	}

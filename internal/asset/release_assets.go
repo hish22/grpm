@@ -1,6 +1,7 @@
 package asset
 
 import (
+	"context"
 	"fmt"
 	"hish22/grpm/internal/config"
 	"hish22/grpm/internal/middlewares"
@@ -8,6 +9,7 @@ import (
 	"hish22/grpm/internal/util"
 	"log"
 	"strings"
+	"time"
 
 	"github.com/dustin/go-humanize"
 )
@@ -46,7 +48,9 @@ func FetchAssets() ([]structures.TrackedAsset, error) {
 	defer db.Close()
 	var a structures.TrackedAsset
 	assets := []structures.TrackedAsset{}
-	r, err := db.Query("SELECT * FROM asset;")
+	ctx, cancle := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancle()
+	r, err := db.QueryContext(ctx, "SELECT * FROM asset;")
 	if err != nil {
 		return nil, err
 	}
@@ -65,7 +69,9 @@ func FetchAssets() ([]structures.TrackedAsset, error) {
 func FetchSpecificAsset(repo string) (structures.TrackedAsset, error) {
 	db := middlewares.MetadataDBConn()
 	defer db.Close()
-	row := db.QueryRow("SELECT * FROM asset WHERE repo=?", repo)
+	ctx, cancle := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancle()
+	row := db.QueryRowContext(ctx, "SELECT * FROM asset WHERE repo=?", repo)
 	if row.Err() != nil {
 		return structures.TrackedAsset{}, row.Err()
 	}
