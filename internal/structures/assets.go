@@ -11,15 +11,15 @@ type Assets struct {
 }
 
 type TrackedAsset struct {
-	ID                int
-	RepoName          string
-	AssetName         string
-	Location          string
-	Tag               string
-	ReleaseName       string
-	Size              int
-	Digest            string
-	SetupStatus       bool
-	SymlinkName       string
-	FileSetupLocation string
+	ID                int    `sql:"id"`
+	RepoName          string `sql:"repo"`
+	AssetName         string `sql:"asset_name"`
+	Location          string `sql:"location"`
+	Tag               string `sql:"tag"`
+	ReleaseName       string `sql:"release_name"`
+	Size              int    `sql:"size"`
+	Digest            string `sql:"Digest"`
+	SetupStatus       bool   `sql:"setup_track"`
+	SymlinkName       string `sql:"symlink_orenv_name"`
+	FileSetupLocation string `sql:"file_setup_location"`
 }
