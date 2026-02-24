@@ -1,11 +1,13 @@
 package install
 
 import (
+	"context"
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
 	assets "hish22/grpm/internal/asset"
 	"hish22/grpm/internal/config"
+	corehttp "hish22/grpm/internal/coreHttp"
 	"hish22/grpm/internal/link"
 	"hish22/grpm/internal/setup"
 	"hish22/grpm/internal/structures"
@@ -15,6 +17,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 
 	charmlog "github.com/charmbracelet/log"
 	"github.com/schollz/progressbar/v3"
@@ -133,16 +136,27 @@ func InstallSelectedAsset(repo string, asset *structures.Assets, release *struct
 
 	// Request to Fetch assets from specific release
 	charmlog.Info("Installing..", "asset", asset.AssetName)
-	resp, err := http.Get(asset.DownloadUrl)
+	requestLink := corehttp.RequestLink{
+		Base: asset.DownloadUrl,
+	}
+	request := corehttp.ApiRequest{
+		Link:    requestLink,
+		Timeout: time.Second * 10,
+	}
+	ctx, cancle := context.WithTimeout(context.Background(), request.Timeout)
+	defer cancle()
+	resp, err := request.RequestWithContext(ctx)
 	if err != nil {
-		charmlog.Fatal("Failed to GET request asset payload", "asset", asset.AssetName, "error", err)
+		charmlog.Error("Failed to GET request asset payload", "asset", asset.AssetName, "error", err)
+		return
 	}
 	defer resp.Body.Close()
 	// Create .tmp file where we store binary data
 	// to validate the digest of the fetched content
 	// and handle unexpected situations
 	if err := downloadWithValidation(asset, resp); err != nil {
-		charmlog.Fatal("Failed to download the asset", "asset", asset.AssetName, "error", err)
+		charmlog.Error("Failed to download the asset", "asset", asset.AssetName, "error", err)
+		return
 	}
 
 	changeFilePerm(asset.AssetName)

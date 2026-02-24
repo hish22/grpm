@@ -35,6 +35,17 @@ func (instance ApiRequest) RequestWithDecode(structure any) error {
 	return nil
 }
 
+func (instance ApiRequest) RequestWithContext(ctx context.Context) (*http.Response, error) {
+	req, _ := http.NewRequestWithContext(ctx, "GET", instance.Link.Build(), nil)
+	req.Header.Set("User-Agent", "grpm/0.0.1")
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 /* Requesting github api, and return a http response */
 func (instance ApiRequest) httpRequest(ctx context.Context, link string) (*http.Response, error) {
 	req, _ := http.NewRequestWithContext(ctx, "GET", link, nil)
