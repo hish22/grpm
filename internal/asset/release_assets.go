@@ -21,6 +21,7 @@ func enumerateAssets(r []structures.Assets) {
 	}
 }
 
+// Needs some refactor
 func matchedAssets(r *structures.Release) []structures.Assets {
 	config := config.DecodeTOMLConfig()
 	var matchedAssets []structures.Assets
