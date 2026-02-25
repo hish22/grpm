@@ -56,45 +56,47 @@ func extractVersionSet(tag []byte) (int, int, int) {
 	return major, minor, patch
 }
 
-func UpdateToLatestAsset(repo string, force bool) {
+func isUpdateable(assetName string, lmajor int, major int, lminor int, minor int, lpatch int, patch int) bool {
+	if lmajor > major {
+		charmlog.Info("Major Updating...")
+		return true
+	} else if lminor > minor {
+		charmlog.Info("Minor Updating...")
+		return true
+	} else if lpatch > patch {
+		charmlog.Info("Patch Updating...")
+		return true
+	} else {
+		charmlog.Info(assetNameStyle.Render(assetName) + " installed with its latest version.")
+		return false
+	}
+}
+
+func fetchReleases(repo string) (*structures.TrackedAsset, *structures.Release) {
 	// Fetch Specific asset
 	a, err := asset.FetchSpecificAsset(repo)
 	if err != nil {
-		charmlog.Fatal("Failed to fetch specified repository", "repo", repo, "error", err)
+		charmlog.Error("Failed to fetch specified repository", "repo", repo, "error", err)
+		return nil, nil
 	}
 	// Fetch latest repo release
-	latestA, err := release.FetchLatestRelease(repo)
+	l, err := release.FetchLatestRelease(repo)
 	if err != nil {
-		charmlog.Fatal("Failed to fetch latest release", "repo", repo, "error", err)
+		charmlog.Error("Failed to fetch latest release", "repo", repo, "error", err)
+		return nil, nil
 	}
-	// Build regex
-	rx := buildregx()
-	b := rx.Find([]byte(a.Tag))
-	lb := rx.Find([]byte(latestA.TagName))
+	return a, l
+}
 
-	// Asset Tag
-	major, minor, patch := extractVersionSet(b)
-	// Latest release Tag
-	lmajor, lminor, lpatch := extractVersionSet(lb)
+func UpdateToLatestAsset(repo string, force bool) {
+	currentAsset, latestAsset, _, latestTag, status := CheckUpdate(repo)
 
 	// Replace if new version found/or nothing changes
-	newVersion := util.UpdateVersion(a.AssetName, string(lb))
-	isUpdateable := false
-	if lmajor > major {
-		charmlog.Info("Major Updating...")
-		isUpdateable = true
-	} else if lminor > minor {
-		charmlog.Info("Minor Updating...")
-		isUpdateable = true
-	} else if lpatch > patch {
-		charmlog.Info("Patch Updating...")
-		isUpdateable = true
-	} else {
-		charmlog.Info(assetNameStyle.Render(a.AssetName) + " installed with its latest version.")
-	}
+	newVersion := util.UpdateVersion(currentAsset.AssetName, string(latestTag))
 
-	if isUpdateable {
-		installUpdatedAsset(repo, latestA, &a, newVersion, force)
+	if status {
+		charmlog.Info("Current Version", currentAsset.Tag, "New Version", latestAsset.TagName)
+		installUpdatedAsset(repo, latestAsset, currentAsset, newVersion, force)
 	}
 
 }
