@@ -95,7 +95,6 @@ func UpdateToLatestAsset(repo string, force bool) {
 	newVersion := util.UpdateVersion(currentAsset.AssetName, string(latestTag))
 
 	if status {
-		charmlog.Info("Current Version", currentAsset.Tag, "New Version", latestAsset.TagName)
 		installUpdatedAsset(repo, latestAsset, currentAsset, newVersion, force)
 	}
 

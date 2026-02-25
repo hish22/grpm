@@ -23,7 +23,7 @@ func CheckUpdate(repo string) (*structures.TrackedAsset, *structures.Release, []
 	checkStatus := isUpdateable(currentAsset.AssetName, lmajor, major, lminor, minor, lpatch, patch)
 
 	if checkStatus {
-		charmlog.Info("Current Version", currentAsset.Tag, "New Version", latestAsset.TagName)
+		charmlog.Info("This asset has a new version.", "Current Version", currentAsset.Tag, "New Version", latestAsset.TagName)
 	}
 	return currentAsset, latestAsset, b, lb, checkStatus
 }
