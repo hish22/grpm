@@ -48,9 +48,9 @@ import (
 func isInstalled(repo string) (*structures.TrackedAsset, bool) {
 	asset, err := assets.FetchSpecificAsset(repo)
 	if err != nil {
-		return &asset, false
+		return asset, false
 	}
-	return &asset, true
+	return asset, true
 }
 
 /*
