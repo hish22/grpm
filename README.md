@@ -13,7 +13,7 @@ Download the tool from the <a href="https://github.com/hish22/grpm/releases">rel
 ### Build from Source
 
 ```bash
-git clone https://github.com/yourusername/grpm.git
+git clone https://github.com/hish22/grpm.git
 cd grpm
 go build -o grpm ./cmd/grpm.go
 ```
