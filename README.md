@@ -23,7 +23,7 @@ go build -o grpm ./cmd/grpm.go
 Before using GRPM, initialize the configuration file:
 
 ```bash
-./grpm --define
+grpm --define
 ```
 
 This creates `~/.config/grpm/config.toml` with default settings.
