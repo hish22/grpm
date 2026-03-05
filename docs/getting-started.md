@@ -1,6 +1,6 @@
 # Getting Started with GRPM
 
-GRPM (GitHub Releases Packet Manager) is a command-line tool written in Go that helps you discover, manage, and install GitHub releases. It functions as a package manager specifically designed for GitHub releases.
+GRPM (Grab Releases Package Manager) is a command-line tool written in Go that helps you discover, manage, and install GitHub releases. It functions as a package manager specifically designed for GitHub releases.
 
 ## Prerequisites
 

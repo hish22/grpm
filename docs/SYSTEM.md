@@ -1,6 +1,6 @@
 # System Overview
 
-GRPM (GitHub Releases Packet Manager) is a command-line package manager for GitHub releases.
+GRPM (Grab Releases Package Manager) is a command-line package manager for GitHub releases.
 
 ## What is GRPM?
 

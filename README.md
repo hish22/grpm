@@ -1,17 +1,14 @@
-# Github Releases Packet Manager (GRPM)
+# Grab Releases Package Manager (GRPM)
+
+<img src="assets/grpm_w.png" />
 
 GRPM is a command-line tool written in Go that helps you discover, manage, and install GitHub releases. It functions as a package manager specifically designed for GitHub releases, allowing you to search repositories, view release information, and download assets directly from your terminal.
 
-## Features
-
-- **Search**: Find GitHub repositories by name with sorting options
-- **Info**: View repository details and README content
-- **Releases**: Browse release information for any repository
-- **Install**: Download and install release assets with tracking
-- **Configure**: Customize installation paths and preferences
-- **Track**: SQLite database tracks all installed releases
-
 ## Installation
+
+### Download a binary
+
+Download the tool from the <a href="https://github.com/hish22/grpm/releases">releases</a>.
 
 ### Build from Source
 
@@ -44,7 +41,7 @@ grpm config --show
 Edit configuration directly:
 
 ```bash
-nano ~/.config/grpm/config.toml
+grpm config --open
 ```
 
 Configuration options include:
@@ -116,24 +113,26 @@ grpm list
 
 ### Check for Updates
 
-Check if installed releases have newer versions available:
+Check if a specific installed release has a newer version available:
 
 ```bash
-grpm new
+grpm update --repo <owner>/<repo> --check
 ```
 
-### Upgrade Releases
+### Update Releases
 
-Update a specific release:
+Update a specific release to the latest version:
 
 ```bash
-grpm update --repo <owner>/<repo>
+grpm update --repo <owner>/<repo> --latest
 ```
 
-Upgrade all installed releases:
+### Remove Installed Packages
+
+Remove an installed release:
 
 ```bash
-grpm upgrade
+grpm remove --repo <owner>/<repo>
 ```
 
 ### Clear Cache
@@ -143,45 +142,6 @@ Clear the search cache:
 ```bash
 grpm cache --clear
 ```
-
-## Architecture
-
-```
-/home/pling77/Desktop/REAL_PROJECTS/grpm/
-├── cmd/                           # CLI commands (Cobra framework)
-│   ├── grpm.go                   # Main entry point
-│   ├── searchc/                  # Search command
-│   ├── installc/                 # Install command
-│   ├── releasec/                 # Release info command
-│   ├── infoc/                    # Repository info command
-│   └── configc/                  # Configuration command
-├── internal/                      # Core business logic
-│   ├── config/                   # TOML configuration
-│   ├── core/                     # HTTP and URL handling
-│   ├── search/                   # GitHub search
-│   ├── release/                  # Release fetching
-│   ├── info/                     # Repository info
-│   ├── install/                  # Asset installation
-│   ├── persistance/              # SQLite database
-│   ├── serialization/            # JSON handling
-│   └── util/                     # Utilities
-```
-
-## Data Storage
-
-GRPM stores data in `~/.config/grpm/`:
-- `config.toml`: User configuration
-- `metadata.db`: SQLite database tracking installed releases
-- `cache/`: Cached API responses (24-hour expiration)
-
-## Dependencies
-
-- Go 1.25+
-- spf13/cobra - CLI framework
-- BurntSushi/toml - Configuration
-- mattn/go-sqlite3 - Database
-- dustin/go-humanize - Human-readable formatting
-- lukechampine.com/blake3 - Cache hashing
 
 ## Contributing
 
