@@ -26,7 +26,7 @@ var (
 func InstallC() *cobra.Command {
 	c := cobra.Command{
 		Use:   "install",
-		Short: "Install a release",
+		Short: "Install a release asset",
 		Run:   installCmd,
 		PreRun: func(cmd *cobra.Command, args []string) {
 			if !config.CheckConfig() {

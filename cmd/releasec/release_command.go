@@ -19,7 +19,7 @@ var (
 func ReleaseC() *cobra.Command {
 	c := cobra.Command{
 		Use:   "release",
-		Short: "Info about repo's releases information",
+		Short: "Repository releases information",
 		Run:   releaseCmd,
 		PreRun: func(cmd *cobra.Command, args []string) {
 			if !config.CheckConfig() {

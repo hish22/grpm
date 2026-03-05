@@ -21,7 +21,7 @@ var (
 func SearchC() *cobra.Command {
 	c := &cobra.Command{
 		Use:   "search",
-		Short: "Search a specific github object.",
+		Short: "Search for set of repositories",
 		Run:   searchCmd,
 		PreRun: func(cmd *cobra.Command, args []string) {
 			if !config.CheckConfig() {
