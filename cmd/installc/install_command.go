@@ -34,10 +34,10 @@ func InstallC() *cobra.Command {
 			}
 		},
 	}
-	c.Flags().StringVarP(&repo, "repo", "r", "", "Repo's name (owner/repo)")
-	c.Flags().StringVarP(&tag, "tag", "t", "", "Grab a specific repo's release by tag")
-	c.Flags().BoolVarP(&match, "match", "m", false, "Print assets that match your config file opitions")
-	c.Flags().BoolVarP(&setup, "setup", "s", false, "Auto setup of installed asset")
+	c.Flags().StringVarP(&repo, "repo", "r", "", "Repository name (owner/repo)")
+	c.Flags().StringVarP(&tag, "tag", "t", "", "Grab a specific repository release by a tag")
+	c.Flags().BoolVarP(&match, "match", "m", false, "Show assets that match your config file opitions")
+	c.Flags().BoolVarP(&setup, "setup", "s", false, "Auto setup of downloaded asset")
 	c.Flags().BoolVarP(&force, "force", "f", false, "Apply any confirmation message as yes")
 	return &c
 }

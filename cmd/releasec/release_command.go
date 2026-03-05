@@ -27,10 +27,10 @@ func ReleaseC() *cobra.Command {
 			}
 		},
 	}
-	c.Flags().StringVarP(&repo, "repo", "r", "", "Repo's name (owner/repo)")
-	c.Flags().BoolVarP(&latest, "latest", "a", false, "Grab 5 latest repo's releases information")
-	c.Flags().StringVarP(&tag, "tag", "t", "", "Grab a specific repo's release by tag")
-	c.Flags().BoolVarP(&latestRelease, "latest-release", "l", false, "Grab latest repo's release information")
+	c.Flags().StringVarP(&repo, "repo", "r", "", "Repository name (owner/repo)")
+	c.Flags().BoolVarP(&latest, "latest", "a", false, "Show 5 latest repository releases information")
+	c.Flags().StringVarP(&tag, "tag", "t", "", "Show a specific repository release by a tag")
+	c.Flags().BoolVarP(&latestRelease, "latest-release", "l", false, "Show latest repository release information")
 	return &c
 }
 

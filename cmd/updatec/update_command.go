@@ -30,7 +30,7 @@ func UpdateC() *cobra.Command {
 	c.Flags().StringVarP(&repo, "repo", "r", "", "Repository name (Owner/repo)")
 	c.Flags().BoolVarP(&latest, "latest", "l", false, "Update to latest asset")
 	c.Flags().BoolVarP(&force, "force", "f", false, "Apply any confirmation message as yes")
-	c.Flags().BoolVarP(&check, "check", "c", force, "Check if the specified asset has an update")
+	c.Flags().BoolVarP(&check, "check", "c", false, "Check if the specified asset has an update")
 	return c
 }
 

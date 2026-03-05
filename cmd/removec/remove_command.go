@@ -23,7 +23,7 @@ func RemoveC() *cobra.Command {
 			}
 		},
 	}
-	c.Flags().StringVarP(&repo, "repo", "r", "", "Repository name")
+	c.Flags().StringVarP(&repo, "repo", "r", "", "Repository name (owner/repo)")
 	return c
 }
 

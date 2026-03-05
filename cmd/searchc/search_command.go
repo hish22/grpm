@@ -31,7 +31,7 @@ func SearchC() *cobra.Command {
 	}
 	c.Flags().StringVarP(&repo, "repo", "r", "", "Search a list of repositories.")
 	c.Flags().IntVarP(&page, "page", "p", 1, "page number of the results to fetch (Default 1).")
-	c.Flags().StringVarP(&sort, "sort", "s", "", "Sort repositories based criteria (stars, forks, help-wanted-issues, updated).")
+	c.Flags().StringVarP(&sort, "sort", "s", "", "Sort repositories based on a criteria (stars, forks, help-wanted-issues, updated).")
 	c.Flags().StringVarP(&order, "order", "o", "", "Order of sorting repositories (asc, desc).")
 	return c
 }
