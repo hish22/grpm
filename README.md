@@ -45,10 +45,10 @@ grpm config --open
 ```
 
 Configuration options include:
-- `install_dir`: Where assets are installed
-- `download_dir`: Where files are downloaded
-- `os`: Operating system filter
-- `arch`: Architecture filter
+- `install_dir`: Where assets are installed.
+- `download_dir`: Where files are downloaded.
+- `os`: Operating system filter.
+- `arch`: Architecture filter.
 
 #### Flags
 
