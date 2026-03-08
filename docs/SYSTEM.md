@@ -15,26 +15,26 @@ GRPM allows users to:
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                     CLI Layer (Cobra)                        │
+│                     CLI Layer (Cobra)                       │
 │  search | config | info | release | install | list | update │
 └─────────────────────────────────────────────────────────────┘
                               │
                               ▼
 ┌─────────────────────────────────────────────────────────────┐
-│                    Business Logic Layer                      │
+│                    Business Logic Layer                     │
 │   search | release | info | install | asset | config        │
 └─────────────────────────────────────────────────────────────┘
                               │
                               ▼
 ┌─────────────────────────────────────────────────────────────┐
-│                      Data Layer                               │
-│         SQLite Database | File System | Cache                │
+│                      Data Layer                             │
+│         SQLite Database | File System | Cache               │
 └─────────────────────────────────────────────────────────────┘
                               │
                               ▼
 ┌─────────────────────────────────────────────────────────────┐
-│                   External Services                          │
-│                   GitHub API                                  │
+│                   External Services                         │
+│                   GitHub API                                │
 └─────────────────────────────────────────────────────────────┘
 ```
 
