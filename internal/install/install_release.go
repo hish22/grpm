@@ -17,6 +17,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 
 	charmlog "github.com/charmbracelet/log"
 	"github.com/schollz/progressbar/v3"
@@ -140,7 +141,7 @@ func InstallSelectedAsset(repo string, asset *structures.Assets, release *struct
 	}
 	request := corehttp.ApiRequest{
 		Link:    requestLink,
-		Timeout: 0,
+		Timeout: 24 * time.Hour, // Temp: Deadline with impossible time
 	}
 	ctx, cancle := context.WithTimeout(context.Background(), request.Timeout)
 	defer cancle()
