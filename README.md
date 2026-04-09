@@ -10,6 +10,47 @@ GRPM is a command-line tool written in Go that helps you discover, manage, and i
 
 Download the tool from the <a href="https://github.com/hish22/grpm/releases">releases</a>.
 
+## Linux:
+
+- Extract the Archive:
+  Unpack the downloaded file to access the executable:
+```bash
+    tar -xzf grpm.tar.gz
+```
+- Move to System Path:
+  Move the grpm binary to /usr/local/bin so it can be accessed globally as a command:
+```bash
+    sudo mv grpm /usr/local/bin/
+```
+
+- Set Permissions:
+  Ensure the file has the necessary permissions to run as an executable:
+```bash
+    sudo chmod +x /usr/local/bin/grpm
+```
+
+## Windows:
+
+- Extract the Binary:
+  Right-click the .zip file and select Extract All.... Inside, you will find the grpm.exe executable.
+
+- Move to a Permanent Folder (Optional):
+  Move grpm.exe to a dedicated folder where it won't be accidentally deleted.
+  Example: C:\Program Files\grpm\ or C:\bin\
+
+- Add to System *PATH*:
+To run grpm from any Command Prompt or PowerShell window, you must add it to your PATH:
+
+1. Open the Start Search, type "env", and select Edit the system environment variables.
+
+2. Click the Environment Variables button.
+
+3. Under User variables, select Path and click Edit.
+
+4. Click New and paste the path to the folder where you moved the .exe (e.g., C:\bin\).
+
+5. Click OK on all windows to save.
+
 ### Build from Source
 
 ```bash
