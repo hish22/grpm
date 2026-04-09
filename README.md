@@ -13,20 +13,23 @@ Download the tool from the <a href="https://github.com/hish22/grpm/releases">rel
 ## Linux:
 
 - Extract the Archive:
+
   Unpack the downloaded file to access the executable:
 ```bash
-    tar -xzf grpm.tar.gz
+tar -xzf grpm.tar.gz
 ```
 - Move to System Path:
+
   Move the grpm binary to /usr/local/bin so it can be accessed globally as a command:
 ```bash
-    sudo mv grpm /usr/local/bin/
+sudo mv grpm /usr/local/bin/
 ```
 
 - Set Permissions:
+
   Ensure the file has the necessary permissions to run as an executable:
 ```bash
-    sudo chmod +x /usr/local/bin/grpm
+sudo chmod +x /usr/local/bin/grpm
 ```
 
 ## Windows:
