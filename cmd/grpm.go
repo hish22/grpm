@@ -44,17 +44,19 @@ func root() *cobra.Command {
 func main() {
 	r := root()
 	r.Flags().BoolVarP(&define, "define", "d", false, "Initialize grpm tool.")
+	grpmCommands := []*cobra.Command{
+		searchc.SearchC(),
+		configc.ConfigC(),
+		infoc.InfoC(),
+		releasec.ReleaseC(),
+		installc.InstallC(),
+		listc.ListC(),
+		updatec.UpdateC(),
+		cachec.CacheC(),
+		removec.RemoveC(),
+	}
 	// Add search command
-	r.AddCommand(searchc.SearchC())
-	r.AddCommand(configc.ConfigC())
-	r.AddCommand(infoc.InfoC())
-	r.AddCommand(releasec.ReleaseC())
-	r.AddCommand(installc.InstallC())
-	r.AddCommand(listc.ListC())
-	r.AddCommand(updatec.UpdateC())
-	r.AddCommand(cachec.CacheC())
-	r.AddCommand(removec.RemoveC())
-	// r.AddCommand(testc.TestC())
+	r.AddCommand(grpmCommands...)
 	if err := r.Execute(); err != nil {
 		charmlog.Error(err)
 	}
