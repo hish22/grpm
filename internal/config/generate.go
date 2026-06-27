@@ -51,7 +51,7 @@ func GrpmDirPath() (FileLink, error) {
 	case "windows":
 		return FileLink{Base: "C:\\", Childern: []string{"Tools", "grpm"}}, nil
 	default:
-		return FileLink{}, fmt.Errorf("Failed to retun the grpm path based on specified OS")
+		return FileLink{}, fmt.Errorf("Failed to return the grpm path based on specified OS")
 	}
 }
 
@@ -79,11 +79,11 @@ func GrpmDownloadedDirPath() (FileLink, error) {
 
 func createAndWriteConfig(payload []byte) {
 	if err := os.MkdirAll(LocalConfigDirPath().String(), 0755); err != nil {
-		charmlog.Fatal("Failed create .config/grpm dir, ", "error", err)
+		charmlog.Fatal("Failed to create .config/grpm directory, ", "error", err)
 	}
 
 	if err := os.WriteFile(LocalConfigDirToml().String(), payload, 0644); err != nil {
-		charmlog.Fatal("Failed create config.toml, ", "error", err)
+		charmlog.Fatal("Failed to create config.toml file, ", "error", err)
 	}
 }
 

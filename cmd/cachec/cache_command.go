@@ -16,7 +16,7 @@ var (
 func CacheC() *cobra.Command {
 	c := &cobra.Command{
 		Use:   "cache",
-		Short: "Handle cache commands",
+		Short: "Cache managment",
 		Run:   cacheCmd,
 		PreRun: func(cmd *cobra.Command, args []string) {
 			if !config.CheckConfig() {
@@ -30,8 +30,9 @@ func CacheC() *cobra.Command {
 
 func cacheCmd(cmd *cobra.Command, args []string) {
 	if clear {
-		persistance.ClearCache()
-		charmlog.Info("Cache cleared")
+		if persistance.ClearCache() {
+			charmlog.Info("Cache cleared")
+		}
 	} else {
 		err := cmd.Help()
 		if err != nil {

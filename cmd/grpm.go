@@ -43,7 +43,7 @@ func root() *cobra.Command {
 
 func main() {
 	r := root()
-	r.Flags().BoolVarP(&define, "define", "d", false, "initialize your grpm tool")
+	r.Flags().BoolVarP(&define, "define", "d", false, "Initialize grpm tool.")
 	// Add search command
 	r.AddCommand(searchc.SearchC())
 	r.AddCommand(configc.ConfigC())
@@ -56,6 +56,6 @@ func main() {
 	r.AddCommand(removec.RemoveC())
 	// r.AddCommand(testc.TestC())
 	if err := r.Execute(); err != nil {
-		panic(err)
+		charmlog.Error(err)
 	}
 }
