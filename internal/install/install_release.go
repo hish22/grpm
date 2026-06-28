@@ -1,11 +1,13 @@
 package install
 
 import (
+	"context"
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
 	assets "hish22/grpm/internal/asset"
 	"hish22/grpm/internal/config"
+	corehttp "hish22/grpm/internal/coreHttp"
 	"hish22/grpm/internal/link"
 	"hish22/grpm/internal/setup"
 	"hish22/grpm/internal/structures"
@@ -15,6 +17,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 
 	charmlog "github.com/charmbracelet/log"
 	"github.com/schollz/progressbar/v3"
@@ -41,14 +44,22 @@ import (
 // 3- apply steps
 // 4- traksing could be opitional
 
+/* Hit DB to check if a sepcfifc asset is already installed */
 func isInstalled(repo string) (*structures.TrackedAsset, bool) {
 	asset, err := assets.FetchSpecificAsset(repo)
 	if err != nil {
-		return &asset, false
+		return asset, false
 	}
-	return &asset, true
+	return asset, true
 }
 
+/*
+	Start The Download operation
+
+Fetch grpm/Downloads path first, then we insert the http response body payload
+into a .tmp file. provide progress bar + hashing to check asset digest.
+if digest check succeed, we start by renaming/creating the fetched asset.
+*/
 func downloadWithValidation(asset *structures.Assets, resp *http.Response) error {
 	// Bring downloads (as tmp file) location
 	downloads, err := config.GrpmDownloadedDirPath()
@@ -86,6 +97,12 @@ func downloadWithValidation(asset *structures.Assets, resp *http.Response) error
 	return os.Rename(tf.Name(), link.WriteDownloadsFilePath(asset.AssetName))
 }
 
+/*
+	Change file permissions
+
+To allow a user to extract and use the download file,
+by changing the file's permission mode into 0644
+*/
 func changeFilePerm(asset string) {
 	err := os.Chmod(link.WriteDownloadsFilePath(asset), 0644)
 	if err != nil {
@@ -93,6 +110,16 @@ func changeFilePerm(asset string) {
 	}
 }
 
+/*
+Install an asset process
+
+Check if user is running this with privileged execution
+then, Check if asset is already installed.
+
+Request to Fetch assets from specific release.
+
+start with setup process only if the user flaged with --setup.
+*/
 func InstallSelectedAsset(repo string, asset *structures.Assets, release *structures.Release, setupStatus bool, force bool) {
 	// Check if user is running this with privileged execution
 	if !util.IsAdministrator() {
@@ -109,16 +136,27 @@ func InstallSelectedAsset(repo string, asset *structures.Assets, release *struct
 
 	// Request to Fetch assets from specific release
 	charmlog.Info("Installing..", "asset", asset.AssetName)
-	resp, err := http.Get(asset.DownloadUrl)
+	requestLink := corehttp.RequestLink{
+		Base: asset.DownloadUrl,
+	}
+	request := corehttp.ApiRequest{
+		Link:    requestLink,
+		Timeout: 24 * time.Hour, // Temp: Deadline with impossible time
+	}
+	ctx, cancle := context.WithTimeout(context.Background(), request.Timeout)
+	defer cancle()
+	resp, err := request.RequestWithContext(ctx)
 	if err != nil {
-		charmlog.Fatal("Failed to GET request asset payload", "asset", asset.AssetName, "error", err)
+		charmlog.Error("Failed to GET request asset payload", "asset", asset.AssetName, "error", err)
+		return
 	}
 	defer resp.Body.Close()
 	// Create .tmp file where we store binary data
 	// to validate the digest of the fetched content
 	// and handle unexpected situations
 	if err := downloadWithValidation(asset, resp); err != nil {
-		charmlog.Fatal("Failed to download the asset", "asset", asset.AssetName, "error", err)
+		charmlog.Error("Failed to download the asset", "asset", asset.AssetName, "error", err)
+		return
 	}
 
 	changeFilePerm(asset.AssetName)

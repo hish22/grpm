@@ -1,9 +1,11 @@
 package asset
 
 import (
+	"context"
 	"fmt"
 	"hish22/grpm/internal/middlewares"
 	"os"
+	"time"
 
 	charmlog "github.com/charmbracelet/log"
 )
@@ -11,7 +13,9 @@ import (
 func DeleteLastTrackedAssetById(id int) {
 	db := middlewares.MetadataDBConn()
 	defer db.Close()
-	_, err := db.Exec("DELETE FROM asset WHERE id=?", id)
+	ctx, cancle := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancle()
+	_, err := db.ExecContext(ctx, "DELETE FROM asset WHERE id=?", id)
 	if err != nil {
 		charmlog.Error("Failed to delete last tracked asset", "error", err)
 	}

@@ -18,6 +18,7 @@ type RequestLink struct {
 	Queries   []string
 }
 
+// Construct a link as a string
 func (link RequestLink) Build() string {
 	// Construct the link without the queries.
 	construct, err := url.JoinPath(link.Base, link.Endpoints...)

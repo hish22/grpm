@@ -22,7 +22,11 @@ var (
 func SearchC() *cobra.Command {
 	c := &cobra.Command{
 		Use:   "search",
+<<<<<<< HEAD
 		Short: "Search github repositories.",
+=======
+		Short: "Search for set of repositories",
+>>>>>>> master
 		Run:   searchCmd,
 		PreRun: func(cmd *cobra.Command, args []string) {
 			if !config.CheckConfig() {
@@ -30,6 +34,7 @@ func SearchC() *cobra.Command {
 			}
 		},
 	}
+<<<<<<< HEAD
 	flags.StringFlags["repo_name"] = c.Flags().StringP("name", "r", "", "repository name to search for.")
 	flags.IntgerFlags["repo_search_page"] = c.Flags().IntP("page", "p", 1, "page number (Default 1).")
 	flags.StringFlags["repo_search_sort"] = c.Flags().StringP("sort", "s", "", "sort repositories based on provided criteria (stars, forks, help-wanted-issues, updated).")
@@ -38,6 +43,12 @@ func SearchC() *cobra.Command {
 	// c.Flags().IntVarP(&page, "page", "p", 1, "page number of the results to fetch (Default 1).")
 	// c.Flags().StringVarP(&sort, "sort", "s", "", "Sort repositories based criteria (stars, forks, help-wanted-issues, updated).")
 	// c.Flags().StringVarP(&order, "order", "o", "", "Order of sorting repositories (asc, desc).")
+=======
+	c.Flags().StringVarP(&repo, "repo", "r", "", "Search a list of repositories.")
+	c.Flags().IntVarP(&page, "page", "p", 1, "page number of the results to fetch (Default 1).")
+	c.Flags().StringVarP(&sort, "sort", "s", "", "Sort repositories based on a criteria (stars, forks, help-wanted-issues, updated).")
+	c.Flags().StringVarP(&order, "order", "o", "", "Order of sorting repositories (asc, desc).")
+>>>>>>> master
 	return c
 }
 

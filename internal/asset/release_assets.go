@@ -1,6 +1,7 @@
 package asset
 
 import (
+	"context"
 	"fmt"
 	"hish22/grpm/internal/config"
 	"hish22/grpm/internal/middlewares"
@@ -8,6 +9,7 @@ import (
 	"hish22/grpm/internal/util"
 	"log"
 	"strings"
+	"time"
 
 	"github.com/dustin/go-humanize"
 )
@@ -19,6 +21,7 @@ func enumerateAssets(r []structures.Assets) {
 	}
 }
 
+// Needs some refactor
 func matchedAssets(r *structures.Release) []structures.Assets {
 	config := config.DecodeTOMLConfig()
 	var matchedAssets []structures.Assets
@@ -46,7 +49,9 @@ func FetchAssets() ([]structures.TrackedAsset, error) {
 	defer db.Close()
 	var a structures.TrackedAsset
 	assets := []structures.TrackedAsset{}
-	r, err := db.Query("SELECT * FROM asset;")
+	ctx, cancle := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancle()
+	r, err := db.QueryContext(ctx, "SELECT * FROM asset;")
 	if err != nil {
 		return nil, err
 	}
@@ -62,18 +67,20 @@ func FetchAssets() ([]structures.TrackedAsset, error) {
 	return assets, nil
 }
 
-func FetchSpecificAsset(repo string) (structures.TrackedAsset, error) {
+func FetchSpecificAsset(repo string) (*structures.TrackedAsset, error) {
 	db := middlewares.MetadataDBConn()
 	defer db.Close()
-	row := db.QueryRow("SELECT * FROM asset WHERE repo=?", repo)
+	ctx, cancle := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancle()
+	row := db.QueryRowContext(ctx, "SELECT * FROM asset WHERE repo=?", repo)
 	if row.Err() != nil {
-		return structures.TrackedAsset{}, row.Err()
+		return &structures.TrackedAsset{}, row.Err()
 	}
 	a := structures.TrackedAsset{}
 	err := row.Scan(&a.ID, &a.RepoName, &a.AssetName, &a.Location, &a.Tag, &a.ReleaseName,
 		&a.Size, &a.Digest, &a.SetupStatus, &a.SymlinkName, &a.FileSetupLocation)
 	if err != nil {
-		return structures.TrackedAsset{}, err
+		return &structures.TrackedAsset{}, err
 	}
-	return a, nil
+	return &a, nil
 }

@@ -15,7 +15,7 @@ var (
 func RemoveC() *cobra.Command {
 	c := &cobra.Command{
 		Use:   "remove",
-		Short: "Delete an installed asset",
+		Short: "Remove an installed asset",
 		Run:   removeCmd,
 		PreRun: func(cmd *cobra.Command, args []string) {
 			if !config.CheckConfig() {
@@ -23,7 +23,7 @@ func RemoveC() *cobra.Command {
 			}
 		},
 	}
-	c.Flags().StringVarP(&repo, "repo", "r", "", "Repository name")
+	c.Flags().StringVarP(&repo, "repo", "r", "", "Repository name (owner/repo)")
 	return c
 }
 

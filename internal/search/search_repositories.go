@@ -5,6 +5,7 @@ import (
 	corehttp "hish22/grpm/internal/coreHttp"
 	"hish22/grpm/internal/persistance"
 	"hish22/grpm/internal/structures"
+	"time"
 )
 
 type RepoInfo struct {
@@ -23,17 +24,21 @@ func SearchRepositories(metadata *RepoInfo) (*structures.Repositories, error) {
 		Queries: []string{"q=" + metadata.Name, "sort=" +
 			metadata.Sort, "order=" + metadata.Order,
 			"page=" + metadata.Page},
-	}.Build()
-	if !persistance.FetchFromCache(&repositories, link) {
-		if err := corehttp.Request(link, &repositories); err != nil {
+	}
+	if !persistance.FetchFromCache(&repositories, link.Build()) {
+		request := corehttp.ApiRequest{
+			Link:    link,
+			Timeout: time.Second * 10,
+		}
+		if err := request.RequestWithDecode(&repositories); err != nil {
 			return &structures.Repositories{}, fmt.Errorf("Failed to search specified repository")
 		}
-		persistance.NewCache(link, &repositories)
+		persistance.NewCache(link.Build(), &repositories)
 	}
 
 	if repositories.TotalCount != 0 {
 		return &repositories, nil
 	} else {
-		return &repositories, fmt.Errorf("Couldn't find any specified repository")
+		return &repositories, fmt.Errorf("Failed to find any specified repository")
 	}
 }
