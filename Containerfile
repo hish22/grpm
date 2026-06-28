@@ -4,7 +4,7 @@ WORKDIR /app
 COPY go.mod ./
 RUN go mod download
 COPY . .
-RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-w -s" -o /app/app-binary ./cmd
+RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-w -s" -o /app/grpm ./cmd
 
 # Stage 2: Create the Ubuntu production image
 FROM docker.io/library/ubuntu:24.04
