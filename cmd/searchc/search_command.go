@@ -2,6 +2,7 @@ package searchc
 
 import (
 	"fmt"
+	"hish22/grpm/cmd/flags"
 	"hish22/grpm/internal/config"
 	"hish22/grpm/internal/search"
 	"hish22/grpm/internal/structures"
@@ -21,7 +22,7 @@ var (
 func SearchC() *cobra.Command {
 	c := &cobra.Command{
 		Use:   "search",
-		Short: "Search a specific github object.",
+		Short: "Search github repositories.",
 		Run:   searchCmd,
 		PreRun: func(cmd *cobra.Command, args []string) {
 			if !config.CheckConfig() {
@@ -29,20 +30,24 @@ func SearchC() *cobra.Command {
 			}
 		},
 	}
-	c.Flags().StringVarP(&repo, "repo", "r", "", "Search a list of repositories.")
-	c.Flags().IntVarP(&page, "page", "p", 1, "page number of the results to fetch (Default 1).")
-	c.Flags().StringVarP(&sort, "sort", "s", "", "Sort repositories based criteria (stars, forks, help-wanted-issues, updated).")
-	c.Flags().StringVarP(&order, "order", "o", "", "Order of sorting repositories (asc, desc).")
+	flags.StringFlags["repo_name"] = c.Flags().StringP("name", "r", "", "repository name to search for.")
+	flags.IntgerFlags["repo_search_page"] = c.Flags().IntP("page", "p", 1, "page number (Default 1).")
+	flags.StringFlags["repo_search_sort"] = c.Flags().StringP("sort", "s", "", "sort repositories based on provided criteria (stars, forks, help-wanted-issues, updated).")
+	flags.StringFlags["repo_search_order"] = c.Flags().StringP("order", "o", "", "Specify direction: 'asc' (A-Z/oldest first) or 'desc' (Z-A/newest first).")
+	// c.Flags().StringVarP(&repo, "repo", "r", "", "Search a list of repositories.")
+	// c.Flags().IntVarP(&page, "page", "p", 1, "page number of the results to fetch (Default 1).")
+	// c.Flags().StringVarP(&sort, "sort", "s", "", "Sort repositories based criteria (stars, forks, help-wanted-issues, updated).")
+	// c.Flags().StringVarP(&order, "order", "o", "", "Order of sorting repositories (asc, desc).")
 	return c
 }
 
 func searchCmd(cmd *cobra.Command, args []string) {
 	if len(repo) != 0 {
 		s := &search.RepoInfo{
-			Name:  repo,
-			Page:  strconv.Itoa(page),
-			Sort:  sort,
-			Order: order,
+			Name:  *flags.StringFlags["repo_name"],
+			Page:  strconv.Itoa(*flags.IntgerFlags["repo_search_page"]),
+			Sort:  *flags.StringFlags["repo_search_sort"],
+			Order: *flags.StringFlags["repo_search_order"],
 		}
 		repositories, err := search.SearchRepositories(s)
 		if err != nil {
