@@ -42,7 +42,7 @@ func SearchC() *cobra.Command {
 }
 
 func searchCmd(cmd *cobra.Command, args []string) {
-	if len(repo) != 0 {
+	if len(*flags.StringFlags["repo_name"]) != 0 {
 		s := &search.RepoInfo{
 			Name:  *flags.StringFlags["repo_name"],
 			Page:  strconv.Itoa(*flags.IntgerFlags["repo_search_page"]),

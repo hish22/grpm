@@ -13,7 +13,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates
 
 # Copy the binary from the builder stage
 WORKDIR /app
-COPY --from=builder /app/app-binary /app/app-binary
+COPY --from=builder /app/grpm /app/grpm
 
 # Set the entrypoint
 ENTRYPOINT ["/bin/bash"]
