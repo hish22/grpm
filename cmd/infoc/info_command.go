@@ -2,6 +2,7 @@ package infoc
 
 import (
 	"fmt"
+	"hish22/grpm/cmd/flags"
 	"hish22/grpm/internal/config"
 	"hish22/grpm/internal/info"
 	"hish22/grpm/internal/search"
@@ -12,6 +13,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// TODO: Spereate into different package (style)
 var (
 	// Style for labels (the keys)
 	labelStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("86")).Bold(true)
@@ -31,10 +33,10 @@ var (
 			Padding(0, 1)
 )
 
-var (
-	name  string
-	owner string
-)
+// var (
+// 	name  string
+// 	owner string
+// )
 
 func InfoC() *cobra.Command {
 	c := &cobra.Command{
@@ -47,13 +49,15 @@ func InfoC() *cobra.Command {
 			}
 		},
 	}
-	c.Flags().StringVarP(&owner, "owner", "o", "", "Repository owner")
-	c.Flags().StringVarP(&name, "repo", "r", "", "Repository name")
+	flags.SetStringFlag("repo_name", c.Flags().StringP("repo", "r", "", "repository name."))
+	flags.SetStringFlag("repo_owner", c.Flags().StringP("owner", "o", "", "repositroy owner."))
 	return c
 }
 
 func fullRepositoryInfo() {
-	repository, err := info.InfoRepository(owner, name)
+	repo := *flags.GetStringFlag("repo_name")
+	owner := *flags.GetStringFlag("repo_owner")
+	repository, err := info.InfoRepository(repo, owner)
 	if err != nil {
 		charmlog.Error("Failed to info specified repository")
 		return
@@ -65,14 +69,16 @@ func particalRepositoryInfo() {
 	// In case a user didn't specifiy a repo name or owner
 	// we will perfom a search command and use first
 	// most stars result as the entry to search for
+	repo_name := *flags.GetStringFlag("repo_name")
+	repo_owner := *flags.GetStringFlag("repo_owner")
 	repo := search.RepoInfo{}
 	repo.Order = "desc"
 	repo.Sort = "stars"
 	repo.Page = "1"
-	if len(name) == 0 && len(owner) != 0 {
-		repo.Name = owner
-	} else if len(owner) == 0 && len(name) != 0 {
-		repo.Name = name
+	if len(repo_name) == 0 && len(repo_owner) != 0 {
+		repo.Name = repo_owner
+	} else if len(repo_owner) == 0 && len(repo_name) != 0 {
+		repo.Name = repo_name
 	}
 	SearchedRepo, err := search.SearchRepositories(&repo)
 	if err != nil {
@@ -124,9 +130,13 @@ func showOwnerInfo(owner *structures.Owner) {
 }
 
 func infoCmd(cmd *cobra.Command, args []string) {
-	if len(name) != 0 && len(owner) != 0 {
+
+	repo_name := *flags.GetStringFlag("repo_name")
+	repo_owner := *flags.GetStringFlag("repo_owner")
+
+	if len(repo_name) != 0 && len(repo_owner) != 0 {
 		fullRepositoryInfo()
-	} else if len(name) == 0 && len(owner) == 0 {
+	} else if len(repo_name) == 0 && len(repo_owner) == 0 {
 		err := cmd.Help()
 		if err != nil {
 			charmlog.Fatal("Failed to show info help", err)
