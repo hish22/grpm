@@ -1,13 +1,15 @@
 package config
 
 import (
-	"log"
+	"errors"
 	"os"
 	"os/exec"
 	"runtime"
+
+	charmlog "github.com/charmbracelet/log"
 )
 
-func OpenTOMLConfig() {
+func OpenTOMLConfig() error {
 	switch runtime.GOOS {
 	case "linux":
 		cmd := exec.Command("nano", LocalConfigDirToml().String())
@@ -17,13 +19,21 @@ func OpenTOMLConfig() {
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 
-		if err := cmd.Run(); err != nil {
-			log.Fatal("Can't open TOML config file, ", err)
+		err := cmd.Run()
+
+		if err != nil {
+			charmlog.Error("Failed to open TOML config file, ", "error", err)
 		}
+
+		return err
+
 	case "windows":
 		cmd := exec.Command("notepad", LocalConfigDirToml().String())
-		if err := cmd.Run(); err != nil {
-			log.Fatal("Can't open TOML config file, ", err)
+		err := cmd.Run()
+		if err != nil {
+			charmlog.Error("Failed to open TOML config file, ", "error", err)
 		}
+		return err
 	}
+	return errors.New("This command only supports (linux nano text editor) and (windows notepad text editor)")
 }
