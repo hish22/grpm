@@ -20,38 +20,38 @@ const (
 )
 
 type LinkService struct {
-	Base      string
-	Endpoints []string
-	Queries   []string
+	base      string
+	endpoints []string
+	queries   []string
 }
 
-// Create a new request link and return the pointer to it.
-func CreateRequestLink(b string, ep []string, q []string) (*LinkService, error) {
-	if len(b) == 0 {
+// Create a new request link. RequestLink expects a base, list of endpoints and a list of queries.
+func CreateRequestLink(base string, endpoints []string, queries []string) (*LinkService, error) {
+	if len(base) == 0 {
 		return nil, errors.New("Failed to create new RequestLink, Base must not be of length 0")
 	}
 	return &LinkService{
-		b,
-		ep,
-		q,
+		base,
+		endpoints,
+		queries,
 	}, nil
 }
 
 // Provide a way to make sure that LinkService is empty object or not (zero values)
-func (link LinkService) IsEmpty() bool {
-	return len(link.Base) == 0 && len(link.Endpoints) == 0 && len(link.Queries) == 0
+func (l LinkService) IsEmpty() bool {
+	return len(l.base) == 0 && len(l.endpoints) == 0 && len(l.queries) == 0
 }
 
 // Build a link from RequestLink object into a string.
-func (link LinkService) String() (string, error) {
+func (l LinkService) String() (string, error) {
 	// Construct the link without the queries.
-	joinedLink, err := url.JoinPath(link.Base, link.Endpoints...)
+	joinedLink, err := url.JoinPath(l.base, l.endpoints...)
 	if err != nil {
-		return "", err
+		return "nil", err
 	}
 	// Add queries only if queries len is greater than 0.
-	if len(link.Queries) > 0 {
-		queryPack := "?" + strings.Join(link.Queries, "&")
+	if len(l.queries) > 0 {
+		queryPack := "?" + strings.Join(l.queries, "&")
 		joinedLink = joinedLink + queryPack
 		return joinedLink, nil
 	}

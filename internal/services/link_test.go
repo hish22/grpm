@@ -17,7 +17,7 @@ func TestRequestLink(t *testing.T) {
 		return
 	}
 
-	fmt.Println(link.Base, link.Endpoints, link.Queries)
+	// fmt.Println(link.Base, link.Endpoints, link.Queries)
 
 	stringLink, err := link.String()
 
