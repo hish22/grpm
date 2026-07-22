@@ -1,7 +1,7 @@
 package services
 
 /*
- * Link Service
+ * Link Service.
  *
  * Provide the ability to construct
  * manage and build a string for a
@@ -18,15 +18,15 @@ const (
 	GithubApiBase = "https://api.github.com/"
 )
 
-type RequestLink struct {
+type RequestService struct {
 	Base      string
 	Endpoints []string
 	Queries   []string
 }
 
 // Create a new request link and return the pointer to it.
-func CreateRequestLink(b string, ep []string, q []string) *RequestLink {
-	return &RequestLink{
+func CreateRequestLink(b string, ep []string, q []string) *RequestService {
+	return &RequestService{
 		b,
 		ep,
 		q,
@@ -34,7 +34,7 @@ func CreateRequestLink(b string, ep []string, q []string) *RequestLink {
 }
 
 // Build a link from RequestLink object into a string.
-func (link RequestLink) String() (string, error) {
+func (link RequestService) String() (string, error) {
 	// Construct the link without the queries.
 	joinedLink, err := url.JoinPath(link.Base, link.Endpoints...)
 	if err != nil {

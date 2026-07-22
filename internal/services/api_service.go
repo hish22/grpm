@@ -1,7 +1,7 @@
 package services
 
 /*
- * API service
+ * API service.
  *
  * Provide a general api to request
  * different version control platforms.
@@ -15,16 +15,16 @@ import (
 )
 
 // General structure for each api request.
-type ApiRequest struct {
-	Link    RequestLink
+type ApiService struct {
+	Link    RequestService
 	Method  string
 	Headers map[string]string
 	Timeout time.Duration
 }
 
 // Create a new api request.
-func CreateApiRequest(link RequestLink, headers map[string]string, method string, timeout time.Duration) *ApiRequest {
-	return &ApiRequest{
+func CreateApiRequest(link RequestService, headers map[string]string, method string, timeout time.Duration) *ApiService {
+	return &ApiService{
 		link,
 		method,
 		headers,
@@ -33,7 +33,7 @@ func CreateApiRequest(link RequestLink, headers map[string]string, method string
 }
 
 // Perform a new http request to an api platform.
-func (api ApiRequest) NewRequest(ctx context.Context) (*http.Response, error) {
+func (api ApiService) NewRequest(ctx context.Context) (*http.Response, error) {
 	// Build a link string instance.
 	url, err := api.Link.String()
 
@@ -41,14 +41,14 @@ func (api ApiRequest) NewRequest(ctx context.Context) (*http.Response, error) {
 		return nil, err
 	}
 
-	// request an api with context.
+	// Request an api with context.
 	req, err := http.NewRequestWithContext(ctx, api.Method, url, nil)
 
 	if err != nil {
 		return nil, err
 	}
 
-	// register provided headers.
+	// Register provided headers.
 	for key, header := range api.Headers {
 		req.Header.Set(key, header)
 	}
@@ -60,7 +60,7 @@ func (api ApiRequest) NewRequest(ctx context.Context) (*http.Response, error) {
 }
 
 // Perform a new http request to an api platform, with handling decoding and context operations.
-func (api ApiRequest) NewRequestWithDecode(structure any) error {
+func (api ApiService) NewRequestWithDecode(structure any) error {
 	// Create a context with a timeout duration.
 	ctx, cancel := context.WithTimeout(context.Background(), api.Timeout)
 	defer cancel()
@@ -72,7 +72,7 @@ func (api ApiRequest) NewRequestWithDecode(structure any) error {
 	}
 	defer res.Body.Close()
 
-	// Perfom json decode into provided structure.
+	// Perform json decode into provided structure.
 	err = json.NewDecoder(res.Body).Decode(&structure)
 	if err != nil {
 		return err
