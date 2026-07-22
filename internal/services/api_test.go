@@ -62,14 +62,15 @@ func TestApiServiceWithGithubSearch(t *testing.T) {
 
 	var repos Repositories
 
-	err := apiReq.NewRequestWithDecode(&repos)
+	err := apiReq.RequestWithDecode(&repos)
 
 	if err != nil {
 		t.Error("Failed to fetch response and decode searched repo into struct", "error", err)
 		return
 	}
 
-	fmt.Println(repos.Repositories[0].Name, repos.Repositories[0].Stars)
+	fmt.Println(repos.TotalCount)
+	fmt.Println(repos.Repositories)
 
 }
 
@@ -92,7 +93,7 @@ func TestApiServiceWithGithubFailSearch(t *testing.T) {
 
 	var repos Repositories
 
-	err := apiReq.NewRequestWithDecode(&repos)
+	err := apiReq.RequestWithDecode(&repos)
 
 	if err != nil {
 		t.Error("Failed to fetch response and decode searched repo into struct", "error", err)
@@ -105,6 +106,6 @@ func TestApiServiceWithGithubFailSearch(t *testing.T) {
 	}
 
 	fmt.Println(repos.TotalCount)
-	fmt.Println(repos.Repositories[0].Name, repos.Repositories[0].Stars)
+	fmt.Println(repos.Repositories)
 
 }

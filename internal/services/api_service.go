@@ -16,14 +16,14 @@ import (
 
 // General structure for each api request.
 type ApiService struct {
-	Link    RequestService
+	Link    LinkService
 	Method  string
 	Headers map[string]string
 	Timeout time.Duration
 }
 
 // Create a new api request.
-func CreateApiRequest(link RequestService, headers map[string]string, method string, timeout time.Duration) *ApiService {
+func CreateApiRequest(link LinkService, headers map[string]string, method string, timeout time.Duration) *ApiService {
 	return &ApiService{
 		link,
 		method,
@@ -33,7 +33,7 @@ func CreateApiRequest(link RequestService, headers map[string]string, method str
 }
 
 // Perform a new http request to an api platform.
-func (api ApiService) NewRequest(ctx context.Context) (*http.Response, error) {
+func (api ApiService) Request(ctx context.Context) (*http.Response, error) {
 	// Build a link string instance.
 	url, err := api.Link.String()
 
@@ -60,13 +60,13 @@ func (api ApiService) NewRequest(ctx context.Context) (*http.Response, error) {
 }
 
 // Perform a new http request to an api platform, with handling decoding and context operations.
-func (api ApiService) NewRequestWithDecode(structure any) error {
+func (api ApiService) RequestWithDecode(structure any) error {
 	// Create a context with a timeout duration.
 	ctx, cancel := context.WithTimeout(context.Background(), api.Timeout)
 	defer cancel()
 
 	// Perform new request to api platform.
-	res, err := api.NewRequest(ctx)
+	res, err := api.Request(ctx)
 	if err != nil {
 		return err
 	}
