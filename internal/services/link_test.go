@@ -6,11 +6,16 @@ import (
 )
 
 func TestRequestLink(t *testing.T) {
-	link := CreateRequestLink(
+	link, err := CreateRequestLink(
 		GithubApiBase,
 		[]string{"search", "repositories"},
 		[]string{"q=fzf"},
 	)
+
+	if err != nil {
+		t.Error(err)
+		return
+	}
 
 	fmt.Println(link.Base, link.Endpoints, link.Queries)
 
@@ -22,5 +27,17 @@ func TestRequestLink(t *testing.T) {
 	}
 
 	fmt.Println(stringLink)
+
+}
+
+func TestRequestLinkWithEmptyBase(t *testing.T) {
+	link, err := CreateRequestLink("", []string{}, []string{})
+
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	fmt.Println(link.String())
 
 }

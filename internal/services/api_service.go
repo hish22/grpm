@@ -10,6 +10,7 @@ package services
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"net/http"
 	"time"
 )
@@ -17,19 +18,22 @@ import (
 // General structure for each api request.
 type ApiService struct {
 	Link    LinkService
-	Method  string
 	Headers map[string]string
+	Method  string
 	Timeout time.Duration
 }
 
 // Create a new api request.
-func CreateApiRequest(link LinkService, headers map[string]string, method string, timeout time.Duration) *ApiService {
+func CreateApiRequest(link LinkService, headers map[string]string, method string, timeout time.Duration) (*ApiService, error) {
+	if link.IsEmpty() {
+		return nil, errors.New("Failed to create new Api Request, LinkService object must not be empty")
+	}
 	return &ApiService{
 		link,
-		method,
 		headers,
+		method,
 		timeout,
-	}
+	}, nil
 }
 
 // Perform a new http request to an api platform.

@@ -44,13 +44,18 @@ type Repositories struct {
 }
 
 func TestApiServiceWithGithubSearch(t *testing.T) {
-	link := CreateRequestLink(
+	link, err := CreateRequestLink(
 		GithubApiBase,
 		[]string{"search", "repositories"},
 		[]string{"q=fzf"},
 	)
 
-	apiReq := CreateApiRequest(
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	apiReq, err := CreateApiRequest(
 		*link,
 		map[string]string{
 			"Accept":     "application/vnd.github+json",
@@ -60,9 +65,14 @@ func TestApiServiceWithGithubSearch(t *testing.T) {
 		5*time.Second,
 	)
 
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
 	var repos Repositories
 
-	err := apiReq.RequestWithDecode(&repos)
+	err = apiReq.RequestWithDecode(&repos)
 
 	if err != nil {
 		t.Error("Failed to fetch response and decode searched repo into struct", "error", err)
@@ -75,13 +85,18 @@ func TestApiServiceWithGithubSearch(t *testing.T) {
 }
 
 func TestApiServiceWithGithubFailSearch(t *testing.T) {
-	link := CreateRequestLink(
+	link, err := CreateRequestLink(
 		GithubApiBase,
 		[]string{"search", "repositories"},
 		[]string{"q=awdawdawdawdawgfwgerg"},
 	)
 
-	apiReq := CreateApiRequest(
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	apiReq, err := CreateApiRequest(
 		*link,
 		map[string]string{
 			"Accept":     "application/vnd.github+json",
@@ -91,9 +106,14 @@ func TestApiServiceWithGithubFailSearch(t *testing.T) {
 		5*time.Second,
 	)
 
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
 	var repos Repositories
 
-	err := apiReq.RequestWithDecode(&repos)
+	err = apiReq.RequestWithDecode(&repos)
 
 	if err != nil {
 		t.Error("Failed to fetch response and decode searched repo into struct", "error", err)
