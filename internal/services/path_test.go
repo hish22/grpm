@@ -6,27 +6,39 @@ import (
 )
 
 func TestPathService(t *testing.T) {
-	path, err := CreatePathService([]string{"root", "home", "Desktop", ".cache"}, "temp.json")
+	path := CreatePathService([]string{"root", "home", "Desktop", ".cache"}, []string{"temp.json", "about.json"})
+
+	pathForFile0, err := path.String(0)
 
 	if err != nil {
 		t.Error(err)
-		return
 	}
 
-	fmt.Println(path.String())
+	pathForFile1, err := path.String(1)
+
+	if err != nil {
+		t.Error(err)
+	}
+
+	fmt.Println(pathForFile0)
+	fmt.Println(pathForFile1)
+
 	fmt.Println(path.GetDirectories())
-	fmt.Println(path.FileExt(false))
+	fmt.Println(path.GetDirectoriesPath())
+
+	ext, err := path.FileExt(0, false)
+
+	if err != nil {
+		t.Error(err)
+	}
+
+	fmt.Println(ext)
 
 }
 
 func TestPathServiceWithEmptyDirectories(t *testing.T) {
-	path, err := CreatePathService([]string{}, "temp.json")
+	path := CreatePathService([]string{}, []string{"temp.json"})
 
-	if err != nil {
-		t.Error(err)
-		return
-	}
-
-	fmt.Println(path.String())
+	fmt.Println(path.String(0))
 
 }
