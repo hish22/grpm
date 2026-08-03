@@ -10,6 +10,7 @@ package services
 import (
 	"errors"
 	"path/filepath"
+	"regexp"
 	"strings"
 )
 
@@ -90,4 +91,15 @@ func (p PathService) FileExt(i int, nodot bool) (string, error) {
 		return "", nil
 	}
 	return filepath.Ext(p.files[i]), nil
+}
+
+// Provide a file without extention.
+func (p PathService) RmvExt(i int) (string, error) {
+	if len(p.files) <= i {
+		return "", errors.New("Failed to remove file extention, wrong index")
+	}
+
+	re := regexp.MustCompile(`^(\w)+`)
+	m := re.FindString(p.files[i])
+	return m, nil
 }

@@ -42,3 +42,15 @@ func TestPathServiceWithEmptyDirectories(t *testing.T) {
 	fmt.Println(path.String(0))
 
 }
+
+func TestPathServiceRemoveExt(t *testing.T) {
+	path := CreatePathService([]string{}, []string{"temp.json"})
+
+	text, err := path.RmvExt(0)
+
+	if err != nil {
+		t.Error(err)
+	}
+
+	fmt.Println(text)
+}
