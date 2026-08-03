@@ -43,15 +43,30 @@ func (f *fileService) ChangeMode(newMode os.FileMode) {
 	f.mode = newMode
 }
 
-// Create a new file.
-func (f *fileService) NewFile(fileIndex int) (*os.File, error) {
+// General file open.
+func (f *fileService) Open(fileIndex int, flags int) (*os.File, error) {
 	filePath, err := f.path.String(fileIndex)
 
 	if err != nil {
 		return nil, err
 	}
 
-	return os.OpenFile(filePath, os.O_CREATE, f.mode)
+	return os.OpenFile(filePath, flags, f.mode)
+}
+
+// Open file as read-only file.
+func (f *fileService) OpenROFile(fileIndex int) (*os.File, error) {
+	return f.Open(fileIndex, os.O_RDONLY)
+}
+
+// Create a file with RW flag. (TMP)
+func (f *fileService) NewRWFile(fileIndex int) (*os.File, error) {
+	return f.Open(fileIndex, os.O_CREATE|os.O_RDWR)
+}
+
+// Create a new file.
+func (f *fileService) NewFile(fileIndex int) (*os.File, error) {
+	return f.Open(fileIndex, os.O_CREATE)
 }
 
 // Create a set of new files. (could be refactored)
@@ -148,17 +163,11 @@ func (f *fileService) ContingencySafeWrite(fileIndex int, stream []byte) error {
 	tFile, err := f.NewTmpFile(fileIndex)
 
 	if err != nil {
-		tFile.Close()
 		return err
 	}
 
-	defer func() error {
-		err = os.Remove(tFile.Name())
-
-		if err != nil {
-			return err
-		}
-		return nil
+	defer func() {
+		os.Remove(tFile.Name())
 	}()
 
 	err = f.WriteStream(tFile, fileIndex, stream)
