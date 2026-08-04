@@ -2,6 +2,7 @@ package services
 
 import (
 	"fmt"
+	"strings"
 	"testing"
 )
 
@@ -116,7 +117,7 @@ func TestFileServiceReadStream(t *testing.T) {
 		t.Error(err)
 	}
 
-	data, err := file.ReadStreamAsString(0)
+	data, err := file.ReadStreamAsString()
 
 	if err != nil {
 		t.Error(err)
@@ -136,6 +137,42 @@ func TestFileServiceContingencySafeWrite(t *testing.T) {
 		return
 	}
 
-	file.ContingencySafeWrite(0, []byte("Welcome to my world!"))
-	file.ContingencySafeWrite(1, []byte("Welcome to my cahce file!"))
+	file.ContingencySafeWrite([]byte("Welcome to my world!"))
+	file.ChangeIndex(1)
+	file.ContingencySafeWrite([]byte("Welcome to my cahce file!"))
+}
+
+func TestFileServiceCopyFile(t *testing.T) {
+	path := CreatePathService([]string{""}, []string{"content.txt"})
+
+	file, err := CreateFileService(path, 0755)
+
+	if err != nil {
+		t.Error(err)
+	}
+
+	stringReader := strings.NewReader("Welcome to copy file test")
+
+	err = file.CopyFile(stringReader)
+
+	if err != nil {
+		t.Error(err)
+	}
+}
+
+func TestFileServiceContingencySafeCopy(t *testing.T) {
+	path := CreatePathService([]string{""}, []string{"content.txt"})
+
+	file, err := CreateFileService(path, 0755)
+
+	if err != nil {
+		t.Error(err)
+	}
+
+	stringReader := strings.NewReader("Welcome to copy file test")
+	err = file.ContingencySafeCopy(stringReader)
+
+	if err != nil {
+		t.Error(err)
+	}
 }

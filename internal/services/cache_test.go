@@ -29,7 +29,7 @@ func TestCacheServiceDispatch(t *testing.T) {
 
 	cache := CreateCacheService(hash, file, []byte(data))
 
-	err = cache.Dispatch(0)
+	err = cache.Dispatch()
 
 	if err != nil {
 		t.Error(err)
@@ -58,7 +58,7 @@ func TestCacheServiceFetchEntry(t *testing.T) {
 		return
 	}
 
-	cache, err := FetchCacheByFingerprint(entries, 0)
+	cache, err := FetchCacheByFingerprint(entries)
 
 	if err != nil {
 		t.Error(err)

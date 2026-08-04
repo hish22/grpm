@@ -43,8 +43,8 @@ func CreateCacheService(fingerprint [32]byte, file *fileService, data []byte) *C
 }
 
 // Apply new cache to indexed file stream.
-func (c CacheService) Dispatch(fileIndex int) error {
-	mdf, err := c.stream.NewRWFile(fileIndex)
+func (c CacheService) Dispatch() error {
+	mdf, err := c.stream.NewRWFile()
 	if err != nil {
 		return err
 	}
@@ -64,14 +64,14 @@ func (c CacheService) Dispatch(fileIndex int) error {
 
 // Fetch applied cache content by fingerprint. FetchCacheByFingerprint expect
 // cache streams container to have the requested cache entries and fileIndex.
-func FetchCacheByFingerprint(container *fileService, fileIndex int) (*CacheEntry, error) {
+func FetchCacheByFingerprint(container *fileService) (*CacheEntry, error) {
 	if container == nil {
 		return nil, errors.New("Failed to fetch cahce stream, container is nil.")
 	}
 
 	var fetchedCacheEntry *CacheEntry
 
-	cacheFileData, err := container.OpenROFile(fileIndex)
+	cacheFileData, err := container.OpenROFile()
 
 	if err != nil {
 		return nil, err
