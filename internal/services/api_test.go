@@ -56,7 +56,7 @@ func TestApiServiceWithGithubSearch(t *testing.T) {
 	}
 
 	apiReq, err := CreateApiRequest(
-		*link,
+		link,
 		map[string]string{
 			"Accept":     "application/vnd.github+json",
 			"User-Agent": "grpm/0.0.1",
@@ -97,7 +97,7 @@ func TestApiServiceWithGithubFailSearch(t *testing.T) {
 	}
 
 	apiReq, err := CreateApiRequest(
-		*link,
+		link,
 		map[string]string{
 			"Accept":     "application/vnd.github+json",
 			"User-Agent": "grpm/0.0.1",

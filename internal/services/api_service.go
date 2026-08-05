@@ -17,14 +17,14 @@ import (
 
 // General structure for each api request.
 type ApiService struct {
-	Link    LinkService
+	Link    *LinkService
 	Headers map[string]string
 	Method  string
 	Timeout time.Duration
 }
 
 // Create a new api request.
-func CreateApiRequest(link LinkService, headers map[string]string, method string, timeout time.Duration) (*ApiService, error) {
+func CreateApiRequest(link *LinkService, headers map[string]string, method string, timeout time.Duration) (*ApiService, error) {
 	if link.IsEmpty() {
 		return nil, errors.New("Failed to create new Api Request, LinkService object must not be empty")
 	}
