@@ -32,7 +32,7 @@ func CreateFileService(path *PathService, mode os.FileMode) (*fileService, error
 	}
 	return &fileService{
 		path,
-		0,
+		0, // Default with index 0
 		mode,
 	}, nil
 }
@@ -196,6 +196,7 @@ func (f *fileService) CopyFile(stream io.Reader) error {
 	return err
 }
 
+// Copy into intermediate temporary file before the regular file
 func (f *fileService) ContingencySafeCopy(stream io.Reader) error {
 	tFile, err := f.NewTmpFile()
 
