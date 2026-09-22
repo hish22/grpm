@@ -204,6 +204,11 @@ func (f *fileService) ContingencySafeCopy(stream io.Reader) error {
 		return err
 	}
 
+	defer func() {
+		tFile.Close()
+		os.Remove(tFile.Name())
+	}()
+
 	_, err = io.Copy(tFile, stream)
 
 	if err != nil {
@@ -234,6 +239,11 @@ func (f *fileService) ContingencySafeWrite(stream []byte) error {
 	if err != nil {
 		return err
 	}
+
+	defer func() {
+		tFile.Close()
+		os.Remove(tFile.Name())
+	}()
 
 	err = f.WriteStream(tFile, stream)
 	if err != nil {
