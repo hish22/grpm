@@ -16,7 +16,8 @@ import (
 )
 
 const (
-	GithubApiBase = "https://api.github.com/"
+	GithubApiBase string = "https://api.github.com/"    // Github url base.
+	GitlabApiBase string = "https://gitlab.com/api/v4/" // Gitlab url base.
 )
 
 type LinkService struct {
