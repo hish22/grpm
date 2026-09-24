@@ -47,7 +47,6 @@ func (api ApiService) Request(ctx context.Context) (*http.Response, error) {
 
 	// Request an api with context.
 	req, err := http.NewRequestWithContext(ctx, api.Method, url, nil)
-
 	if err != nil {
 		return nil, err
 	}
@@ -60,6 +59,12 @@ func (api ApiService) Request(ctx context.Context) (*http.Response, error) {
 	// Perform the request and return the response.
 	c := http.Client{}
 	res, err := c.Do(req)
+
+	// Through error when status code is 4xx or 5xx.
+	if res.StatusCode >= 400 || res.StatusCode >= 500 {
+		return nil, errors.New("Failed to perform request, " + res.Status)
+	}
+
 	return res, err
 }
 
