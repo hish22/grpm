@@ -1,17 +1,7 @@
 package main
 
 import (
-	"hish22/grpm/cmd/cachec"
-	"hish22/grpm/cmd/configc"
-	"hish22/grpm/cmd/infoc"
-	"hish22/grpm/cmd/installc"
-	"hish22/grpm/cmd/listc"
-	"hish22/grpm/cmd/releasec"
-	"hish22/grpm/cmd/removec"
-	"hish22/grpm/cmd/searchc"
-	"hish22/grpm/cmd/updatec"
-	"hish22/grpm/internal/config"
-	"hish22/grpm/internal/util"
+	"hish22/grpm/cmd/commands"
 
 	charmlog "github.com/charmbracelet/log"
 
@@ -27,16 +17,8 @@ func root() *cobra.Command {
 		Use:   "grpm",
 		Short: "A cool github release packet manger",
 		Long:  `Github Releases Packet Manager (grpm) is a tool to handle installed releases from github.`,
-		Run: func(cmd *cobra.Command, args []string) {
-			if define {
-				if util.IsAdministrator() {
-					config.GenerateTOMLConfig()
-				} else {
-					charmlog.Error("Failed to define grpm, please use (grpm -d) with privileged execution")
-				}
-			} else {
-				cmd.Help()
-			}
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return nil
 		},
 	}
 }
@@ -45,15 +27,15 @@ func main() {
 	r := root()
 	r.Flags().BoolVarP(&define, "define", "d", false, "Initialize grpm tool.")
 	grpmCommands := []*cobra.Command{
-		searchc.SearchC(),
-		configc.ConfigC(),
-		infoc.InfoC(),
-		releasec.ReleaseC(),
-		installc.InstallC(),
-		listc.ListC(),
-		updatec.UpdateC(),
-		cachec.CacheC(),
-		removec.RemoveC(),
+		commands.SearchC(),
+		commands.ConfigC(),
+		commands.InfoC(),
+		commands.ReleaseC(),
+		commands.InstallC(),
+		commands.ListC(),
+		commands.UpdateC(),
+		commands.CacheC(),
+		commands.RemoveC(),
 	}
 	// Add search command
 	r.AddCommand(grpmCommands...)

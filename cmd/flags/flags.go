@@ -32,15 +32,16 @@ func GetIntgerFlag(name string) *int {
 
 // ** GRPM BOOLEAN FLAGS **
 var BoolFlags map[string]*bool = map[string]*bool{
-	"define":        nil, // initialize grpm tool.
-	"clear":         nil, // clear (search, info) commands data cache.
-	"show":          nil, // show user configuration options.
-	"rfconfig":      nil, // allow user to refactor configuration options.
-	"match":         nil, // display only options that match the configuration options (os,arch).
-	"setup":         nil, // extract compressed or archived files into lib folder.
-	"force":         nil, // apply all pop up options.
-	"latest":        nil, // have different applications (show repositories or grab latest release).
-	"latestRelease": nil, // show latest repository release.
+	"define":         nil, // initialize grpm tool.
+	"clear":          nil, // clear (search, info) commands data cache.
+	"show":           nil, // show user configuration options.
+	"rfconfig":       nil, // allow user to refactor configuration options.
+	"match":          nil, // display only options that match the configuration options (os,arch).
+	"setup":          nil, // extract compressed or archived files into lib folder.
+	"force":          nil, // apply all pop up options.
+	"latest":         nil, // have different applications (show repositories or grab latest release).
+	"latest-release": nil, // show latest repository release.
+	"check":          nil, // check for specific update.
 }
 
 func SetBooleanFlag(name string, flag *bool) {
