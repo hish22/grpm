@@ -287,6 +287,10 @@ grpm cache --clear
 
 ---
 
+## Next Phase
+
+- Future development will consist of integrating gitlab platform.
+
 ## Contributing
 
 1. Fork the repository
